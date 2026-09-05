@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-arial-narrow: "Arial Narrow", "Nimbus Sans Narrow", "Roboto Condensed", "Liberation Sans Narrow", Arial, sans-serif;
+  }
+
+  body {
+    font-family: var(--font-arial-narrow);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Arial Narrow Utility Class */
+.font-arial-narrow {
+  font-family: "Arial Narrow", "Nimbus Sans Narrow", "Roboto Condensed", "Liberation Sans Narrow", Arial, sans-serif !important;
+}
+
+/* Official Document Sheets (Surat, BKU, SPJ, BA Kesepakatan, Notulen) */
+.document-sheet,
+.print-document,
+.official-doc {
+  font-family: "Arial Narrow", "Nimbus Sans Narrow", "Roboto Condensed", "Liberation Sans Narrow", Arial, sans-serif !important;
+  letter-spacing: -0.01em;
+}
+
+/* Print Optimization for Arial Narrow & Exact Web Layout Matching */
+@media print {
+  * {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 8mm;
+  }
+
+  body {
+    background: #f8fafc !important;
+    color: #0f172a !important;
+  }
+
+  .print-avoid-break {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .print-page-break {
+    page-break-after: always !important;
+    break-after: page !important;
+  }
+
+  .print-page-break-before {
+    page-break-before: always !important;
+    break-before: page !important;
+  }
+
+  *,
+  html,
+  body,
+  table,
+  th,
+  td,
+  p,
+  span,
+  div,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  input,
+  textarea {
+    font-family: "Arial Narrow", "Nimbus Sans Narrow", "Roboto Condensed", "Liberation Sans Narrow", Arial, sans-serif !important;
+  }
+}
+
