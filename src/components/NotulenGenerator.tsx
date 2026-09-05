@@ -128,7 +128,11 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
               }`}
             >
               <FileText className="w-3.5 h-3.5" />
-              <span>Notulen Rapat</span>
+              <span>
+                {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus'
+                  ? 'Berita Acara Pelaksanaan'
+                  : 'Notulen Rapat'}
+              </span>
             </button>
           </div>
 
@@ -337,7 +341,11 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs print:hidden space-y-4 text-xs">
           <div className="flex items-center justify-between border-b pb-3">
             <span className="font-bold text-slate-800 uppercase tracking-wider text-xs">
-              {docViewMode === 'daftar-hadir' ? 'Pengaturan Daftar Hadir' : 'Formulir Notulen Rapat'}
+              {docViewMode === 'daftar-hadir' 
+                ? 'Pengaturan Daftar Hadir' 
+                : selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus'
+                ? 'Formulir Berita Acara Pelaksanaan'
+                : 'Formulir Notulen Rapat'}
             </span>
             <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-[10px] font-bold uppercase">
               Bulan {month} 2026
@@ -582,7 +590,11 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 uppercase mb-1">Uraian Pembahasan Rapat</label>
+                <label className="block font-semibold text-slate-700 uppercase mb-1">
+                  {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus'
+                    ? 'Uraian Jalannya Acara & Pelaksanaan'
+                    : 'Uraian Pembahasan Rapat'}
+                </label>
                 <textarea
                   rows={4}
                   value={discussionNotes}
@@ -592,7 +604,11 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 uppercase mb-1">Hasil Keputusan Rapat</label>
+                <label className="block font-semibold text-slate-700 uppercase mb-1">
+                  {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus'
+                    ? 'Hasil Pelaksanaan & Kesimpulan Acara'
+                    : 'Hasil Keputusan Rapat'}
+                </label>
                 <textarea
                   rows={4}
                   value={decisions}
@@ -969,9 +985,9 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                   <div className="h-px bg-slate-300 my-1"></div>
                   <h1 className="text-base font-extrabold uppercase text-slate-900 leading-tight">
                     {selectedPresetId === 'notulen-tirakatan-16agustus'
-                      ? 'NOTULEN MALAM TIRAKATAN HUT RI KE 81 TAHUN 2026'
+                      ? 'BERITA ACARA & NOTULEN PELAKSANAAN KEGIATAN MALAM TIRAKATAN HUT RI KE 81 TAHUN 2026'
                       : selectedPresetId === 'notulen-resepsi-23agustus'
-                      ? 'NOTULEN MALAM RESEPSI HUT RI KE 81 TAHUN 2026'
+                      ? 'BERITA ACARA & NOTULEN PELAKSANAAN KEGIATAN MALAM RESEPSI HUT RI KE 81 TAHUN 2026'
                       : meetingType === 'rt' ? 'NOTULEN RAPAT RUTIN WARGA' : 'NOTULEN PERTEMUAN PKK'}
                   </h1>
                   <p className="text-xs text-slate-600 mt-0.5">Bulan {month} Tahun {profile.year}</p>
@@ -1013,10 +1029,12 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                 </tbody>
               </table>
 
-              {/* Agenda Rapat */}
+              {/* Agenda Rapat / Acara */}
               <div className="space-y-2">
                 <h3 className="text-xs font-bold uppercase bg-slate-100 p-2 border-l-4 border-red-600">
-                  I. Susunan Agenda / Acara Rapat
+                  {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus'
+                    ? 'I. Susunan Acara Pelaksanaan Kegiatan'
+                    : 'I. Susunan Agenda / Acara Rapat'}
                 </h3>
                 <ol className="list-decimal list-inside space-y-1 text-xs pl-2">
                   {agendaItems.map((ag, i) => (
@@ -1025,20 +1043,24 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                 </ol>
               </div>
 
-              {/* Uraian Pembahasan */}
+              {/* Uraian Pembahasan / Jalannya Acara */}
               <div className="space-y-2">
                 <h3 className="text-xs font-bold uppercase bg-slate-100 p-2 border-l-4 border-red-600">
-                  II. Uraian Pembahasan & Diskusi
+                  {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus'
+                    ? 'II. Uraian Jalannya Acara & Pelaksanaan Kegiatan'
+                    : 'II. Uraian Pembahasan & Diskusi'}
                 </h3>
                 <p className="text-xs text-justify whitespace-pre-line bg-slate-50 p-3 rounded-xl border border-slate-200">
                   {discussionNotes}
                 </p>
               </div>
 
-              {/* Hasil Keputusan */}
+              {/* Hasil Keputusan / Hasil Pelaksanaan */}
               <div className="space-y-2">
                 <h3 className="text-xs font-bold uppercase bg-slate-100 p-2 border-l-4 border-red-600">
-                  III. Hasil Keputusan & Kesepakatan Warga
+                  {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus'
+                    ? 'III. Hasil Pelaksanaan Kegiatan & Kesimpulan'
+                    : 'III. Hasil Keputusan & Kesepakatan Warga'}
                 </h3>
                 <p className="text-xs text-justify whitespace-pre-line bg-slate-50 p-3 rounded-xl border border-slate-200 font-medium">
                   {decisions}
