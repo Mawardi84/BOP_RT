@@ -135,16 +135,16 @@ export const BaKesepakatanManager: React.FC<BaKesepakatanManagerProps> = ({
             />
           </div>
           <div className="text-center flex-grow px-2">
-            <div className="text-xs font-bold uppercase text-slate-800 leading-tight">
+            <div className="text-[12px] font-bold uppercase text-slate-800 leading-tight">
               PEMERINTAH KOTA SEMARANG
             </div>
-            <div className="text-xs font-semibold uppercase text-slate-800 leading-tight">
+            <div className="text-[12px] font-semibold uppercase text-slate-800 leading-tight">
               KECAMATAN {profile.kecamatan.toUpperCase()}
             </div>
-            <div className="text-xs font-semibold uppercase text-slate-800 leading-tight">
+            <div className="text-[12px] font-semibold uppercase text-slate-800 leading-tight">
               KELURAHAN {profile.kelurahan.toUpperCase()}
             </div>
-            <div className="text-xs font-bold uppercase text-slate-900 leading-tight">
+            <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight">
               RT {profile.rtNumber} RW {profile.rwNumber}
             </div>
             <p className="text-[10px] text-slate-600 leading-tight">

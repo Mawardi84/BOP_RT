@@ -125,16 +125,16 @@ export const RapManager: React.FC<RapManagerProps> = ({ rapItems, onUpdateRap, p
       <div className="bg-white p-8 sm:p-12 rounded-2xl border border-slate-200 shadow-sm max-w-4xl mx-auto text-slate-900 official-doc font-arial-narrow">
         {/* Header Official */}
         <div className="text-center border-b-2 border-slate-900 pb-6 mb-6">
-          <div className="text-xs font-bold uppercase text-slate-800 leading-tight">
+          <div className="text-[12px] font-bold uppercase text-slate-800 leading-tight">
             PEMERINTAH KOTA SEMARANG
           </div>
-          <div className="text-xs font-semibold uppercase text-slate-800 leading-tight">
+          <div className="text-[12px] font-semibold uppercase text-slate-800 leading-tight">
             KECAMATAN {profile.kecamatan.toUpperCase()}
           </div>
-          <div className="text-xs font-semibold uppercase text-slate-800 leading-tight">
+          <div className="text-[12px] font-semibold uppercase text-slate-800 leading-tight">
             KELURAHAN {profile.kelurahan.toUpperCase()}
           </div>
-          <div className="text-xs font-bold uppercase text-slate-900 leading-tight">
+          <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight">
             RT {profile.rtNumber} RW {profile.rwNumber}
           </div>
           <p className="text-[10px] text-slate-600 leading-tight">
