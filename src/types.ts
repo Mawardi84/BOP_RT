@@ -119,4 +119,4 @@ export interface AttendeeItem {
   gender: 'L' | 'P';
 }
 
-export type ActiveTab = 'dashboard' | 'ba-kesepakatan' | 'rap' | 'sptjm' | 'surat' | 'pengambilan' | 'transactions' | 'reports' | 'spj-bulanan' | 'notulen' | 'musyawarah' | 'settings' | 'lpkm-proposal';
+export type ActiveTab = 'dashboard' | 'ba-kesepakatan' | 'rap' | 'sptjm' | 'surat' | 'pengambilan' | 'transactions' | 'reports' | 'spj-bulanan' | 'notulen' | 'musyawarah' | 'settings';

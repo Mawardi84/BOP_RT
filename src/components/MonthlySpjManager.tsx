@@ -14,6 +14,7 @@ import {
   Sparkles,
   ExternalLink
 } from 'lucide-react';
+import { executePrint } from '../utils/printHelper';
 import { FotoDokumentasiLampiran } from './FotoDokumentasiLampiran';
 import { getDefaultPhotosForMonth } from '../utils/photoHelpers';
 
@@ -125,21 +126,21 @@ export const MonthlySpjManager: React.FC<MonthlySpjManagerProps> = ({
   };
 
   const handlePrintCurrentView = () => {
-    window.print();
+    executePrint(`SPJ Pelaporan & Foto - Bulan ${selectedMonth} ${profile.year}`);
   };
 
   const handlePrintPhotosOnly = () => {
     setViewMode('foto-terpisah');
     setTimeout(() => {
-      window.print();
-    }, 150);
+      executePrint(`Lampiran Foto Dokumentasi - Bulan ${selectedMonth} ${profile.year}`);
+    }, 200);
   };
 
   const handlePrintSpjOnly = () => {
     setViewMode('spj');
     setTimeout(() => {
-      window.print();
-    }, 150);
+      executePrint(`Dokumen SPJ Bulanan - Bulan ${selectedMonth} ${profile.year}`);
+    }, 200);
   };
 
   // RAP items for this month

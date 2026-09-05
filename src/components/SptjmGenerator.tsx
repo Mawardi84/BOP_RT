@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { RtProfile } from '../types';
 import { formatDate } from '../utils/formatters';
 import { Printer, ShieldCheck, Award } from 'lucide-react';
+import { executePrint } from '../utils/printHelper';
 
 interface SptjmGeneratorProps {
   profile: RtProfile;
@@ -13,7 +14,7 @@ export const SptjmGenerator: React.FC<SptjmGeneratorProps> = ({ profile }) => {
   const [nikKetua, setNikKetua] = useState('3374................');
 
   const handlePrint = () => {
-    window.print();
+    executePrint(`SPTJM BOP RT ${profile.rtNumber} - ${nomorSptjm}`);
   };
 
   return (

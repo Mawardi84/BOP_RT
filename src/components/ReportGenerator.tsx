@@ -9,6 +9,7 @@ import {
   Sliders,
   RefreshCw,
 } from 'lucide-react';
+import { executePrint } from '../utils/printHelper';
 
 interface ReportGeneratorProps {
   transactions: Transaction[];
@@ -176,7 +177,7 @@ export const ReportGenerator: React.FC<ReportGeneratorProps> = ({
   };
 
   const handlePrint = () => {
-    window.print();
+    executePrint(`SPJ BOP RT - ${reportType === 'bku' ? 'BKU' : 'Laporan Realisasi'} ${currentMonthInfo.name} ${profile.year}`);
   };
 
   // Export report to CSV

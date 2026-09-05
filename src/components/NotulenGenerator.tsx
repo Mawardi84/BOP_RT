@@ -12,6 +12,7 @@ import {
   Award,
   Layers
 } from 'lucide-react';
+import { executePrint } from '../utils/printHelper';
 
 interface NotulenGeneratorProps {
   profile: RtProfile;
@@ -21,7 +22,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
   const [docViewMode, setDocViewMode] = useState<'daftar-hadir' | 'notulen'>('daftar-hadir');
   const [meetingType, setMeetingType] = useState<'rt' | 'pkk'>('rt');
   const [selectedPresetId, setSelectedPresetId] = useState<string>('notulen-januari');
-  const [tableLayoutMode, setTableLayoutMode] = useState<'auto' | '1-kolom' | '2-kolom-100'>('auto');
+  const [tableLayoutMode, setTableLayoutMode] = useState<'auto' | '1-kolom' | '2-kolom-100' | '2-kolom'>('auto');
   
   // Initialize with the 1st preset (Januari 2026 - Persiapan Haul)
   const firstPreset = rtNotulenPresets[0];
@@ -84,16 +85,24 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
   };
 
   const handlePrint = () => {
-    window.print();
+    executePrint(`${docViewMode === 'daftar-hadir' ? 'Daftar Hadir' : 'Notulen'} - ${month} ${profile.year}`);
   };
 
   const activeAttendees = meetingType === 'rt' ? rtAttendees : pkkAttendees;
   const displayAttendees: AttendeeItem[] = activeAttendees.slice(0, Math.max(participantCount, 1));
-  const isDualColumn = tableLayoutMode === '2-kolom-100' || (tableLayoutMode === 'auto' && participantCount >= 50);
+  const isDualColumn =
+    tableLayoutMode === '2-kolom-100' ||
+    tableLayoutMode === '2-kolom' ||
+    (tableLayoutMode === 'auto' && participantCount >= 25) ||
+    (tableLayoutMode !== '1-kolom' && participantCount >= 25);
 
   const midPoint = Math.ceil(displayAttendees.length / 2);
   const col1Attendees = displayAttendees.slice(0, midPoint);
   const col2Attendees = displayAttendees.slice(midPoint);
+  const isUltraCompact = displayAttendees.length > 50;
+  const dualRowHeight = isUltraCompact ? 'h-[13.5px] print:h-[13px]' : 'h-[16.5px] print:h-[15.5px]';
+  const dualHeaderFont = isUltraCompact ? 'text-[7.5px] print:text-[7px]' : 'text-[8.5px] print:text-[8px]';
+  const dualTableFont = isUltraCompact ? 'text-[8px] print:text-[7.5px]' : 'text-[9px] print:text-[8.5px]';
 
   return (
     <div className="space-y-6">
@@ -357,18 +366,15 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
             <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
               <label className="block font-bold text-slate-800 uppercase text-[11px] flex items-center justify-between">
                 <span>Format Lembar Cetak</span>
-                {isDualColumn && (
-                  <span className="bg-red-100 text-red-700 px-1.5 py-0.5 rounded text-[9px] font-extrabold uppercase">
-                    Pas 1 Lembar A4
-                  </span>
-                )}
+                <span className="bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded text-[9px] font-extrabold uppercase">
+                  Pas 1 Halaman A4
+                </span>
               </label>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
                   onClick={() => {
-                    setTableLayoutMode('2-kolom-100');
-                    if (participantCount < 50) setParticipantCount(100);
+                    setTableLayoutMode('2-kolom');
                   }}
                   className={`p-2 rounded-lg border text-left flex items-center space-x-2 transition-all ${
                     isDualColumn
@@ -378,9 +384,9 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                 >
                   <Layers className="w-3.5 h-3.5 shrink-0" />
                   <div className="min-w-0">
-                    <div className="text-[11px] font-bold leading-tight">2 Kolom (1 Lembar)</div>
+                    <div className="text-[11px] font-bold leading-tight">2 Kolom (1 Halaman Pas)</div>
                     <div className={`text-[9px] truncate ${isDualColumn ? 'text-red-100' : 'text-slate-500'}`}>
-                      Hingga 100 Orang
+                      Rekomendasi (40 s.d 100 Warga)
                     </div>
                   </div>
                 </button>
@@ -398,7 +404,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                   <div className="min-w-0">
                     <div className="text-[11px] font-bold leading-tight">1 Kolom Standar</div>
                     <div className={`text-[9px] truncate ${!isDualColumn ? 'text-slate-300' : 'text-slate-500'}`}>
-                      20 - 40 Orang
+                      Untuk 10 - 25 Warga
                     </div>
                   </div>
                 </button>
@@ -444,12 +450,22 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                   <button
                     type="button"
                     onClick={() => {
+                      setParticipantCount(25);
+                      setTableLayoutMode('auto');
+                    }}
+                    className="text-[10px] text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-1.5 py-0.5 rounded"
+                  >
+                    25
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
                       setParticipantCount(40);
                       setTableLayoutMode('auto');
                     }}
-                    className="text-[10px] text-slate-500 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-1.5 py-0.5 rounded"
+                    className="text-[10px] text-red-700 font-extrabold bg-red-100 hover:bg-red-200 px-2 py-0.5 rounded shadow-xs"
                   >
-                    40
+                    40 (Default)
                   </button>
                   <button
                     type="button"
@@ -471,8 +487,8 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                 onChange={(e) => {
                   const val = Number(e.target.value);
                   setParticipantCount(val);
-                  if (val >= 50 && tableLayoutMode === 'auto') {
-                    setTableLayoutMode('2-kolom-100');
+                  if (val >= 25 && tableLayoutMode === 'auto') {
+                    setTableLayoutMode('auto');
                   }
                 }}
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold"
@@ -699,9 +715,9 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                 <div className="grid grid-cols-2 gap-2 print:gap-1.5">
                   {/* Kolom 1 */}
                   <div>
-                    <table className="w-full border-collapse border border-slate-900 text-[8px] print:text-[7.5px] leading-none">
+                    <table className={`w-full border-collapse border border-slate-900 ${dualTableFont} leading-none`}>
                       <thead>
-                        <tr className="bg-slate-100 text-slate-900 font-black uppercase text-[7.5px] print:text-[7px]">
+                        <tr className={`bg-slate-100 text-slate-900 font-black uppercase ${dualHeaderFont}`}>
                           <th className="border border-slate-900 py-0.5 px-0.5 text-center w-5">NO</th>
                           <th className="border border-slate-900 py-0.5 px-1 text-left">Nama</th>
                           <th className="border border-slate-900 py-0.5 px-0.5 text-center w-5">L/P</th>
@@ -712,7 +728,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                         {col1Attendees.map((att) => {
                           const isOdd = att.no % 2 !== 0;
                           return (
-                            <tr key={att.no} className="h-[13.5px] print:h-[13px]">
+                            <tr key={att.no} className={dualRowHeight}>
                               <td className="border border-slate-900 py-0 px-0.5 text-center font-bold">
                                 {att.no}
                               </td>
@@ -746,9 +762,9 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
 
                   {/* Kolom 2 */}
                   <div>
-                    <table className="w-full border-collapse border border-slate-900 text-[8px] print:text-[7.5px] leading-none">
+                    <table className={`w-full border-collapse border border-slate-900 ${dualTableFont} leading-none`}>
                       <thead>
-                        <tr className="bg-slate-100 text-slate-900 font-black uppercase text-[7.5px] print:text-[7px]">
+                        <tr className={`bg-slate-100 text-slate-900 font-black uppercase ${dualHeaderFont}`}>
                           <th className="border border-slate-900 py-0.5 px-0.5 text-center w-5">NO</th>
                           <th className="border border-slate-900 py-0.5 px-1 text-left">Nama</th>
                           <th className="border border-slate-900 py-0.5 px-0.5 text-center w-5">L/P</th>
@@ -759,7 +775,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                         {col2Attendees.map((att) => {
                           const isOdd = att.no % 2 !== 0;
                           return (
-                            <tr key={att.no} className="h-[13.5px] print:h-[13px]">
+                            <tr key={att.no} className={dualRowHeight}>
                               <td className="border border-slate-900 py-0 px-0.5 text-center font-bold">
                                 {att.no}
                               </td>
@@ -813,42 +829,42 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
               </div>
             ) : (
               /* ================= 1 KOLOM STANDAR (20 - 40 WARGA) ================= */
-              <div className="space-y-4">
+              <div className="space-y-2 print-one-page text-slate-900 leading-tight">
                 {/* KOP surat */}
-                <div className="flex items-center justify-between border-b-2 border-slate-900 pb-3 mb-2">
-                  <div className="w-16 h-16 flex-shrink-0 flex items-center justify-center">
+                <div className="flex items-center justify-between border-b-2 border-slate-900 pb-1.5 mb-1.5">
+                  <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center">
                     <img 
                       src={meetingType === 'pkk' ? (profile.pkkLogoUrl || profile.logoUrl || "https://upload.wikimedia.org/wikipedia/commons/e/e9/Coat_of_arms_of_Semarang.svg") : (profile.logoUrl || "https://upload.wikimedia.org/wikipedia/commons/e/e9/Coat_of_arms_of_Semarang.svg")} 
                       alt={meetingType === 'pkk' ? "Logo PKK" : "Logo Kota Semarang"} 
-                      className="w-14 h-14 object-contain"
+                      className="w-10 h-10 object-contain"
                     />
                   </div>
                   <div className="text-center flex-grow px-2">
-                    <div className="text-xs font-bold uppercase text-slate-800 leading-tight">
+                    <div className="text-[10px] print:text-[9px] font-bold uppercase text-slate-800 leading-tight">
                       PEMERINTAH KOTA SEMARANG
                     </div>
-                    <div className="text-xs font-semibold uppercase text-slate-800 leading-tight">
+                    <div className="text-[10px] print:text-[9px] font-semibold uppercase text-slate-800 leading-tight">
                       KECAMATAN {profile.kecamatan.toUpperCase()}
                     </div>
-                    <div className="text-xs font-semibold uppercase text-slate-800 leading-tight">
+                    <div className="text-[10px] print:text-[9px] font-semibold uppercase text-slate-800 leading-tight">
                       KELURAHAN {profile.kelurahan.toUpperCase()}
                     </div>
-                    <div className="text-xs font-bold uppercase text-slate-900 leading-tight">
+                    <div className="text-[10px] print:text-[9px] font-bold uppercase text-slate-900 leading-tight">
                       RT {profile.rtNumber} RW {profile.rwNumber}
                     </div>
-                    <p className="text-[10px] text-slate-600 leading-tight">
-                      Alamat: Ngabean RT {profile.rtNumber} RW {profile.rwNumber} Kelurahan {profile.kelurahan}
+                    <p className="text-[8px] print:text-[7.5px] text-slate-600 leading-none mt-0.5">
+                      Alamat: Ngabean RT {profile.rtNumber} RW {profile.rwNumber}, Kel. {profile.kelurahan}, Kec. {profile.kecamatan}, Kota Semarang
                     </p>
                   </div>
-                  <div className="w-16 h-16 flex-shrink-0"></div>
+                  <div className="w-12 h-12 flex-shrink-0"></div>
                 </div>
 
                 {/* DAFTAR HADIR (posisi center) */}
-                <div className="text-center my-3">
-                  <h1 className="text-base font-black tracking-widest uppercase underline underline-offset-4 text-slate-900">
-                    DAFTAR HADIR
+                <div className="text-center my-1.5">
+                  <h1 className="text-xs print:text-[11px] font-black tracking-widest uppercase underline underline-offset-2 text-slate-900 leading-none">
+                    DAFTAR HADIR WARGA
                   </h1>
-                  <p className="text-[11px] font-bold uppercase mt-1 text-slate-700">
+                  <p className="text-[9.5px] print:text-[8.5px] font-extrabold uppercase mt-0.5 text-slate-800">
                     {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus'
                       ? agendaSummary.toUpperCase()
                       : meetingType === 'rt' 
@@ -857,71 +873,69 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                   </p>
                 </div>
 
-                {/* Hari/tanggal, Waktu, Tempat, Agenda */}
-                <div className="border border-slate-300 rounded-lg p-3 bg-slate-50/50 print:bg-transparent print:border-none print:p-0 mb-3">
-                  <table className="w-full text-xs border-collapse">
-                    <tbody>
-                      <tr>
-                        <td className="w-28 font-bold py-0.5 text-slate-900">Hari/tanggal</td>
-                        <td className="w-4 py-0.5 text-center font-bold">:</td>
-                        <td className="py-0.5 text-slate-800 font-semibold">{formatDate(date)}</td>
-                      </tr>
-                      <tr>
-                        <td className="font-bold py-0.5 text-slate-900">Waktu</td>
-                        <td className="py-0.5 text-center font-bold">:</td>
-                        <td className="py-0.5 text-slate-800">{time}</td>
-                      </tr>
-                      <tr>
-                        <td className="font-bold py-0.5 text-slate-900">Tempat</td>
-                        <td className="py-0.5 text-center font-bold">:</td>
-                        <td className="py-0.5 text-slate-800">{location}</td>
-                      </tr>
-                      <tr>
-                        <td className="font-bold py-0.5 text-slate-900 align-top">Agenda</td>
-                        <td className="py-0.5 text-center font-bold align-top">:</td>
-                        <td className="py-0.5 text-slate-800 font-medium leading-normal">{agendaSummary}</td>
-                      </tr>
-                    </tbody>
-                  </table>
+                {/* Hari/tanggal, Waktu, Tempat, Agenda (Compact Grid) */}
+                <div className="border border-slate-900/70 rounded p-1.5 bg-slate-50/50 print:bg-transparent print:p-1 text-[9px] print:text-[8px] mb-1.5 leading-tight">
+                  <div className="grid grid-cols-2 gap-x-3 gap-y-0.5">
+                    <div className="flex">
+                      <span className="w-20 font-bold shrink-0">Hari / tanggal</span>
+                      <span className="w-2 font-bold">:</span>
+                      <span className="font-semibold text-slate-900">{formatDate(date)}</span>
+                    </div>
+                    <div className="flex">
+                      <span className="w-16 font-bold shrink-0">Tempat</span>
+                      <span className="w-2 font-bold">:</span>
+                      <span className="truncate text-slate-900">{location}</span>
+                    </div>
+                    <div className="flex">
+                      <span className="w-20 font-bold shrink-0">Waktu</span>
+                      <span className="w-2 font-bold">:</span>
+                      <span className="text-slate-900">{time}</span>
+                    </div>
+                    <div className="flex">
+                      <span className="w-16 font-bold shrink-0">Agenda</span>
+                      <span className="w-2 font-bold">:</span>
+                      <span className="font-medium truncate text-slate-900">{agendaSummary}</span>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Tabelnya: NO | Nama | L/P | Tanda Tangan (Silang) */}
                 <div className="overflow-x-auto">
-                  <table className="w-full border-collapse border border-slate-900 text-xs">
+                  <table className="w-full border-collapse border border-slate-900 text-[8.5px] print:text-[8px] leading-none">
                     <thead>
-                      <tr className="bg-slate-100 text-slate-900 font-extrabold uppercase">
-                        <th className="border border-slate-900 py-1.5 px-1 text-center w-10">NO</th>
-                        <th className="border border-slate-900 py-1.5 px-3 text-left">Nama</th>
-                        <th className="border border-slate-900 py-1.5 px-2 text-center w-14">L/P</th>
-                        <th colSpan={2} className="border border-slate-900 py-1.5 px-2 text-center w-64">Tanda Tangan</th>
+                      <tr className="bg-slate-100 text-slate-900 font-extrabold uppercase text-[8px] print:text-[7.5px]">
+                        <th className="border border-slate-900 py-1 px-1 text-center w-8">NO</th>
+                        <th className="border border-slate-900 py-1 px-2 text-left">Nama Lengkap</th>
+                        <th className="border border-slate-900 py-1 px-1 text-center w-10">L/P</th>
+                        <th colSpan={2} className="border border-slate-900 py-1 px-1 text-center w-48">Tanda Tangan</th>
                       </tr>
                     </thead>
                     <tbody>
                       {displayAttendees.map((att) => {
                         const isOdd = att.no % 2 !== 0;
                         return (
-                          <tr key={att.no} className="hover:bg-slate-50/50">
-                            <td className="border border-slate-900 py-1 px-1 text-center font-bold text-[11px]">
+                          <tr key={att.no} className="h-[15.5px] print:h-[14px]">
+                            <td className="border border-slate-900 py-0 px-1 text-center font-bold">
                               {att.no}
                             </td>
-                            <td className="border border-slate-900 py-1 px-3 font-semibold uppercase text-[11px]">
+                            <td className="border border-slate-900 py-0 px-2 font-semibold uppercase truncate max-w-[180px]">
                               {blankNamesMode ? '' : att.name}
                             </td>
-                            <td className="border border-slate-900 py-1 px-1 text-center font-bold text-[11px]">
+                            <td className="border border-slate-900 py-0 px-1 text-center font-bold">
                               {blankNamesMode ? '' : att.gender}
                             </td>
                             {isOdd ? (
                               <>
-                                <td className="border border-slate-900 py-1 px-2 text-left w-32 font-semibold text-[11px]">
-                                  {att.no}. ..........................
+                                <td className="border border-slate-900 py-0 px-1.5 text-left w-24 font-semibold">
+                                  {att.no}. ...................
                                 </td>
-                                <td className="border border-slate-900 py-1 px-2 w-32 bg-slate-50/20"></td>
+                                <td className="border border-slate-900 py-0 px-1.5 w-24 bg-slate-50/20"></td>
                               </>
                             ) : (
                               <>
-                                <td className="border border-slate-900 py-1 px-2 w-32 bg-slate-50/20"></td>
-                                <td className="border border-slate-900 py-1 px-2 text-left w-32 font-semibold text-[11px]">
-                                  {att.no}. ..........................
+                                <td className="border border-slate-900 py-0 px-1.5 w-24 bg-slate-50/20"></td>
+                                <td className="border border-slate-900 py-0 px-1.5 text-left w-24 font-semibold">
+                                  {att.no}. ...................
                                 </td>
                               </>
                             )}
@@ -933,20 +947,20 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                 </div>
 
                 {/* Tanda Tangan Mengetahui */}
-                <div className="mt-8 pt-4 grid grid-cols-2 gap-8 text-xs text-center page-break-inside-avoid">
+                <div className="mt-2 pt-1 grid grid-cols-2 gap-8 text-[9px] print:text-[8px] text-center print-avoid-break">
                   <div>
                     <p className="font-bold uppercase">
                       {meetingType === 'rt' ? `Notulis / Sekretaris RT ${profile.rtNumber}` : `Sekretaris PKK RT ${profile.rtNumber}`}
                     </p>
-                    <div className="h-16"></div>
+                    <div className="h-7 print:h-6"></div>
                     <p className="font-extrabold underline uppercase">{secretary}</p>
                   </div>
                   <div>
-                    <p className="text-slate-600 mb-1">Semarang, {formatDate(date)}</p>
+                    <p className="text-slate-600 mb-0.5">Semarang, {formatDate(date)}</p>
                     <p className="font-bold uppercase">
                       {meetingType === 'rt' ? `Ketua RT ${profile.rtNumber}` : `Ketua PKK RT ${profile.rtNumber}`}
                     </p>
-                    <div className="h-16"></div>
+                    <div className="h-7 print:h-6"></div>
                     <p className="font-extrabold underline uppercase">{leader}</p>
                   </div>
                 </div>
@@ -954,131 +968,139 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
             )
           )}
 
-          {/* ================== VIEW 2: NOTULEN RAPAT ================== */}
+          {/* ================== VIEW 2: NOTULEN RAPAT (PAS 1 HALAMAN) ================== */}
           {docViewMode === 'notulen' && (
-            <div className="space-y-6">
-              {/* Header */}
-              <div className="flex items-center justify-between border-b-2 border-slate-900 pb-4">
-                <div className="w-16 h-16 flex-shrink-0 flex items-center justify-center">
+            <div className="space-y-2 print-one-page text-slate-900 leading-tight">
+              {/* KOP Surat Compact */}
+              <div className="flex items-center justify-between border-b-2 border-slate-900 pb-1.5 mb-1.5">
+                <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center">
                   <img 
                     src={meetingType === 'pkk' ? (profile.pkkLogoUrl || profile.logoUrl || "https://upload.wikimedia.org/wikipedia/commons/e/e9/Coat_of_arms_of_Semarang.svg") : (profile.logoUrl || "https://upload.wikimedia.org/wikipedia/commons/e/e9/Coat_of_arms_of_Semarang.svg")} 
                     alt={meetingType === 'pkk' ? "Logo PKK" : "Logo Kota Semarang"} 
-                    className="w-14 h-14 object-contain"
+                    className="w-10 h-10 object-contain"
                   />
                 </div>
                 <div className="text-center flex-grow px-2">
-                  <div className="text-xs font-bold uppercase text-slate-800 leading-tight">
+                  <div className="text-[10px] print:text-[9px] font-bold uppercase text-slate-800 leading-tight">
                     PEMERINTAH KOTA SEMARANG
                   </div>
-                  <div className="text-xs font-semibold uppercase text-slate-800 leading-tight">
+                  <div className="text-[10px] print:text-[9px] font-semibold uppercase text-slate-800 leading-tight">
                     KECAMATAN {profile.kecamatan.toUpperCase()}
                   </div>
-                  <div className="text-xs font-semibold uppercase text-slate-800 leading-tight">
+                  <div className="text-[10px] print:text-[9px] font-semibold uppercase text-slate-800 leading-tight">
                     KELURAHAN {profile.kelurahan.toUpperCase()}
                   </div>
-                  <div className="text-xs font-bold uppercase text-slate-900 leading-tight">
-                    RT {profile.rtNumber} RW {profile.rwNumber}
+                  <div className="text-[10px] print:text-[9px] font-bold uppercase text-slate-900 leading-tight">
+                    RT {profile.rtNumber} RW {profile.rwNumber} NGABEAN
                   </div>
-                  <p className="text-[10px] text-slate-600 leading-tight">
-                    Alamat: Ngabean RT {profile.rtNumber} RW {profile.rwNumber} Kelurahan {profile.kelurahan}
+                  <p className="text-[8px] print:text-[7.5px] text-slate-600 leading-none mt-0.5">
+                    Alamat: Ngabean RT {profile.rtNumber} RW {profile.rwNumber}, Kel. {profile.kelurahan}, Kec. {profile.kecamatan}, Kota Semarang
                   </p>
-                  <div className="h-px bg-slate-300 my-1"></div>
-                  <h1 className="text-base font-extrabold uppercase text-slate-900 leading-tight">
-                    {selectedPresetId === 'notulen-tirakatan-16agustus'
-                      ? 'BERITA ACARA & NOTULEN PELAKSANAAN KEGIATAN MALAM TIRAKATAN HUT RI KE 81 TAHUN 2026'
-                      : selectedPresetId === 'notulen-resepsi-23agustus'
-                      ? 'BERITA ACARA & NOTULEN PELAKSANAAN KEGIATAN MALAM RESEPSI HUT RI KE 81 TAHUN 2026'
-                      : meetingType === 'rt' ? 'NOTULEN RAPAT RUTIN WARGA' : 'NOTULEN PERTEMUAN PKK'}
-                  </h1>
-                  <p className="text-xs text-slate-600 mt-0.5">Bulan {month} Tahun {profile.year}</p>
                 </div>
-                <div className="w-16 h-16 flex-shrink-0"></div>
+                <div className="w-12 h-12 flex-shrink-0"></div>
               </div>
 
-              {/* Meeting Meta Table */}
-              <table className="w-full text-xs border-collapse border border-slate-300">
+              {/* Judul Notulen */}
+              <div className="text-center my-1">
+                <h1 className="text-xs print:text-[11px] font-black tracking-wider uppercase underline underline-offset-2 text-slate-900 leading-none">
+                  {selectedPresetId === 'notulen-tirakatan-16agustus'
+                    ? 'BERITA ACARA & NOTULEN PELAKSANAAN MALAM TIRAKATAN HUT RI KE 81 TAHUN 2026'
+                    : selectedPresetId === 'notulen-resepsi-23agustus'
+                    ? 'BERITA ACARA & NOTULEN PELAKSANAAN MALAM RESEPSI HUT RI KE 81 TAHUN 2026'
+                    : meetingType === 'rt' 
+                    ? `NOTULEN RAPAT RUTIN WARGA RT ${profile.rtNumber} RW ${profile.rwNumber}` 
+                    : `NOTULEN PERTEMUAN RUTIN PKK RT ${profile.rtNumber} RW ${profile.rwNumber}`}
+                </h1>
+                <p className="text-[9px] print:text-[8px] font-bold uppercase text-slate-700 mt-0.5">
+                  Bulan {month} Tahun {profile.year}
+                </p>
+              </div>
+
+              {/* Tabel Meta Pertemuan (Grid 2 Kolom Ringkas) */}
+              <table className="w-full border-collapse border border-slate-900 text-[9px] print:text-[8px] mb-1.5 leading-tight">
                 <tbody>
                   <tr>
-                    <td className="border border-slate-300 p-2 font-semibold bg-slate-50 w-40">Hari / Tanggal</td>
-                    <td className="border border-slate-300 p-2">{formatDate(date)}</td>
+                    <td className="border border-slate-900 py-0.5 px-1.5 font-bold bg-slate-100 w-24">Hari / Tanggal</td>
+                    <td className="border border-slate-900 py-0.5 px-1.5 font-semibold text-slate-900 w-[32%]">{formatDate(date)}</td>
+                    <td className="border border-slate-900 py-0.5 px-1.5 font-bold bg-slate-100 w-28">Pimpinan Rapat</td>
+                    <td className="border border-slate-900 py-0.5 px-1.5 font-semibold text-slate-900">{leader}</td>
                   </tr>
                   <tr>
-                    <td className="border border-slate-300 p-2 font-semibold bg-slate-50">Waktu / Pukul</td>
-                    <td className="border border-slate-300 p-2">{time}</td>
+                    <td className="border border-slate-900 py-0.5 px-1.5 font-bold bg-slate-100">Waktu / Pukul</td>
+                    <td className="border border-slate-900 py-0.5 px-1.5 text-slate-900">{time}</td>
+                    <td className="border border-slate-900 py-0.5 px-1.5 font-bold bg-slate-100">Notulis / Sekretaris</td>
+                    <td className="border border-slate-900 py-0.5 px-1.5 font-semibold text-slate-900">{secretary}</td>
                   </tr>
                   <tr>
-                    <td className="border border-slate-300 p-2 font-semibold bg-slate-50">Tempat Pertemuan</td>
-                    <td className="border border-slate-300 p-2">{location}</td>
+                    <td className="border border-slate-900 py-0.5 px-1.5 font-bold bg-slate-100">Tempat</td>
+                    <td className="border border-slate-900 py-0.5 px-1.5 text-slate-900">{location}</td>
+                    <td className="border border-slate-900 py-0.5 px-1.5 font-bold bg-slate-100">Peserta Hadir</td>
+                    <td className="border border-slate-900 py-0.5 px-1.5 font-bold text-slate-900">{participantCount} Orang (Daftar Hadir Terlampir)</td>
                   </tr>
                   <tr>
-                    <td className="border border-slate-300 p-2 font-semibold bg-slate-50">Agenda Rapat</td>
-                    <td className="border border-slate-300 p-2 font-bold text-slate-900">{agendaSummary}</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-slate-300 p-2 font-semibold bg-slate-50">Pimpinan Rapat</td>
-                    <td className="border border-slate-300 p-2">{leader}</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-slate-300 p-2 font-semibold bg-slate-50">Notulis / Sekretaris</td>
-                    <td className="border border-slate-300 p-2">{secretary}</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-slate-300 p-2 font-semibold bg-slate-50">Jumlah Peserta Hadir</td>
-                    <td className="border border-slate-300 p-2 font-bold">{participantCount} Orang (Daftar hadir terlampir)</td>
+                    <td className="border border-slate-900 py-0.5 px-1.5 font-bold bg-slate-100">Agenda Rapat</td>
+                    <td colSpan={3} className="border border-slate-900 py-0.5 px-1.5 font-bold text-slate-900">{agendaSummary}</td>
                   </tr>
                 </tbody>
               </table>
 
-              {/* Agenda Rapat / Acara */}
-              <div className="space-y-2">
-                <h3 className="text-xs font-bold uppercase bg-slate-100 p-2 border-l-4 border-red-600">
+              {/* I. Susunan Acara Rapat (Kompak 2 Kolom) */}
+              <div className="mb-1.5">
+                <div className="text-[9.5px] print:text-[8.5px] font-bold uppercase bg-slate-100 py-0.5 px-1.5 border-l-2 border-slate-900 text-slate-900 mb-1">
                   {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus'
                     ? 'I. Susunan Acara Pelaksanaan Kegiatan'
                     : 'I. Susunan Agenda / Acara Rapat'}
-                </h3>
-                <ol className="list-decimal list-inside space-y-1 text-xs pl-2">
+                </div>
+                <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-[8.5px] print:text-[8px] pl-1.5 leading-tight text-slate-800">
                   {agendaItems.map((ag, i) => (
-                    <li key={i}>{ag}</li>
+                    <div key={i} className="flex space-x-1">
+                      <span className="font-bold text-slate-900">{i + 1}.</span>
+                      <span className="truncate">{ag}</span>
+                    </div>
                   ))}
-                </ol>
+                </div>
               </div>
 
-              {/* Uraian Pembahasan / Jalannya Acara */}
-              <div className="space-y-2">
-                <h3 className="text-xs font-bold uppercase bg-slate-100 p-2 border-l-4 border-red-600">
+              {/* II. Uraian Pembahasan / Jalannya Acara */}
+              <div className="mb-1.5">
+                <div className="text-[9.5px] print:text-[8.5px] font-bold uppercase bg-slate-100 py-0.5 px-1.5 border-l-2 border-slate-900 text-slate-900 mb-1">
                   {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus'
                     ? 'II. Uraian Jalannya Acara & Pelaksanaan Kegiatan'
-                    : 'II. Uraian Pembahasan & Diskusi'}
-                </h3>
-                <p className="text-xs text-justify whitespace-pre-line bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    : 'II. Uraian Pembahasan & Diskusi Rapat'}
+                </div>
+                <div className="text-[9px] print:text-[8px] text-justify leading-snug whitespace-pre-line text-slate-900 border border-slate-300 rounded p-1.5 bg-slate-50/40 print:bg-transparent print:p-0 print:border-none">
                   {discussionNotes}
-                </p>
+                </div>
               </div>
 
-              {/* Hasil Keputusan / Hasil Pelaksanaan */}
-              <div className="space-y-2">
-                <h3 className="text-xs font-bold uppercase bg-slate-100 p-2 border-l-4 border-red-600">
+              {/* III. Hasil Keputusan / Kesepakatan Warga */}
+              <div className="mb-1.5">
+                <div className="text-[9.5px] print:text-[8.5px] font-bold uppercase bg-slate-100 py-0.5 px-1.5 border-l-2 border-slate-900 text-slate-900 mb-1">
                   {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus'
                     ? 'III. Hasil Pelaksanaan Kegiatan & Kesimpulan'
                     : 'III. Hasil Keputusan & Kesepakatan Warga'}
-                </h3>
-                <p className="text-xs text-justify whitespace-pre-line bg-slate-50 p-3 rounded-xl border border-slate-200 font-medium">
+                </div>
+                <div className="text-[9px] print:text-[8px] text-justify leading-snug whitespace-pre-line text-slate-900 font-medium border border-slate-300 rounded p-1.5 bg-slate-50/40 print:bg-transparent print:p-0 print:border-none">
                   {decisions}
-                </p>
+                </div>
               </div>
 
-              {/* Signatures */}
-              <div className="mt-12 pt-6 grid grid-cols-2 gap-8 text-xs text-center page-break-inside-avoid">
+              {/* Tanda Tangan Mengetahui */}
+              <div className="mt-2 pt-1 grid grid-cols-2 gap-8 text-[9px] print:text-[8px] text-center print-avoid-break">
                 <div>
-                  <p className="font-semibold uppercase">Notulis / Sekretaris</p>
-                  <div className="h-16"></div>
-                  <p className="font-bold underline uppercase">{secretary}</p>
+                  <p className="font-bold uppercase">
+                    {meetingType === 'rt' ? `Notulis / Sekretaris RT ${profile.rtNumber}` : `Sekretaris PKK RT ${profile.rtNumber}`}
+                  </p>
+                  <div className="h-7 print:h-6"></div>
+                  <p className="font-extrabold underline uppercase">{secretary}</p>
                 </div>
                 <div>
-                  <p className="text-slate-600 mb-1">Semarang, {formatDate(date)}</p>
-                  <p className="font-semibold uppercase">Pimpinan Rapat / Ketua RT {profile.rtNumber}</p>
-                  <div className="h-16"></div>
-                  <p className="font-bold underline uppercase">{leader}</p>
+                  <p className="text-slate-600 mb-0.5">Semarang, {formatDate(date)}</p>
+                  <p className="font-bold uppercase">
+                    {meetingType === 'rt' ? `Ketua RT ${profile.rtNumber}` : `Ketua PKK RT ${profile.rtNumber}`}
+                  </p>
+                  <div className="h-7 print:h-6"></div>
+                  <p className="font-extrabold underline uppercase">{leader}</p>
                 </div>
               </div>
             </div>

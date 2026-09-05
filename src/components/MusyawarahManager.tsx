@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { MusyawarahRecord, RtProfile } from '../types';
 import { formatDate } from '../utils/formatters';
 import { Users, Plus, FileText, CheckCircle2, Calendar, UserCheck } from 'lucide-react';
+import { executePrint } from '../utils/printHelper';
 
 interface MusyawarahManagerProps {
   records: MusyawarahRecord[];
@@ -49,8 +50,8 @@ export const MusyawarahManager: React.FC<MusyawarahManagerProps> = ({
   const handlePrintBeritaAcara = (record: MusyawarahRecord) => {
     setSelectedRecord(record);
     setTimeout(() => {
-      window.print();
-    }, 100);
+      executePrint(`Berita Acara - ${record.title}`);
+    }, 150);
   };
 
   return (
@@ -256,7 +257,7 @@ export const MusyawarahManager: React.FC<MusyawarahManagerProps> = ({
 
       {/* Hidden Printable Berita Acara */}
       {selectedRecord && (
-        <div className="hidden print:block bg-white p-12 text-slate-900">
+        <div className="hidden print:block bg-white p-12 text-slate-900 official-doc font-arial-narrow">
           <div className="text-center border-b-2 border-slate-900 pb-6 mb-6">
             <h2 className="text-lg font-bold uppercase">BERITA ACARA MUSYAWARAH WARGA</h2>
             <h3 className="text-base font-bold uppercase text-red-700">

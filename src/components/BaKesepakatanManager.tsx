@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { RtProfile, MusyawarahRecord } from '../types';
 import { formatDate } from '../utils/formatters';
 import { Printer, FileText, CheckCircle2, Users, Calendar } from 'lucide-react';
+import { executePrint } from '../utils/printHelper';
 
 interface BaKesepakatanManagerProps {
   profile: RtProfile;
@@ -21,7 +22,7 @@ export const BaKesepakatanManager: React.FC<BaKesepakatanManagerProps> = ({
   const [nomorBA, setNomorBA] = useState(`001/BA-RAP/${profile.rtNumber}.${profile.rwNumber}/VIII/2026`);
 
   const handlePrint = () => {
-    window.print();
+    executePrint(`Berita Acara Kesepakatan RAP BOP RT ${profile.rtNumber} Tahun ${profile.year}`);
   };
 
   const handleSaveToMusyawarah = () => {

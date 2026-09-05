@@ -17,6 +17,7 @@ import {
   FileText,
   Sparkles
 } from 'lucide-react';
+import { executePrint } from '../utils/printHelper';
 import { getDefaultPhotosForMonth } from '../utils/photoHelpers';
 
 interface FotoDokumentasiLampiranProps {
@@ -158,7 +159,7 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
     if (onPrint) {
       onPrint();
     } else {
-      window.print();
+      executePrint(`Lampiran Foto Dokumentasi SPJ Bulan ${month} ${profile.year}`);
     }
   };
 

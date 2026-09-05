@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { RtProfile } from '../types';
 import { formatDate, formatRupiah } from '../utils/formatters';
 import { Printer, FileCheck, Building, Landmark, Sparkles } from 'lucide-react';
+import { executePrint } from '../utils/printHelper';
 
 interface SuratPencairanGeneratorProps {
   profile: RtProfile;
@@ -25,7 +26,7 @@ export const SuratPencairanGenerator: React.FC<SuratPencairanGeneratorProps> = (
   const currentNominal = getNominal();
 
   const handlePrint = () => {
-    window.print();
+    executePrint(`Surat Permohonan Pencairan BOP RT ${profile.rtNumber} - ${nomorSurat}`);
   };
 
   return (

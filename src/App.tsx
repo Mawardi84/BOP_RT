@@ -16,7 +16,6 @@ import { SettingsModal } from './components/SettingsModal';
 import { BaKesepakatanManager } from './components/BaKesepakatanManager';
 import { SptjmGenerator } from './components/SptjmGenerator';
 import { LoginHeroLanding } from './components/LoginHeroLanding';
-import { LpkmProposalView } from './components/LpkmProposalView';
 
 export default function App() {
   const [authRole, setAuthRole] = useState<'admin' | 'public' | null>(() => {
@@ -214,8 +213,8 @@ export default function App() {
         authRole={authRole}
       />
 
-      <div className="flex-1 md:pl-72 flex flex-col">
-        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="flex-1 md:pl-72 flex flex-col print:pl-0 print:m-0">
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 print:p-0 print:max-w-none print:w-full">
         {activeTab === 'dashboard' && (
           <Dashboard
             transactions={transactions}
@@ -227,10 +226,6 @@ export default function App() {
               setIsAddModalOpen(true);
             }}
           />
-        )}
-
-        {activeTab === 'lpkm-proposal' && (
-          <LpkmProposalView profile={profile} />
         )}
 
         {activeTab === 'ba-kesepakatan' && (

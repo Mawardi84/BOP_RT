@@ -14,8 +14,10 @@ import {
   Menu, 
   X,
   ChevronRight,
-  Award
+  ExternalLink,
+  Printer
 } from 'lucide-react';
+import { isInIframe, openInNewTab } from '../utils/printHelper';
 
 interface SidebarProps {
   activeTab: ActiveTab;
@@ -39,7 +41,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const navItems = [
     { id: 'dashboard', label: 'Dashboard Utama', icon: LayoutDashboard },
-    { id: 'lpkm-proposal', label: '🤝 Proposal Kemitraan LPKM', icon: Award },
     { id: 'ba-kesepakatan', label: '1. BA Kesepakatan Anggaran', icon: FileText },
     { id: 'rap', label: '2. Rincian RAP (12 Bulan)', icon: FileSpreadsheet },
     { id: 'sptjm', label: '3. Surat Pernyataan (SPTJM)', icon: ShieldAlert },
@@ -56,7 +57,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <>
       {/* Mobile / Top Toggle Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs">
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs print:hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-3.5">
             <div className="flex items-center space-x-3">
@@ -90,19 +91,31 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
             </div>
 
-            <div className="hidden lg:flex items-center space-x-4">
-              <div className="bg-slate-50 px-3.5 py-1.5 rounded-lg border border-slate-200 text-right">
-                <div className="text-[11px] text-slate-500 font-medium">Sisa / Pagu Dana BOP RT</div>
-                <div className="text-xs font-bold text-slate-900">
-                  Rp {remainingBudget.toLocaleString('id-ID')}{' '}
-                  <span className="text-[10px] font-normal text-slate-500">
-                    (dari Rp {profile.totalPagu.toLocaleString('id-ID')})
-                  </span>
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={openInNewTab}
+                title="Buka aplikasi di Tab Baru Browser untuk mencetak dengan lancar (tanpa batasan preview/iframe)"
+                className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 text-xs font-semibold border border-red-200 transition-all shadow-2xs"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Buka Tab Baru (Cetak Lancar)</span>
+                <span className="sm:hidden">Tab Baru</span>
+              </button>
+
+              <div className="hidden lg:flex items-center space-x-4">
+                <div className="bg-slate-50 px-3.5 py-1.5 rounded-lg border border-slate-200 text-right">
+                  <div className="text-[11px] text-slate-500 font-medium">Sisa / Pagu Dana BOP RT</div>
+                  <div className="text-xs font-bold text-slate-900">
+                    Rp {remainingBudget.toLocaleString('id-ID')}{' '}
+                    <span className="text-[10px] font-normal text-slate-500">
+                      (dari Rp {profile.totalPagu.toLocaleString('id-ID')})
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <div className="bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-lg flex items-center space-x-2 text-amber-800 text-[11px]">
-                <ShieldAlert className="w-3.5 h-3.5 shrink-0 text-amber-600" />
-                <span>Dilarang untuk Gaji/Honor Pengurus!</span>
+                <div className="bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-lg flex items-center space-x-2 text-amber-800 text-[11px]">
+                  <ShieldAlert className="w-3.5 h-3.5 shrink-0 text-amber-600" />
+                  <span>Dilarang untuk Gaji/Honor Pengurus!</span>
+                </div>
               </div>
             </div>
           </div>
@@ -119,7 +132,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Sidebar Navigation */}
       <aside
-        className={`fixed md:sticky top-[57px] md:top-[65px] h-[calc(100vh-57px)] md:h-[calc(100vh-65px)] w-72 bg-white border-r border-slate-200 z-30 transition-transform duration-300 ease-in-out flex flex-col ${
+        className={`fixed md:sticky top-[57px] md:top-[65px] h-[calc(100vh-57px)] md:h-[calc(100vh-65px)] w-72 bg-white border-r border-slate-200 z-30 transition-transform duration-300 ease-in-out flex flex-col print:hidden ${
           isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:translate-x-0'
         }`}
       >

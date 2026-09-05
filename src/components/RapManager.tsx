@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { RapItem, RtProfile, TransactionCategory } from '../types';
 import { formatRupiah } from '../utils/formatters';
 import { FileSpreadsheet, Printer, Plus, Trash2, Calendar, CheckCircle2 } from 'lucide-react';
+import { executePrint } from '../utils/printHelper';
 
 interface RapManagerProps {
   rapItems: RapItem[];
@@ -65,7 +66,7 @@ export const RapManager: React.FC<RapManagerProps> = ({ rapItems, onUpdateRap, p
   };
 
   const handlePrint = () => {
-    window.print();
+    executePrint(`Rincian RAP BOP RT ${profile.rtNumber} Tahun ${profile.year} - ${selectedMonth === 'all' ? '12 Bulan' : selectedMonth}`);
   };
 
   const filteredItems = rapItems.filter(
@@ -121,7 +122,7 @@ export const RapManager: React.FC<RapManagerProps> = ({ rapItems, onUpdateRap, p
       </div>
 
       {/* Official Printable RAP Document Container */}
-      <div className="bg-white p-8 sm:p-12 rounded-2xl border border-slate-200 shadow-sm max-w-4xl mx-auto text-slate-900">
+      <div className="bg-white p-8 sm:p-12 rounded-2xl border border-slate-200 shadow-sm max-w-4xl mx-auto text-slate-900 official-doc font-arial-narrow">
         {/* Header Official */}
         <div className="text-center border-b-2 border-slate-900 pb-6 mb-6">
           <div className="text-xs font-bold uppercase text-slate-800 leading-tight">

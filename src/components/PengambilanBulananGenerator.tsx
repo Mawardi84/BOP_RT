@@ -13,6 +13,7 @@ import {
   Landmark,
   ArrowRight,
 } from 'lucide-react';
+import { executePrint } from '../utils/printHelper';
 
 interface PengambilanBulananGeneratorProps {
   profile: RtProfile;
@@ -191,7 +192,7 @@ export const PengambilanBulananGenerator: React.FC<PengambilanBulananGeneratorPr
   };
 
   const handlePrint = () => {
-    window.print();
+    executePrint(`Surat Pengambilan Operasional BOP RT - ${periodeLabel}`);
   };
 
   // Quick Action to register this withdrawal as Income in BKU (Agustus 2026)

@@ -25,7 +25,7 @@
   letter-spacing: -0.01em;
 }
 
-/* Print Optimization for Arial Narrow & Exact Web Layout Matching */
+/* Print Optimization for Arial Narrow & Exact Official Document Matching */
 @media print {
   * {
     print-color-adjust: exact;
@@ -34,17 +34,63 @@
 
   @page {
     size: A4 portrait;
-    margin: 8mm;
+    margin: 10mm;
   }
 
+  html,
   body {
-    background: #f8fafc !important;
-    color: #0f172a !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
   }
 
-  .print-avoid-break {
+  /* Completely eliminate headers, sidebars, toolbars, buttons and modals */
+  header,
+  aside,
+  nav,
+  .print\:hidden {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    width: 0 !important;
+    overflow: hidden !important;
+  }
+
+  /* Reset document sheets to pure white A4 paper format without screen decorations */
+  .document-sheet,
+  .print-document,
+  .official-doc {
+    background: #ffffff !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Remove outer app container offsets */
+  .min-h-screen {
+    min-height: auto !important;
+    background: #ffffff !important;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .print-avoid-break,
+  .print-one-page {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
   }
 
   .print-page-break {
@@ -77,4 +123,5 @@
     font-family: "Arial Narrow", "Nimbus Sans Narrow", "Roboto Condensed", "Liberation Sans Narrow", Arial, sans-serif !important;
   }
 }
+
 
