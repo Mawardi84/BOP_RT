@@ -42,6 +42,8 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
   const [rtAttendees] = useState<AttendeeItem[]>([...defaultRtAttendees]);
   const [pkkAttendees] = useState<AttendeeItem[]>([...defaultPkkAttendees]);
   const [blankNamesMode, setBlankNamesMode] = useState(false);
+  const [nameWidthMode, setNameWidthMode] = useState<'standar' | 'ringkas' | 'leluasa'>('standar');
+  const [includeAddressColumn, setIncludeAddressColumn] = useState<boolean>(false);
 
   const [newAgenda, setNewAgenda] = useState('');
 
@@ -103,6 +105,18 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
   const dualRowHeight = isUltraCompact ? 'h-[13.5px] print:h-[13px]' : 'h-[16.5px] print:h-[15.5px]';
   const dualHeaderFont = isUltraCompact ? 'text-[7.5px] print:text-[7px]' : 'text-[8.5px] print:text-[8px]';
   const dualTableFont = isUltraCompact ? 'text-[8px] print:text-[7.5px]' : 'text-[9px] print:text-[8.5px]';
+
+  const singleColWidths = includeAddressColumn
+    ? nameWidthMode === 'ringkas'
+      ? { no: 'w-[6%]', name: 'w-[26%]', gender: 'w-[10%]', addr: 'w-[22%]', ttd: 'w-[18%]', ttdTotal: 'w-[36%]' }
+      : nameWidthMode === 'leluasa'
+      ? { no: 'w-[6%]', name: 'w-[34%]', gender: 'w-[10%]', addr: 'w-[18%]', ttd: 'w-[16%]', ttdTotal: 'w-[32%]' }
+      : { no: 'w-[7%]', name: 'w-[28%]', gender: 'w-[11%]', addr: 'w-[20%]', ttd: 'w-[17%]', ttdTotal: 'w-[34%]' }
+    : nameWidthMode === 'ringkas'
+    ? { no: 'w-[7%]', name: 'w-[28%]', gender: 'w-[15%]', addr: '', ttd: 'w-[25%]', ttdTotal: 'w-[50%]' }
+    : nameWidthMode === 'leluasa'
+    ? { no: 'w-[10%]', name: 'w-[40%]', gender: 'w-[14%]', addr: '', ttd: 'w-[18%]', ttdTotal: 'w-[36%]' }
+    : { no: 'w-[10%]', name: 'w-[35%]', gender: 'w-[15%]', addr: '', ttd: 'w-[20%]', ttdTotal: 'w-[40%]' };
 
   return (
     <div className="space-y-6">
@@ -561,6 +575,64 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                 </label>
               </div>
 
+              {!isDualColumn && (
+                <div className="pt-2 border-t border-red-200/60 space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="includeAddress"
+                      checked={includeAddressColumn}
+                      onChange={(e) => setIncludeAddressColumn(e.target.checked)}
+                      className="rounded text-red-600 focus:ring-red-500 w-4 h-4 cursor-pointer"
+                    />
+                    <label htmlFor="includeAddress" className="text-[11px] font-medium text-slate-700 cursor-pointer">
+                      Sertakan Kolom Alamat / RT (Format 5 Kolom)
+                    </label>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-700 uppercase mb-1">
+                      Proporsi Kolom Tabel:
+                    </label>
+                    <div className="grid grid-cols-3 gap-1">
+                      <button
+                        type="button"
+                        onClick={() => setNameWidthMode('standar')}
+                        className={`py-1.5 px-1 text-[10px] font-bold rounded border text-center transition-all ${
+                          nameWidthMode === 'standar'
+                            ? 'bg-slate-900 border-slate-900 text-white shadow-xs'
+                            : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
+                        }`}
+                      >
+                        Standar (35% - 15% - 40%)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setNameWidthMode('ringkas')}
+                        className={`py-1.5 px-1 text-[10px] font-bold rounded border text-center transition-all ${
+                          nameWidthMode === 'ringkas'
+                            ? 'bg-slate-900 border-slate-900 text-white shadow-xs'
+                            : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
+                        }`}
+                      >
+                        Ringkas (28% - 15% - 50%)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setNameWidthMode('leluasa')}
+                        className={`py-1.5 px-1 text-[10px] font-bold rounded border text-center transition-all ${
+                          nameWidthMode === 'leluasa'
+                            ? 'bg-slate-900 border-slate-900 text-white shadow-xs'
+                            : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
+                        }`}
+                      >
+                        Leluasa (40% - 14% - 36%)
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <p className="text-[10px] text-slate-600">
                 <CheckCircle2 className="w-3 h-3 text-emerald-600 inline mr-1" />
                 Kolom <strong>Tanda Tangan</strong> menggunakan sistem <strong>nomor silang</strong> (ganjil di sebelah kiri, genap di sebelah kanan).
@@ -899,15 +971,30 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                   </div>
                 </div>
 
-                {/* Tabelnya: NO | Nama | L/P | Tanda Tangan (Silang) */}
+                {/* Tabelnya: NO | Nama | L/P | (Alamat Opsional) | Tanda Tangan (Silang) */}
                 <div className="overflow-x-auto">
-                  <table className="w-full border-collapse border border-slate-900 text-[8.5px] print:text-[8px] leading-none">
+                  <table className="w-full table-fixed border-collapse border border-slate-900 text-[8.5px] print:text-[8px] leading-none">
+                    <colgroup>
+                      <col className={singleColWidths.no} />
+                      <col className={singleColWidths.name} />
+                      <col className={singleColWidths.gender} />
+                      {includeAddressColumn && singleColWidths.addr && (
+                        <col className={singleColWidths.addr} />
+                      )}
+                      <col className={singleColWidths.ttd} />
+                      <col className={singleColWidths.ttd} />
+                    </colgroup>
                     <thead>
                       <tr className="bg-slate-100 text-slate-900 font-extrabold uppercase text-[8px] print:text-[7.5px]">
-                        <th className="border border-slate-900 py-1 px-1 text-center w-8">NO</th>
-                        <th className="border border-slate-900 py-1 px-2 text-left">Nama Lengkap</th>
-                        <th className="border border-slate-900 py-1 px-1 text-center w-10">L/P</th>
-                        <th colSpan={2} className="border border-slate-900 py-1 px-1 text-center w-48">Tanda Tangan</th>
+                        <th className={`border border-slate-900 py-1 px-1 text-center ${singleColWidths.no}`}>NO</th>
+                        <th className={`border border-slate-900 py-1 px-2 text-left ${singleColWidths.name}`}>Nama Lengkap</th>
+                        <th className={`border border-slate-900 py-1 px-1 text-center ${singleColWidths.gender}`}>L/P</th>
+                        {includeAddressColumn && singleColWidths.addr && (
+                          <th className={`border border-slate-900 py-1 px-1 text-center ${singleColWidths.addr}`}>Alamat / RT</th>
+                        )}
+                        <th colSpan={2} className={`border border-slate-900 py-1 px-1 text-center ${singleColWidths.ttdTotal}`}>
+                          Tanda Tangan
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -918,24 +1005,29 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                             <td className="border border-slate-900 py-0 px-1 text-center font-bold">
                               {att.no}
                             </td>
-                            <td className="border border-slate-900 py-0 px-2 font-semibold uppercase truncate max-w-[180px]">
+                            <td className="border border-slate-900 py-0 px-2 font-semibold uppercase truncate">
                               {blankNamesMode ? '' : att.name}
                             </td>
                             <td className="border border-slate-900 py-0 px-1 text-center font-bold">
                               {blankNamesMode ? '' : att.gender}
                             </td>
+                            {includeAddressColumn && singleColWidths.addr && (
+                              <td className="border border-slate-900 py-0 px-1.5 text-center text-slate-700 truncate">
+                                {blankNamesMode ? '' : `RT ${profile.rtNumber} / RW ${profile.rwNumber}`}
+                              </td>
+                            )}
                             {isOdd ? (
                               <>
-                                <td className="border border-slate-900 py-0 px-1.5 text-left w-24 font-semibold">
-                                  {att.no}. ...................
+                                <td className={`border border-slate-900 py-0 px-2 text-left font-semibold truncate ${singleColWidths.ttd}`}>
+                                  {att.no}. ....................................................
                                 </td>
-                                <td className="border border-slate-900 py-0 px-1.5 w-24 bg-slate-50/20"></td>
+                                <td className={`border border-slate-900 py-0 px-1.5 bg-slate-50/20 ${singleColWidths.ttd}`}></td>
                               </>
                             ) : (
                               <>
-                                <td className="border border-slate-900 py-0 px-1.5 w-24 bg-slate-50/20"></td>
-                                <td className="border border-slate-900 py-0 px-1.5 text-left w-24 font-semibold">
-                                  {att.no}. ...................
+                                <td className={`border border-slate-900 py-0 px-1.5 bg-slate-50/20 ${singleColWidths.ttd}`}></td>
+                                <td className={`border border-slate-900 py-0 px-2 text-left font-semibold truncate ${singleColWidths.ttd}`}>
+                                  {att.no}. ....................................................
                                 </td>
                               </>
                             )}
