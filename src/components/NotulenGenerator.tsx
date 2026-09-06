@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { RtProfile, AttendeeItem } from '../types';
 import { formatDate } from '../utils/formatters';
-import { rtNotulenPresets, defaultRtAttendees, defaultPkkAttendees } from '../data/initialData';
+import { rtNotulenPresets, pkkNotulenPresets, defaultRtAttendees, defaultPkkAttendees } from '../data/initialData';
 import { 
   FileText, 
   Printer, 
@@ -53,26 +53,27 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
 
   const [newAgenda, setNewAgenda] = useState('');
 
-  const handleSelectPreset = (presetId: string) => {
-    const preset = rtNotulenPresets.find((p) => p.id === presetId);
+  const handleSelectPreset = (presetId: string, type: 'rt' | 'pkk' = meetingType) => {
+    const list = type === 'pkk' ? pkkNotulenPresets : rtNotulenPresets;
+    const preset = list.find((p) => p.id === presetId);
     if (!preset) return;
     setSelectedPresetId(presetId);
     setMonth(preset.month);
     setDate(preset.date);
     setTime(preset.time);
     setLocation(preset.location);
-    if (meetingType === 'pkk') {
-      setLeader(profile.ketuaPkk || 'TISNANI SUBANDIYAH');
-      setSecretary(profile.sekretarisPkk || 'INDRIANAH');
+    if (type === 'pkk') {
+      setLeader(preset.leader || profile.ketuaPkk || 'TISNANI SUBANDIYAH');
+      setSecretary(preset.secretary || profile.sekretarisPkk || 'INDRIANAH');
     } else {
-      setLeader(profile.ketuaRt);
-      setSecretary(profile.sekretaris);
+      setLeader(preset.leader || profile.ketuaRt);
+      setSecretary(preset.secretary || profile.sekretaris);
     }
     setParticipantCount(preset.participantCount);
     setAgendaItems([...preset.agendaItems]);
     setDiscussionNotes(preset.discussionNotes);
     setDecisions(preset.decisions);
-    setClosingSentence('');
+    setClosingSentence(type === 'pkk' ? 'Rapat PKK ditutup pukul 17.15 WIB dengan bacaan hamdallah, ucapan salam dan terimakasih.' : '');
     setAgendaSummary(
       preset.agendaTitle ||
       (preset.id === 'notulen-tirakatan-16agustus'
@@ -86,6 +87,16 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
     } else {
       setTableLayoutMode('1-kolom');
     }
+  };
+
+  const switchMeetingType = (type: 'rt' | 'pkk') => {
+    let base = selectedPresetId.replace('pkk-', '');
+    if (base === 'notulen-tirakatan-16agustus' || base === 'notulen-resepsi-23agustus') {
+      base = 'notulen-agustus';
+    }
+    const targetId = type === 'pkk' ? `pkk-${base}` : base;
+    setMeetingType(type);
+    handleSelectPreset(targetId, type);
   };
 
   const handleAddAgenda = () => {
@@ -236,11 +247,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
           {/* Meeting Category Switcher */}
           <div className="inline-flex bg-slate-100 p-1 rounded-xl">
             <button
-              onClick={() => {
-                setMeetingType('rt');
-                setLeader(profile.ketuaRt);
-                setSecretary(profile.sekretaris);
-              }}
+              onClick={() => switchMeetingType('rt')}
               className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 meetingType === 'rt' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600'
               }`}
@@ -248,29 +255,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
               RT {profile.rtNumber}
             </button>
             <button
-              onClick={() => {
-                setMeetingType('pkk');
-                setLeader(profile.ketuaPkk || 'TISNANI SUBANDIYAH');
-                setSecretary(profile.sekretarisPkk || 'INDRIANAH');
-                setAgendaItems([
-                  'Rapat dibuka dengan bacaan basmallah, ucapan salam dan ucapan terima kasih atas kehadiran ibu ibu PKK',
-                  'Menyanyikan Mars PKK dan pembacaan 1 program pokok PKK',
-                  'Laporan Keuangan',
-                  'Lain-lain',
-                  'Mengingatkan untuk pelunasan simpan pinjam Bank sampah',
-                  'Jika ada kegiatan RT diharap ikut berpatisipasi',
-                  'Akan ada haul mbh kyai pati joyokusumo tanggal 13,14,15 januari untuk ikut berpartisipasi'
-                ]);
-                setClosingSentence('Rapat PKK ditutup pukul 17.15 WIB dengan bacaan hamdallah, ucapan salam dan terimakasih.');
-                if (selectedPresetId === 'notulen-januari') {
-                  setDiscussionNotes('Pertemuan rutin PKK RT 04 bulan Januari diawali dengan pembukaan, menyanyikan Mars PKK, dan pembacaan program pokok PKK. Dalam sambutannya, Ketua PKK memaparkan rancangan program kerja awal tahun dan laporan keuangan kas. Ditekankan pula tenggat waktu pelunasan simpan pinjam Bank Sampah agar segera diselesaikan. Seluruh kader dan anggota PKK dihimbau untuk terus menjaga kekompakan, berpartisipasi aktif dalam setiap kegiatan lingkungan RT, serta turut menyemarakkan acara Haul Mbah Kyai Pati Joyokusumo yang akan diselenggarakan pada tanggal 13, 14, dan 15 Januari mendatang.');
-                  setDecisions('1. Pelunasan simpan pinjam Bank Sampah disepakati untuk diselesaikan paling lambat pada pertemuan bulan depan.\n2. Seluruh anggota PKK berkomitmen untuk selalu guyub rukun dan berpartisipasi aktif dalam kegiatan gotong royong maupun agenda RT lainnya.\n3. Warga dan kader PKK sepakat untuk mendukung serta turut berpartisipasi dalam rangkaian acara Haul Mbah Kyai Pati Joyokusumo pada 13-15 Januari.');
-                }
-                
-                if (docViewMode === 'daftar-hadir' && (agendaSummary.includes('Haul') || agendaSummary.includes('RT'))) {
-                  setAgendaSummary('Pertemuan Rutin Kader PKK dan Pembahasan Program RT 04');
-                }
-              }}
+              onClick={() => switchMeetingType('pkk')}
               className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 meetingType === 'pkk' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600'
               }`}
@@ -290,10 +275,10 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
       </div>
 
       {/* Quick Select Bar for RT 04 Meetings */}
-      {meetingType === 'rt' && (
-        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 print:hidden space-y-3.5">
-          {/* Special Agustusan LPJ 100 Person Presets */}
-          <div className="bg-gradient-to-r from-red-500/10 via-amber-500/10 to-red-500/10 border border-red-200 rounded-xl p-3">
+      <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 print:hidden space-y-3.5">
+        {/* Special Agustusan LPJ 100 Person Presets */}
+          {meetingType === 'rt' && (
+          <div className="bg-gradient-to-r from-red-500/10 via-amber-500/10 to-red-500/10 border border-red-200 rounded-xl p-3 mb-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2">
               <div className="flex items-center space-x-2">
                 <span className="flex h-2 w-2 rounded-full bg-red-600 animate-pulse"></span>
@@ -395,6 +380,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
             </div>
           </div>
 
+          )}
           {/* 8 Regular Monthly Meetings */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
@@ -427,14 +413,19 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                         {idx + 1}. {preset.month}
                       </div>
                       <div className="text-[11px] font-extrabold leading-tight mt-0.5 truncate" title={preset.agendaItems[1] || preset.agendaItems[0]}>
-                        {preset.month === 'Januari' ? 'Persiapan Haul' :
-                         preset.month === 'Pebruari' ? 'Tabungan Warga' :
-                         preset.month === 'Maret' ? 'Buka Bersama' :
-                         preset.month === 'April' ? 'Halal Bi Halal' :
-                         preset.month === 'Mei' ? 'Taman TOGA PKK' :
-                         preset.month === 'Juni' ? 'Zarkasi Jogja' :
-                         preset.month === 'Juli' ? 'Sosialisasi BOP' :
-                         'HUT RI Ke-81'}
+                        {meetingType === 'rt' ? (
+                          preset.month === 'Januari' ? 'Persiapan Haul' :
+                          preset.month === 'Pebruari' ? 'Tabungan Warga' :
+                          preset.month === 'Maret' ? 'Buka Bersama' :
+                          preset.month === 'April' ? 'Halal Bi Halal' :
+                          preset.month === 'Mei' ? 'Taman TOGA PKK' :
+                          preset.month === 'Juni' ? 'Zarkasi Jogja' :
+                          preset.month === 'Juli' ? 'Sosialisasi BOP' :
+                          'HUT RI Ke-81'
+                        ) : (
+                          preset.month === 'Januari' ? 'Proker PKK' :
+                          'Laporan Bulanan'
+                        )}
                       </div>
                     </div>
                     <div className={`text-[9px] mt-1.5 pt-1 border-t truncate ${isActive ? 'border-slate-700 text-slate-300' : 'border-slate-100 text-slate-500'}`}>
@@ -446,7 +437,6 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
             </div>
           </div>
         </div>
-      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 print:block">
         {/* Editor Form (Hidden on print) */}
