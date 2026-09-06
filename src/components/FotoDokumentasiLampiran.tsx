@@ -492,11 +492,11 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
           return (
             <div
               key={`sheet-${sheetIdx}`}
-              className="bg-white p-6 sm:p-10 rounded-2xl border border-slate-200 shadow-sm print-avoid-break print-page-break flex flex-col justify-between"
-              style={{ minHeight: '260mm' }}
+              className="bg-white p-6 sm:p-10 rounded-2xl border border-slate-200 shadow-sm print-avoid-break print-page-break flex flex-col justify-start"
+              style={{ minHeight: '260mm', maxHeight: '290mm' }}
             >
               {/* Official Header / KOP Surat Resmi */}
-              <div className="border-b-2 border-slate-900 pb-2.5 mb-3">
+              <div className="pb-1 mb-3">
                 <div className="flex items-center justify-between">
                   <div className="w-14 h-14 flex-shrink-0 flex items-center justify-center">
                     <img 
@@ -518,39 +518,35 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
                     <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight">
                       RT {profile.rtNumber} RW {profile.rwNumber}
                     </div>
-                    <p className="text-[10px] text-slate-600 leading-tight">
+                    <p className="text-[10px] text-slate-600 leading-tight mt-0.5">
                       Alamat: Ngabean RT {profile.rtNumber} RW {profile.rwNumber} Kelurahan {profile.kelurahan}
-                    </p>
-                    <div className="h-px bg-slate-300 my-1"></div>
-                    <h1 className="text-sm font-extrabold uppercase text-slate-900 leading-tight">
-                      LAMPIRAN FOTO DOKUMENTASI KEGIATAN & PEMBELANJAAN BOP RT
-                    </h1>
-                    <p className="text-[11px] text-slate-600 font-medium">
-                      Bulan {month} Tahun {profile.year} • Lembar ke-{sheetNumber} dari {totalSheets}
                     </p>
                   </div>
                   <div className="w-14 h-14 flex-shrink-0"></div>
                 </div>
-                <div className="h-0.5 bg-slate-900 mt-1"></div>
+                <div className="h-0.5 bg-slate-900 mt-2"></div>
                 <div className="h-px bg-slate-900 mt-0.5"></div>
               </div>
 
-              {/* Sub-Header Notice */}
-              <div className="bg-slate-50 border border-slate-300 px-3 py-1.5 mb-3 text-[11px] text-center">
-                <span className="font-bold text-slate-800 uppercase">
-                  DOKUMENTASI PELAKSANAAN ANGGARAN OPERASIONAL RT 04 BULAN {month.toUpperCase()} {profile.year}
-                </span>
+              {/* Title Section */}
+              <div className="text-center mb-3">
+                <h1 className="text-sm font-extrabold uppercase text-slate-900 inline-block border-b-[1.5px] border-slate-900 pb-0.5">
+                  LAMPIRAN FOTO DOKUMENTASI KEGIATAN
+                </h1>
+                <p className="text-[10px] text-slate-600 font-medium mt-1">
+                  Bulan {month} Tahun {profile.year} • Lembar ke-{sheetNumber} dari {totalSheets}
+                </p>
               </div>
 
               {/* Main Content: The Photos */}
-              <div className="grid grid-cols-2 gap-4 flex-1 content-start mt-4">
+              <div className="grid grid-cols-2 gap-4 flex-1 content-start mt-2">
                 {sheetPhotos.map((photo, photoInSheetIdx) => {
                   const globalPhotoNumber = sheetIdx * chunkSize + photoInSheetIdx + 1;
 
                   return (
                     <div
                       key={photo.id || photoInSheetIdx}
-                      className="border border-slate-300 rounded-lg p-2 bg-white print:border-slate-400 print-avoid-break h-[110mm] flex flex-col"
+                      className="border border-slate-300 rounded-lg p-2 bg-white print:border-slate-400 print-avoid-break h-[105mm] flex flex-col"
                     >
                       {/* Top Bar for each photo */}
                       <div className="flex items-center pb-1 mb-1.5 border-b border-slate-200 text-[10px]">
@@ -586,7 +582,7 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
 
                 {/* Fill empty slots in the grid (up to 4) */}
                 {Array.from({ length: 4 - sheetPhotos.length }).map((_, emptyIdx) => (
-                  <div key={`empty-${emptyIdx}`} className="border border-dashed border-slate-300 rounded-lg p-6 text-center text-slate-400 text-xs flex flex-col items-center justify-center h-[110mm]">
+                  <div key={`empty-${emptyIdx}`} className="border border-dashed border-slate-300 rounded-lg p-6 text-center text-slate-400 text-xs flex flex-col items-center justify-center h-[105mm]">
                     <ImageIcon className="w-8 h-8 text-slate-300 mb-1" />
                     <span>Slot Foto Kosong</span>
                     <button
