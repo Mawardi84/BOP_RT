@@ -18,7 +18,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { executePrint } from '../utils/printHelper';
-import { getDefaultPhotosForMonth } from '../utils/photoHelpers';
+import { getDefaultPhotosForMonth, getTirakatanPhotos, getResepsiPhotos } from '../utils/photoHelpers';
 
 interface FotoDokumentasiLampiranProps {
   profile: RtProfile;
@@ -143,8 +143,14 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
     setActivePhotoIndex(targetIdx);
   };
 
-  const handleLoadAgustusPreset = () => {
-    const defaults = getDefaultPhotosForMonth('Agustus', profile.year);
+  const handleLoadTirakatanPreset = () => {
+    const defaults = getTirakatanPhotos();
+    onUpdatePhotos(defaults);
+    setActivePhotoIndex(0);
+  };
+
+  const handleLoadResepsiPreset = () => {
+    const defaults = getResepsiPhotos();
     onUpdatePhotos(defaults);
     setActivePhotoIndex(0);
   };
@@ -208,14 +214,22 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
         {/* Quick Presets Bar */}
         <div className="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-xs">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-slate-500 font-medium">Preset Rekomendasi:</span>
+            <span className="text-slate-500 font-medium">Preset Khusus Agustusan:</span>
             <button
               type="button"
-              onClick={handleLoadAgustusPreset}
+              onClick={handleLoadTirakatanPreset}
               className="bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 px-2.5 py-1 rounded-lg font-medium flex items-center space-x-1.5 transition-colors"
             >
               <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-              <span>🇮🇩 Preset Agustusan (Tirakatan & Resepsi)</span>
+              <span>🇮🇩 Malam Tirakatan</span>
+            </button>
+            <button
+              type="button"
+              onClick={handleLoadResepsiPreset}
+              className="bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 px-2.5 py-1 rounded-lg font-medium flex items-center space-x-1.5 transition-colors"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+              <span>🇮🇩 Malam Resepsi</span>
             </button>
             <button
               type="button"

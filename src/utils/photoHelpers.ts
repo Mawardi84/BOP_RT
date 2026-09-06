@@ -1,5 +1,95 @@
 import { DocumentationPhoto, MonthlySpjRecord } from '../types';
 
+export const getTirakatanPhotos = (existingRecord?: Partial<MonthlySpjRecord>): DocumentationPhoto[] => {
+  return [
+    {
+      id: `photo-tirakatan-1`,
+      title: 'Malam Tirakatan HUT RI Ke 81',
+      description: 'Kegiatan doa bersama, tahlil pejuang, renungan suci dan pemotongan tumpeng kemerdekaan bersama warga.',
+      date: '16 Agustus 2026',
+      location: 'Balai Warga RT 04 / RW 04 Ngabean',
+      imageUrl: existingRecord?.meetingPhotoUrl || 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=800&q=80',
+      orientation: 'landscape',
+      fitMode: 'cover',
+    },
+    {
+      id: `photo-tirakatan-2`,
+      title: 'Sambutan Ketua RT & Tokoh Masyarakat',
+      description: 'Sambutan dan pengarahan dari Ketua RT serta tokoh masyarakat dalam acara malam tirakatan.',
+      date: '16 Agustus 2026',
+      location: 'Balai Warga RT 04 / RW 04 Ngabean',
+      imageUrl: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80',
+      orientation: 'landscape',
+      fitMode: 'cover',
+    },
+    {
+      id: `photo-tirakatan-3`,
+      title: 'Pembelanjaan Konsumsi Tirakatan',
+      description: 'Pengadaan bahan tumpeng tirakatan, snack warga, dan perlengkapan doa bersama.',
+      date: '15 Agustus 2026',
+      location: 'Wilayah RT 04 Ngabean',
+      imageUrl: existingRecord?.itemPhotoUrl || 'https://images.unsplash.com/photo-1543353071-873f17a7a088?auto=format&fit=crop&w=800&q=80',
+      orientation: 'landscape',
+      fitMode: 'cover',
+    },
+    {
+      id: `photo-tirakatan-4`,
+      title: 'Nota Pembelian Konsumsi Tirakatan',
+      description: 'Nota kontan sah berstempel toko untuk pembelanjaan konsumsi malam tirakatan.',
+      date: '15 Agustus 2026',
+      location: 'Toko / Rekanan Penyedia',
+      imageUrl: existingRecord?.receiptPhotoUrl || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80',
+      orientation: 'portrait',
+      fitMode: 'contain',
+    },
+  ];
+};
+
+export const getResepsiPhotos = (existingRecord?: Partial<MonthlySpjRecord>): DocumentationPhoto[] => {
+  return [
+    {
+      id: `photo-resepsi-1`,
+      title: 'Malam Resepsi HUT RI Ke 81',
+      description: 'Pentas seni kreasi pemuda, panggung gembira warga memeriahkan kemerdekaan.',
+      date: '23 Agustus 2026',
+      location: 'Panggung Kemerdekaan RT 04 Ngabean',
+      imageUrl: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80',
+      orientation: 'landscape',
+      fitMode: 'cover',
+    },
+    {
+      id: `photo-resepsi-2`,
+      title: 'Penyerahan Hadiah Lomba',
+      description: 'Penyerahan hadiah lomba 17-an dan doorprize kepada warga yang berpartisipasi.',
+      date: '23 Agustus 2026',
+      location: 'Panggung Kemerdekaan RT 04 Ngabean',
+      imageUrl: 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=800&q=80',
+      orientation: 'landscape',
+      fitMode: 'cover',
+    },
+    {
+      id: `photo-resepsi-3`,
+      title: 'Pembelanjaan Keperluan Resepsi',
+      description: 'Pembelanjaan perlengkapan panggung, sound system, hadiah lomba dan doorprize.',
+      date: '20 Agustus 2026',
+      location: 'Wilayah RT 04 Ngabean',
+      imageUrl: existingRecord?.itemPhotoUrl || 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=800&q=80',
+      orientation: 'landscape',
+      fitMode: 'cover',
+    },
+    {
+      id: `photo-resepsi-4`,
+      title: 'Nota Pembelian Resepsi & Hadiah',
+      description: 'Nota kontan sah berstempel toko untuk pembelanjaan keperluan resepsi dan hadiah.',
+      date: '20 Agustus 2026',
+      location: 'Toko / Rekanan Penyedia',
+      imageUrl: existingRecord?.receiptPhotoUrl || 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=800&q=80',
+      orientation: 'portrait',
+      fitMode: 'contain',
+    },
+  ];
+};
+
 export const getDefaultPhotosForMonth = (
   month: string,
   year: number = 2026,
