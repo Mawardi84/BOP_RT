@@ -40,8 +40,8 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
   const [activePhotoIndex, setActivePhotoIndex] = useState<number | null>(0);
   const [showEditor, setShowEditor] = useState<boolean>(true);
 
-  // Split photos into chunks of 2 (1 sheet = 2 postcard photos)
-  const chunkSize = 2;
+  // Split photos into chunks of 4 (1 sheet = 4 photos)
+  const chunkSize = 4;
   const sheets: DocumentationPhoto[][] = [];
   for (let i = 0; i < photos.length; i += chunkSize) {
     sheets.push(photos.slice(i, i + chunkSize));
@@ -365,7 +365,7 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
                   </div>
                   <p className="text-[10px] text-slate-500 italic">
                     {photos[activePhotoIndex].orientation === 'portrait'
-                      ? 'Format Tegak: Foto ditampilkan tegak 2:3 dengan tabel keterangan di sebelahnya agar 2 foto tetap pas dalam 1 lembar.'
+                      ? 'Format Tegak: Foto ditampilkan tegak 2:3 dengan tabel keterangan di sebelahnya.'
                       : 'Format Mendatar: Foto ditampilkan lebar 3:2 dengan keterangan di bawahnya.'}
                   </p>
                 </div>
@@ -529,7 +529,7 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
               </div>
 
               {/* Main Content: The Photos */}
-              <div className="space-y-4 flex-1 flex flex-col justify-around">
+              <div className="grid grid-cols-2 gap-4 flex-1 content-start mt-4">
                 {sheetPhotos.map((photo, photoInSheetIdx) => {
                   const globalPhotoNumber = sheetIdx * chunkSize + photoInSheetIdx + 1;
                   const isPortrait = photo.orientation === 'portrait';
@@ -537,15 +537,15 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
                   return (
                     <div
                       key={photo.id || photoInSheetIdx}
-                      className="border border-slate-300 rounded-lg p-2 bg-white print:border-slate-400 print-avoid-break"
+                      className="border border-slate-300 rounded-lg p-2 bg-white print:border-slate-400 print-avoid-break h-[110mm] flex flex-col"
                     >
                       {/* Top Bar for each photo */}
-                      <div className="flex items-center pb-1.5 mb-1.5 border-b border-slate-200 text-xs">
-                        <div className="flex items-center space-x-2">
-                          <span className="bg-slate-900 text-white font-bold text-[10px] px-2 py-0.5 rounded">
+                      <div className="flex items-center pb-1 mb-1.5 border-b border-slate-200 text-[10px]">
+                        <div className="flex items-center space-x-1.5">
+                          <span className="bg-slate-900 text-white font-bold text-[9px] px-1.5 py-0.5 rounded">
                             FOTO {globalPhotoNumber}
                           </span>
-                          <span className="font-bold text-slate-900 text-xs truncate max-w-md">
+                          <span className="font-bold text-slate-900 text-[10px] truncate max-w-[55mm]">
                             {photo.title || `Dokumentasi Kegiatan ${globalPhotoNumber}`}
                           </span>
                         </div>
@@ -553,11 +553,11 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
 
                       {/* Photo + Caption Layout: Adaptive based on Portrait / Landscape */}
                       {isPortrait ? (
-                        /* PORTRAIT PHOTO LAYOUT */
-                        <div className="flex items-center gap-3">
+                        /* PORTRAIT PHOTO LAYOUT (Side-by-side inside cell) */
+                        <div className="flex items-start gap-2 flex-1">
                           <div 
-                            className="shrink-0 bg-slate-100 border border-slate-800 rounded overflow-hidden flex items-center justify-center"
-                            style={{ width: '70mm', height: '98mm' }}
+                            className="shrink-0 bg-slate-100 border border-slate-800 rounded flex items-center justify-center overflow-hidden"
+                            style={{ width: '45mm', height: '67.5mm' }} // 2:3 ratio
                           >
                             {photo.imageUrl ? (
                               <img
@@ -566,38 +566,27 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
                                 className={photo.fitMode === 'contain' ? 'max-w-full max-h-full object-contain' : 'w-full h-full object-cover'}
                               />
                             ) : (
-                              <span className="text-xs text-slate-400">Tidak ada foto</span>
+                              <span className="text-[8px] text-slate-400">Tidak ada foto</span>
                             )}
                           </div>
-
-                          {/* Metadata / Caption Box on Right */}
-                          <div 
-                            className="flex-1 border border-slate-300 rounded p-3.5 bg-slate-50 text-xs flex flex-col justify-between"
-                            style={{ height: '98mm' }}
-                          >
-                            <div className="space-y-2">
-                              <div>
-                                <span className="text-[10px] font-bold uppercase text-slate-500 block">Uraian / Keterangan Kegiatan:</span>
-                                <p className="text-slate-800 font-medium leading-relaxed text-justify mt-1">
-                                  {photo.description || 'Dokumentasi bukti kegiatan / pembelanjaan operasional RT.'}
-                                </p>
-                              </div>
-
-                              <div className="pt-2 border-t border-slate-200">
-                                <div>
-                                  <span className="text-[10px] font-bold uppercase text-slate-500 block">Hari / Tanggal Pelaksanaan:</span>
-                                  <span className="text-slate-800 font-semibold">{photo.date || `-`}</span>
-                                </div>
-                              </div>
+                          
+                          {/* Caption */}
+                          <div className="flex-1 border border-slate-300 rounded p-1.5 bg-slate-50 text-[9px] h-full flex flex-col">
+                            <span className="text-[8px] font-bold uppercase text-slate-500 block mb-0.5">Uraian:</span>
+                            <p className="text-slate-800 leading-snug flex-1">
+                              {photo.description || 'Dokumentasi bukti kegiatan / pembelanjaan operasional RT.'}
+                            </p>
+                            <div className="pt-1 mt-1 border-t border-slate-200 text-[8px] text-slate-600">
+                              <strong>Waktu:</strong><br/>{photo.date || `-`}
                             </div>
                           </div>
                         </div>
                       ) : (
-                        /* LANDSCAPE PHOTO LAYOUT */
-                        <div className="flex flex-col items-center">
+                        /* LANDSCAPE PHOTO LAYOUT (Stacked inside cell) */
+                        <div className="flex flex-col flex-1">
                           <div 
-                            className="w-full max-w-[160mm] bg-slate-100 border border-slate-800 rounded overflow-hidden flex items-center justify-center mb-2"
-                            style={{ height: '90mm' }}
+                            className="w-full bg-slate-100 border border-slate-800 rounded flex items-center justify-center overflow-hidden mb-1.5"
+                            style={{ height: '60mm' }}
                           >
                             {photo.imageUrl ? (
                               <img
@@ -606,19 +595,17 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
                                 className={photo.fitMode === 'contain' ? 'max-w-full max-h-full object-contain' : 'w-full h-full object-cover'}
                               />
                             ) : (
-                              <span className="text-xs text-slate-400">Tidak ada foto</span>
+                              <span className="text-[8px] text-slate-400">Tidak ada foto</span>
                             )}
                           </div>
-
-                          {/* Caption Strip Underneath */}
-                          <div className="w-full max-w-[160mm] bg-slate-50 border border-slate-300 rounded p-2.5 text-xs">
-                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1">
-                              <p className="text-slate-800 leading-snug flex-1">
-                                <strong className="font-bold text-slate-900">Keterangan: </strong>
-                                {photo.description || 'Dokumentasi bukti kegiatan / pembelanjaan operasional RT.'}
-                              </p>
-                            </div>
-                            <div className="mt-1 pt-1 border-t border-slate-200 text-[11px] text-slate-600">
+                          
+                          {/* Caption */}
+                          <div className="w-full bg-slate-50 border border-slate-300 rounded p-1.5 text-[9px] flex flex-col flex-1">
+                            <p className="text-slate-800 leading-snug flex-1">
+                              <strong className="font-bold text-slate-900">Ket: </strong>
+                              {photo.description || 'Dokumentasi bukti kegiatan / pembelanjaan operasional RT.'}
+                            </p>
+                            <div className="pt-1 mt-1 border-t border-slate-200 text-[8px] text-slate-600">
                               <span><strong>Waktu:</strong> {photo.date || `-`}</span>
                             </div>
                           </div>
@@ -628,20 +615,20 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
                   );
                 })}
 
-                {/* If sheet has only 1 photo, fill second slot with empty box */}
-                {sheetPhotos.length === 1 && (
-                  <div className="border border-dashed border-slate-300 rounded-lg p-6 text-center text-slate-400 text-xs flex flex-col items-center justify-center min-h-[90mm]">
+                {/* Fill empty slots in the grid (up to 4) */}
+                {Array.from({ length: 4 - sheetPhotos.length }).map((_, emptyIdx) => (
+                  <div key={`empty-${emptyIdx}`} className="border border-dashed border-slate-300 rounded-lg p-6 text-center text-slate-400 text-xs flex flex-col items-center justify-center h-[110mm]">
                     <ImageIcon className="w-8 h-8 text-slate-300 mb-1" />
-                    <span>Slot Foto 2 Belum Terisi</span>
+                    <span>Slot Foto Kosong</span>
                     <button
                       type="button"
                       onClick={handleAddPhoto}
                       className="print:hidden mt-2 text-red-600 hover:text-red-700 font-semibold"
                     >
-                      + Tambah Foto ke Slot 2
+                      + Tambah Foto
                     </button>
                   </div>
-                )}
+                ))}
               </div>
             </div>
           );

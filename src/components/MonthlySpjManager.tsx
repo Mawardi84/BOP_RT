@@ -162,7 +162,7 @@ export const MonthlySpjManager: React.FC<MonthlySpjManagerProps> = ({
               <span>Pelaporan & Bukti Fisik Bulanan (SPJ)</span>
             </h2>
             <p className="text-xs text-slate-500 mt-0.5">
-              Berkas SPJ resmi Kelurahan: Notulen RT/PKK, Partisipasi Warga, serta <strong>Lampiran Foto Terpisah (1 Lembar 2 Foto Postcard)</strong>.
+              Berkas SPJ resmi Kelurahan: Notulen RT/PKK, Partisipasi Warga, serta <strong>Lampiran Foto Terpisah (1 Lembar 4 Foto)</strong>.
             </p>
           </div>
 
@@ -214,7 +214,7 @@ export const MonthlySpjManager: React.FC<MonthlySpjManagerProps> = ({
               }`}
             >
               <Camera className="w-3.5 h-3.5 text-red-600" />
-              <span>📸 Lampiran Foto Terpisah (1 Lembar 2 Postcard)</span>
+              <span>📸 Lampiran Foto Terpisah (1 Lembar 4 Foto)</span>
             </button>
 
             <button
@@ -347,7 +347,7 @@ export const MonthlySpjManager: React.FC<MonthlySpjManagerProps> = ({
                     <span>Lampiran Foto Postcard ({photosList.length} Foto)</span>
                   </span>
                   <span className="text-[10px] bg-amber-200/80 px-2 py-0.5 rounded font-semibold">
-                    1 Lembar 2 Foto
+                    1 Lembar 4 Foto
                   </span>
                 </div>
                 <p className="text-[11px] text-amber-800 leading-relaxed">
