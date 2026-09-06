@@ -546,7 +546,6 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
               <div className="grid grid-cols-2 gap-4 flex-1 content-start mt-4">
                 {sheetPhotos.map((photo, photoInSheetIdx) => {
                   const globalPhotoNumber = sheetIdx * chunkSize + photoInSheetIdx + 1;
-                  const isPortrait = photo.orientation === 'portrait';
 
                   return (
                     <div
@@ -565,66 +564,22 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
                         </div>
                       </div>
 
-                      {/* Photo + Caption Layout: Adaptive based on Portrait / Landscape */}
-                      {isPortrait ? (
-                        /* PORTRAIT PHOTO LAYOUT (Side-by-side inside cell) */
-                        <div className="flex items-start gap-2 flex-1">
-                          <div 
-                            className="shrink-0 bg-slate-100 border border-slate-800 rounded flex items-center justify-center overflow-hidden"
-                            style={{ width: '45mm', height: '67.5mm' }} // 2:3 ratio
-                          >
-                            {photo.imageUrl ? (
-                              <img
-                                src={photo.imageUrl}
-                                alt={photo.title}
-                                className={photo.fitMode === 'contain' ? 'max-w-full max-h-full object-contain' : 'w-full h-full object-cover'}
-                              />
-                            ) : (
-                              <span className="text-[8px] text-slate-400">Tidak ada foto</span>
-                            )}
-                          </div>
-                          
-                          {/* Caption */}
-                          <div className="flex-1 border border-slate-300 rounded p-1.5 bg-slate-50 text-[9px] h-full flex flex-col">
-                            <span className="text-[8px] font-bold uppercase text-slate-500 block mb-0.5">Uraian:</span>
-                            <p className="text-slate-800 leading-snug flex-1">
-                              {photo.description || 'Dokumentasi bukti kegiatan / pembelanjaan operasional RT.'}
-                            </p>
-                            <div className="pt-1 mt-1 border-t border-slate-200 text-[8px] text-slate-600">
-                              <strong>Waktu:</strong><br/>{photo.date || `-`}
-                            </div>
-                          </div>
+                      {/* Photo Layout */}
+                      <div className="flex-1 flex flex-col h-full mt-1">
+                        <div 
+                          className="w-full h-full bg-slate-100 border border-slate-800 rounded flex items-center justify-center overflow-hidden"
+                        >
+                          {photo.imageUrl ? (
+                            <img
+                              src={photo.imageUrl}
+                              alt={photo.title}
+                              className={photo.fitMode === 'contain' ? 'max-w-full max-h-full object-contain' : 'w-full h-full object-cover'}
+                            />
+                          ) : (
+                            <span className="text-[8px] text-slate-400">Tidak ada foto</span>
+                          )}
                         </div>
-                      ) : (
-                        /* LANDSCAPE PHOTO LAYOUT (Stacked inside cell) */
-                        <div className="flex flex-col flex-1">
-                          <div 
-                            className="w-full bg-slate-100 border border-slate-800 rounded flex items-center justify-center overflow-hidden mb-1.5"
-                            style={{ height: '60mm' }}
-                          >
-                            {photo.imageUrl ? (
-                              <img
-                                src={photo.imageUrl}
-                                alt={photo.title}
-                                className={photo.fitMode === 'contain' ? 'max-w-full max-h-full object-contain' : 'w-full h-full object-cover'}
-                              />
-                            ) : (
-                              <span className="text-[8px] text-slate-400">Tidak ada foto</span>
-                            )}
-                          </div>
-                          
-                          {/* Caption */}
-                          <div className="w-full bg-slate-50 border border-slate-300 rounded p-1.5 text-[9px] flex flex-col flex-1">
-                            <p className="text-slate-800 leading-snug flex-1">
-                              <strong className="font-bold text-slate-900">Ket: </strong>
-                              {photo.description || 'Dokumentasi bukti kegiatan / pembelanjaan operasional RT.'}
-                            </p>
-                            <div className="pt-1 mt-1 border-t border-slate-200 text-[8px] text-slate-600">
-                              <span><strong>Waktu:</strong> {photo.date || `-`}</span>
-                            </div>
-                          </div>
-                        </div>
-                      )}
+                      </div>
                     </div>
                   );
                 })}

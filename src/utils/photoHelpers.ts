@@ -34,13 +34,13 @@ export const getTirakatanPhotos = (existingRecord?: Partial<MonthlySpjRecord>): 
     },
     {
       id: `photo-tirakatan-4`,
-      title: 'Nota Pembelian Konsumsi Tirakatan',
-      description: 'Nota kontan sah berstempel toko untuk pembelanjaan konsumsi malam tirakatan.',
-      date: '15 Agustus 2026',
-      location: 'Toko / Rekanan Penyedia',
-      imageUrl: existingRecord?.receiptPhotoUrl || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80',
-      orientation: 'portrait',
-      fitMode: 'contain',
+      title: 'Dokumentasi Suasana Tirakatan',
+      description: 'Warga berkumpul menikmati tumpeng dan hidangan dalam suasana kebersamaan malam tirakatan.',
+      date: '16 Agustus 2026',
+      location: 'Balai Warga RT 04 / RW 04 Ngabean',
+      imageUrl: 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=800&q=80',
+      orientation: 'landscape',
+      fitMode: 'cover',
     },
   ];
 };
@@ -79,13 +79,13 @@ export const getResepsiPhotos = (existingRecord?: Partial<MonthlySpjRecord>): Do
     },
     {
       id: `photo-resepsi-4`,
-      title: 'Nota Pembelian Resepsi & Hadiah',
-      description: 'Nota kontan sah berstempel toko untuk pembelanjaan keperluan resepsi dan hadiah.',
-      date: '20 Agustus 2026',
-      location: 'Toko / Rekanan Penyedia',
-      imageUrl: existingRecord?.receiptPhotoUrl || 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=800&q=80',
-      orientation: 'portrait',
-      fitMode: 'contain',
+      title: 'Keseruan Warga & Ramah Tamah',
+      description: 'Dokumentasi kebersamaan warga menikmati hiburan dan ramah tamah pada malam resepsi kemerdekaan.',
+      date: '23 Agustus 2026',
+      location: 'Panggung Kemerdekaan RT 04 Ngabean',
+      imageUrl: 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=800&q=80',
+      orientation: 'landscape',
+      fitMode: 'cover',
     },
   ];
 };
