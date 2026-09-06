@@ -493,7 +493,7 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
             <div
               key={`sheet-${sheetIdx}`}
               className="bg-white p-6 sm:p-10 rounded-2xl border border-slate-200 shadow-sm print-avoid-break print-page-break flex flex-col justify-start"
-              style={{ minHeight: '260mm', maxHeight: '290mm' }}
+              style={{ minHeight: '290mm', maxHeight: '310mm' }}
             >
               {/* Official Header / KOP Surat Resmi */}
               <div className="pb-1 mb-3">
@@ -546,7 +546,7 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
                   return (
                     <div
                       key={photo.id || photoInSheetIdx}
-                      className="border border-slate-300 rounded-lg p-2 bg-white print:border-slate-400 print-avoid-break h-[105mm] flex flex-col"
+                      className="border border-slate-300 rounded-lg p-2 bg-white print:border-slate-400 print-avoid-break h-[95mm] flex flex-col"
                     >
                       {/* Top Bar for each photo */}
                       <div className="flex items-center pb-1 mb-1.5 border-b border-slate-200 text-[10px]">
@@ -582,7 +582,7 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
 
                 {/* Fill empty slots in the grid (up to 4) */}
                 {Array.from({ length: 4 - sheetPhotos.length }).map((_, emptyIdx) => (
-                  <div key={`empty-${emptyIdx}`} className="border border-dashed border-slate-300 rounded-lg p-6 text-center text-slate-400 text-xs flex flex-col items-center justify-center h-[105mm]">
+                  <div key={`empty-${emptyIdx}`} className="border border-dashed border-slate-300 rounded-lg p-6 text-center text-slate-400 text-xs flex flex-col items-center justify-center h-[95mm]">
                     <ImageIcon className="w-8 h-8 text-slate-300 mb-1" />
                     <span>Slot Foto Kosong</span>
                     <button
