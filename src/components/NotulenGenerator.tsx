@@ -22,7 +22,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
   const [docViewMode, setDocViewMode] = useState<'daftar-hadir' | 'notulen'>('daftar-hadir');
   const [meetingType, setMeetingType] = useState<'rt' | 'pkk'>('rt');
   const [selectedPresetId, setSelectedPresetId] = useState<string>('notulen-januari');
-  const [tableLayoutMode, setTableLayoutMode] = useState<'auto' | '1-kolom' | '2-kolom-100' | '2-kolom'>('auto');
+  const [tableLayoutMode, setTableLayoutMode] = useState<'auto' | '1-kolom' | '2-kolom-100' | '2-kolom'>('1-kolom');
   
   // Initialize with the 1st preset (Januari 2026 - Persiapan Haul)
   const firstPreset = rtNotulenPresets[0];
@@ -44,6 +44,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
   const [blankNamesMode, setBlankNamesMode] = useState(false);
   const [nameWidthMode, setNameWidthMode] = useState<'standar' | 'ringkas' | 'leluasa'>('standar');
   const [includeAddressColumn, setIncludeAddressColumn] = useState<boolean>(false);
+  const [showSignatureBlock, setShowSignatureBlock] = useState<boolean>(false);
 
   const [newAgenda, setNewAgenda] = useState('');
 
@@ -72,7 +73,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
     if (preset.participantCount >= 50) {
       setTableLayoutMode('2-kolom-100');
     } else {
-      setTableLayoutMode('auto');
+      setTableLayoutMode('1-kolom');
     }
   };
 
@@ -95,16 +96,78 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
   const isDualColumn =
     tableLayoutMode === '2-kolom-100' ||
     tableLayoutMode === '2-kolom' ||
-    (tableLayoutMode === 'auto' && participantCount >= 25) ||
-    (tableLayoutMode !== '1-kolom' && participantCount >= 25);
+    (tableLayoutMode === 'auto' && participantCount > 40);
 
   const midPoint = Math.ceil(displayAttendees.length / 2);
   const col1Attendees = displayAttendees.slice(0, midPoint);
   const col2Attendees = displayAttendees.slice(midPoint);
   const isUltraCompact = displayAttendees.length > 50;
-  const dualRowHeight = isUltraCompact ? 'h-[13.5px] print:h-[13px]' : 'h-[16.5px] print:h-[15.5px]';
+  const dualRowHeight = isUltraCompact
+    ? (showSignatureBlock ? 'h-[13.5px] print:h-[13px]' : 'h-[15.5px] print:h-[14.5px]')
+    : (showSignatureBlock ? 'h-[16.5px] print:h-[15.5px]' : 'h-[19px] print:h-[17.5px]');
   const dualHeaderFont = isUltraCompact ? 'text-[7.5px] print:text-[7px]' : 'text-[8.5px] print:text-[8px]';
   const dualTableFont = isUltraCompact ? 'text-[8px] print:text-[7.5px]' : 'text-[9px] print:text-[8.5px]';
+
+  // Dynamic row sizing for 1-Kolom Standar so that the table fills the A4 page right down to the bottom
+  const getSingleRowStyle = (count: number) => {
+    if (count <= 20) {
+      return {
+        rowHeight: 'h-[36px] print:h-[9.5mm]',
+        fontSize: 'text-[11px] print:text-[10.5px]',
+        thHeight: 'h-[28px] print:h-[8mm]',
+        py: 'py-1',
+      };
+    }
+    if (count <= 25) {
+      return {
+        rowHeight: 'h-[30px] print:h-[7.8mm]',
+        fontSize: 'text-[10.5px] print:text-[10px]',
+        thHeight: 'h-[26px] print:h-[7.5mm]',
+        py: 'py-1',
+      };
+    }
+    if (count <= 30) {
+      return {
+        rowHeight: 'h-[26px] print:h-[6.6mm]',
+        fontSize: 'text-[10px] print:text-[9.5px]',
+        thHeight: 'h-[24px] print:h-[7mm]',
+        py: 'py-0.5',
+      };
+    }
+    if (count <= 35) {
+      return {
+        rowHeight: 'h-[23px] print:h-[5.7mm]',
+        fontSize: 'text-[9.5px] print:text-[9px]',
+        thHeight: 'h-[22px] print:h-[6.5mm]',
+        py: 'py-0.5',
+      };
+    }
+    if (count <= 40) {
+      // 40 rows: precisely fills the A4 sheet down to the bottom margin without spilling
+      return {
+        rowHeight: 'h-[21px] print:h-[4.95mm]',
+        fontSize: 'text-[9px] print:text-[8.5px]',
+        thHeight: 'h-[22px] print:h-[6.5mm]',
+        py: 'py-0',
+      };
+    }
+    if (count <= 45) {
+      return {
+        rowHeight: 'h-[18.5px] print:h-[4.3mm]',
+        fontSize: 'text-[8.5px] print:text-[8px]',
+        thHeight: 'h-[20px] print:h-[6mm]',
+        py: 'py-0',
+      };
+    }
+    return {
+      rowHeight: 'h-[16.5px] print:h-[3.9mm]',
+      fontSize: 'text-[8px] print:text-[7.5px]',
+      thHeight: 'h-[18px] print:h-[5.5mm]',
+      py: 'py-0',
+    };
+  };
+
+  const singleStyle = getSingleRowStyle(displayAttendees.length);
 
   const singleColWidths = includeAddressColumn
     ? nameWidthMode === 'ringkas'
@@ -387,26 +450,6 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
               <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
-                  onClick={() => {
-                    setTableLayoutMode('2-kolom');
-                  }}
-                  className={`p-2 rounded-lg border text-left flex items-center space-x-2 transition-all ${
-                    isDualColumn
-                      ? 'bg-red-600 border-red-600 text-white font-bold shadow-xs'
-                      : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
-                  }`}
-                >
-                  <Layers className="w-3.5 h-3.5 shrink-0" />
-                  <div className="min-w-0">
-                    <div className="text-[11px] font-bold leading-tight">2 Kolom (1 Halaman Pas)</div>
-                    <div className={`text-[9px] truncate ${isDualColumn ? 'text-red-100' : 'text-slate-500'}`}>
-                      Rekomendasi (40 s.d 100 Warga)
-                    </div>
-                  </div>
-                </button>
-
-                <button
-                  type="button"
                   onClick={() => setTableLayoutMode('1-kolom')}
                   className={`p-2 rounded-lg border text-left flex items-center space-x-2 transition-all ${
                     !isDualColumn
@@ -418,7 +461,27 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                   <div className="min-w-0">
                     <div className="text-[11px] font-bold leading-tight">1 Kolom Standar</div>
                     <div className={`text-[9px] truncate ${!isDualColumn ? 'text-slate-300' : 'text-slate-500'}`}>
-                      Untuk 10 - 25 Warga
+                      s.d 40 Warga (Penuh Sampai Bawah)
+                    </div>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTableLayoutMode('2-kolom');
+                  }}
+                  className={`p-2 rounded-lg border text-left flex items-center space-x-2 transition-all ${
+                    isDualColumn
+                      ? 'bg-red-600 border-red-600 text-white font-bold shadow-xs'
+                      : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
+                  }`}
+                >
+                  <Layers className="w-3.5 h-3.5 shrink-0" />
+                  <div className="min-w-0">
+                    <div className="text-[11px] font-bold leading-tight">2 Kolom (Rapat Akbar)</div>
+                    <div className={`text-[9px] truncate ${isDualColumn ? 'text-red-100' : 'text-slate-500'}`}>
+                      45 s.d 100 Warga
                     </div>
                   </div>
                 </button>
@@ -572,6 +635,19 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                 />
                 <label htmlFor="blankNames" className="text-[11px] font-medium text-slate-700 cursor-pointer">
                   Kosongkan Kolom Nama & L/P (Untuk ditulis tangan warga langsung di lokasi)
+                </label>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="showSignature"
+                  checked={showSignatureBlock}
+                  onChange={(e) => setShowSignatureBlock(e.target.checked)}
+                  className="rounded text-red-600 focus:ring-red-500 w-4 h-4 cursor-pointer"
+                />
+                <label htmlFor="showSignature" className="text-[11px] font-medium text-slate-700 cursor-pointer">
+                  Tampilkan Tanda Tangan Notulis & Ketua RT di Bawah Daftar Hadir
                 </label>
               </div>
 
@@ -881,23 +957,25 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                 </div>
 
                 {/* Tanda Tangan Mengetahui Compact */}
-                <div className="mt-2 pt-1 grid grid-cols-2 gap-8 text-[9px] print:text-[8px] text-center print-avoid-break">
-                  <div>
-                    <p className="font-bold uppercase">
-                      {meetingType === 'rt' ? `Notulis / Sekretaris RT ${profile.rtNumber}` : `Sekretaris PKK RT ${profile.rtNumber}`}
-                    </p>
-                    <div className="h-7 print:h-6"></div>
-                    <p className="font-extrabold underline uppercase">{secretary}</p>
+                {showSignatureBlock && (
+                  <div className="mt-2 pt-1 grid grid-cols-2 gap-8 text-[9px] print:text-[8px] text-center print-avoid-break">
+                    <div>
+                      <p className="font-bold uppercase">
+                        {meetingType === 'rt' ? `Notulis / Sekretaris RT ${profile.rtNumber}` : `Sekretaris PKK RT ${profile.rtNumber}`}
+                      </p>
+                      <div className="h-7 print:h-6"></div>
+                      <p className="font-extrabold underline uppercase">{secretary}</p>
+                    </div>
+                    <div>
+                      <p className="text-slate-600 mb-0.5">Semarang, {formatDate(date)}</p>
+                      <p className="font-bold uppercase">
+                        {meetingType === 'rt' ? `Ketua RT ${profile.rtNumber}` : `Ketua PKK RT ${profile.rtNumber}`}
+                      </p>
+                      <div className="h-7 print:h-6"></div>
+                      <p className="font-extrabold underline uppercase">{leader}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-slate-600 mb-0.5">Semarang, {formatDate(date)}</p>
-                    <p className="font-bold uppercase">
-                      {meetingType === 'rt' ? `Ketua RT ${profile.rtNumber}` : `Ketua PKK RT ${profile.rtNumber}`}
-                    </p>
-                    <div className="h-7 print:h-6"></div>
-                    <p className="font-extrabold underline uppercase">{leader}</p>
-                  </div>
-                </div>
+                )}
               </div>
             ) : (
               /* ================= 1 KOLOM STANDAR (20 - 40 WARGA) ================= */
@@ -985,14 +1063,14 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                       <col className={singleColWidths.ttd} />
                     </colgroup>
                     <thead>
-                      <tr className="bg-slate-100 text-slate-900 font-extrabold uppercase text-[8px] print:text-[7.5px]">
-                        <th className={`border border-slate-900 py-1 px-1 text-center ${singleColWidths.no}`}>NO</th>
-                        <th className={`border border-slate-900 py-1 px-2 text-left ${singleColWidths.name}`}>Nama Lengkap</th>
-                        <th className={`border border-slate-900 py-1 px-1 text-center ${singleColWidths.gender}`}>L/P</th>
+                      <tr className={`bg-slate-100 text-slate-900 font-extrabold uppercase ${singleStyle.fontSize} ${singleStyle.thHeight}`}>
+                        <th className={`border border-slate-900 ${singleStyle.py} px-1 text-center ${singleColWidths.no}`}>NO</th>
+                        <th className={`border border-slate-900 ${singleStyle.py} px-2 text-left ${singleColWidths.name}`}>Nama Lengkap</th>
+                        <th className={`border border-slate-900 ${singleStyle.py} px-1 text-center ${singleColWidths.gender}`}>L/P</th>
                         {includeAddressColumn && singleColWidths.addr && (
-                          <th className={`border border-slate-900 py-1 px-1 text-center ${singleColWidths.addr}`}>Alamat / RT</th>
+                          <th className={`border border-slate-900 ${singleStyle.py} px-1 text-center ${singleColWidths.addr}`}>Alamat / RT</th>
                         )}
-                        <th colSpan={2} className={`border border-slate-900 py-1 px-1 text-center ${singleColWidths.ttdTotal}`}>
+                        <th colSpan={2} className={`border border-slate-900 ${singleStyle.py} px-1 text-center ${singleColWidths.ttdTotal}`}>
                           Tanda Tangan
                         </th>
                       </tr>
@@ -1001,32 +1079,32 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                       {displayAttendees.map((att) => {
                         const isOdd = att.no % 2 !== 0;
                         return (
-                          <tr key={att.no} className="h-[15.5px] print:h-[14px]">
-                            <td className="border border-slate-900 py-0 px-1 text-center font-bold">
+                          <tr key={att.no} className={singleStyle.rowHeight}>
+                            <td className={`border border-slate-900 ${singleStyle.py} px-1 text-center font-bold ${singleStyle.fontSize}`}>
                               {att.no}
                             </td>
-                            <td className="border border-slate-900 py-0 px-2 font-semibold uppercase truncate">
+                            <td className={`border border-slate-900 ${singleStyle.py} px-2 font-semibold uppercase truncate ${singleStyle.fontSize}`}>
                               {blankNamesMode ? '' : att.name}
                             </td>
-                            <td className="border border-slate-900 py-0 px-1 text-center font-bold">
+                            <td className={`border border-slate-900 ${singleStyle.py} px-1 text-center font-bold ${singleStyle.fontSize}`}>
                               {blankNamesMode ? '' : att.gender}
                             </td>
                             {includeAddressColumn && singleColWidths.addr && (
-                              <td className="border border-slate-900 py-0 px-1.5 text-center text-slate-700 truncate">
+                              <td className={`border border-slate-900 ${singleStyle.py} px-1.5 text-center text-slate-700 truncate ${singleStyle.fontSize}`}>
                                 {blankNamesMode ? '' : `RT ${profile.rtNumber} / RW ${profile.rwNumber}`}
                               </td>
                             )}
                             {isOdd ? (
                               <>
-                                <td className={`border border-slate-900 py-0 px-2 text-left font-semibold truncate ${singleColWidths.ttd}`}>
+                                <td className={`border border-slate-900 ${singleStyle.py} px-2 text-left font-semibold truncate ${singleColWidths.ttd} ${singleStyle.fontSize}`}>
                                   {att.no}. ....................................................
                                 </td>
-                                <td className={`border border-slate-900 py-0 px-1.5 bg-slate-50/20 ${singleColWidths.ttd}`}></td>
+                                <td className={`border border-slate-900 ${singleStyle.py} px-1.5 bg-slate-50/20 ${singleColWidths.ttd}`}></td>
                               </>
                             ) : (
                               <>
-                                <td className={`border border-slate-900 py-0 px-1.5 bg-slate-50/20 ${singleColWidths.ttd}`}></td>
-                                <td className={`border border-slate-900 py-0 px-2 text-left font-semibold truncate ${singleColWidths.ttd}`}>
+                                <td className={`border border-slate-900 ${singleStyle.py} px-1.5 bg-slate-50/20 ${singleColWidths.ttd}`}></td>
+                                <td className={`border border-slate-900 ${singleStyle.py} px-2 text-left font-semibold truncate ${singleColWidths.ttd} ${singleStyle.fontSize}`}>
                                   {att.no}. ....................................................
                                 </td>
                               </>
@@ -1039,23 +1117,25 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                 </div>
 
                 {/* Tanda Tangan Mengetahui */}
-                <div className="mt-2 pt-1 grid grid-cols-2 gap-8 text-[9px] print:text-[8px] text-center print-avoid-break">
-                  <div>
-                    <p className="font-bold uppercase">
-                      {meetingType === 'rt' ? `Notulis / Sekretaris RT ${profile.rtNumber}` : `Sekretaris PKK RT ${profile.rtNumber}`}
-                    </p>
-                    <div className="h-7 print:h-6"></div>
-                    <p className="font-extrabold underline uppercase">{secretary}</p>
+                {showSignatureBlock && (
+                  <div className="mt-2 pt-1 grid grid-cols-2 gap-8 text-[9px] print:text-[8px] text-center print-avoid-break">
+                    <div>
+                      <p className="font-bold uppercase">
+                        {meetingType === 'rt' ? `Notulis / Sekretaris RT ${profile.rtNumber}` : `Sekretaris PKK RT ${profile.rtNumber}`}
+                      </p>
+                      <div className="h-7 print:h-6"></div>
+                      <p className="font-extrabold underline uppercase">{secretary}</p>
+                    </div>
+                    <div>
+                      <p className="text-slate-600 mb-0.5">Semarang, {formatDate(date)}</p>
+                      <p className="font-bold uppercase">
+                        {meetingType === 'rt' ? `Ketua RT ${profile.rtNumber}` : `Ketua PKK RT ${profile.rtNumber}`}
+                      </p>
+                      <div className="h-7 print:h-6"></div>
+                      <p className="font-extrabold underline uppercase">{leader}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-slate-600 mb-0.5">Semarang, {formatDate(date)}</p>
-                    <p className="font-bold uppercase">
-                      {meetingType === 'rt' ? `Ketua RT ${profile.rtNumber}` : `Ketua PKK RT ${profile.rtNumber}`}
-                    </p>
-                    <div className="h-7 print:h-6"></div>
-                    <p className="font-extrabold underline uppercase">{leader}</p>
-                  </div>
-                </div>
+                )}
               </div>
             )
           )}
