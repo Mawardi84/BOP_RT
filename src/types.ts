@@ -39,6 +39,8 @@ export interface RtProfile {
   ketuaRt: string;
   sekretaris: string;
   bendaharaRt: string;
+  ketuaPkk?: string;
+  sekretarisPkk?: string;
   lurahName: string;
   rwChairman: string;
   year: number;

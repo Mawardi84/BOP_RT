@@ -33,9 +33,14 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
   const [leader, setLeader] = useState(firstPreset.leader || profile.ketuaRt);
   const [secretary, setSecretary] = useState(firstPreset.secretary || profile.sekretaris);
   const [participantCount, setParticipantCount] = useState(firstPreset.participantCount || 40);
+  const [invitedCount, setInvitedCount] = useState(45); // Added for PKK
+  const [absentNames, setAbsentNames] = useState(''); // Added for PKK
+  const [arisanUang, setArisanUang] = useState(''); // Added for PKK Arisan
+  const [arisanBarang, setArisanBarang] = useState(''); // Added for PKK Arisan
   const [agendaItems, setAgendaItems] = useState<string[]>([...firstPreset.agendaItems]);
   const [discussionNotes, setDiscussionNotes] = useState(firstPreset.discussionNotes);
   const [decisions, setDecisions] = useState(firstPreset.decisions);
+  const [closingSentence, setClosingSentence] = useState('');
   const [agendaSummary, setAgendaSummary] = useState(firstPreset.agendaItems[1] || firstPreset.agendaItems[0]);
 
   // Attendee list management
@@ -56,12 +61,18 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
     setDate(preset.date);
     setTime(preset.time);
     setLocation(preset.location);
-    setLeader(profile.ketuaRt);
-    setSecretary(profile.sekretaris);
+    if (meetingType === 'pkk') {
+      setLeader(profile.ketuaPkk || 'TISNANI SUBANDIYAH');
+      setSecretary(profile.sekretarisPkk || 'INDRIANAH');
+    } else {
+      setLeader(profile.ketuaRt);
+      setSecretary(profile.sekretaris);
+    }
     setParticipantCount(preset.participantCount);
     setAgendaItems([...preset.agendaItems]);
     setDiscussionNotes(preset.discussionNotes);
     setDecisions(preset.decisions);
+    setClosingSentence('');
     setAgendaSummary(
       preset.agendaTitle ||
       (preset.id === 'notulen-tirakatan-16agustus'
@@ -239,8 +250,23 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
             <button
               onClick={() => {
                 setMeetingType('pkk');
-                setLeader('Ibu Ketua PKK RT ' + profile.rtNumber);
-                setSecretary('Ibu Sekretaris PKK');
+                setLeader(profile.ketuaPkk || 'TISNANI SUBANDIYAH');
+                setSecretary(profile.sekretarisPkk || 'INDRIANAH');
+                setAgendaItems([
+                  'Rapat dibuka dengan bacaan basmallah, ucapan salam dan ucapan terima kasih atas kehadiran ibu ibu PKK',
+                  'Menyanyikan Mars PKK dan pembacaan 1 program pokok PKK',
+                  'Laporan Keuangan',
+                  'Lain-lain',
+                  'Mengingatkan untuk pelunasan simpan pinjam Bank sampah',
+                  'Jika ada kegiatan RT diharap ikut berpatisipasi',
+                  'Akan ada haul mbh kyai pati joyokusumo tanggal 13,14,15 januari untuk ikut berpartisipasi'
+                ]);
+                setClosingSentence('Rapat PKK ditutup pukul 17.15 WIB dengan bacaan hamdallah, ucapan salam dan terimakasih.');
+                if (selectedPresetId === 'notulen-januari') {
+                  setDiscussionNotes('Rapat rutin PKK bulan Januari 2026 berjalan lancar. Ketua PKK menyampaikan program-program awal tahun, mengingatkan pelunasan simpan pinjam Bank sampah sebelum masa pembagian sisa hasil, serta mengimbau seluruh kader dan anggota untuk selalu berpartisipasi aktif jika ada kegiatan RT atau kerja bakti lingkungan. Disampaikan juga bahwa akan ada haul mbh kyai pati joyokusumo tanggal 13, 14, dan 15 Januari, warga diharapkan partisipasinya.');
+                  setDecisions('1. Pelunasan simpan pinjam Bank sampah paling lambat bulan depan.\n2. Anggota PKK siap berpartisipasi dalam setiap kegiatan RT.\n3. Warga dan anggota PKK siap mendukung dan berpartisipasi dalam haul mbah kyai pati joyokusumo pada pertengahan Januari.');
+                }
+                
                 if (docViewMode === 'daftar-hadir' && (agendaSummary.includes('Haul') || agendaSummary.includes('RT'))) {
                   setAgendaSummary('Pertemuan Rutin Kader PKK dan Pembahasan Program RT 04');
                 }
@@ -520,6 +546,31 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs"
               />
             </div>
+            {meetingType === 'pkk' && (
+              <>
+                <div>
+                  <label className="block font-semibold text-slate-700 uppercase mb-1">Jumlah Diundang</label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={200}
+                    value={invitedCount}
+                    onChange={(e) => setInvitedCount(Number(e.target.value))}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold"
+                  />
+                </div>
+                <div>
+                  <label className="block font-semibold text-slate-700 uppercase mb-1">Nama Yang Tidak Hadir</label>
+                  <input
+                    type="text"
+                    placeholder="Contoh: Hanavia, Lukita, dll..."
+                    value={absentNames}
+                    onChange={(e) => setAbsentNames(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs"
+                  />
+                </div>
+              </>
+            )}
             <div>
               <div className="flex justify-between items-center mb-1">
                 <label className="font-semibold text-slate-700 uppercase">Jumlah Hadir</label>
@@ -765,6 +816,22 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                   onChange={(e) => setDiscussionNotes(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs"
                 ></textarea>
+
+                {meetingType === 'pkk' && (
+                  <div className="mt-3 p-3 bg-red-50 border border-red-100 rounded-xl space-y-3">
+                    <h4 className="font-semibold text-red-900 uppercase text-[11px]">Pemenang Arisan (Lain-lain)</h4>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block font-medium text-slate-700 mb-1">Arisan Uang (2 Orang)</label>
+                        <input type="text" value={arisanUang} onChange={e => setArisanUang(e.target.value)} placeholder="Contoh: Bu Istianah, Bu Kakun" className="w-full bg-white border border-slate-200 rounded p-2 text-xs" />
+                      </div>
+                      <div>
+                        <label className="block font-medium text-slate-700 mb-1">Arisan Gula & Telur (2 Orang)</label>
+                        <input type="text" value={arisanBarang} onChange={e => setArisanBarang(e.target.value)} placeholder="Contoh: Bu Istianah, Bu Ngatminah" className="w-full bg-white border border-slate-200 rounded p-2 text-xs" />
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div>
@@ -777,8 +844,21 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                   rows={4}
                   value={decisions}
                   onChange={(e) => setDecisions(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs mb-3"
                 ></textarea>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 uppercase mb-1">
+                  Kalimat Penutup (Opsional)
+                </label>
+                <input
+                  type="text"
+                  value={closingSentence}
+                  onChange={(e) => setClosingSentence(e.target.value)}
+                  placeholder="Contoh: Rapat ditutup pukul 22.00 WIB..."
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs"
+                />
               </div>
             </>
           )}
@@ -1204,10 +1284,36 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                     <td className="border border-slate-900 py-1.5 px-2.5 font-semibold text-slate-900">{secretary}</td>
                   </tr>
                   <tr>
-                    <td className="border border-slate-900 py-1.5 px-2.5 font-bold bg-slate-100">Tempat</td>
-                    <td className="border border-slate-900 py-1.5 px-2.5 text-slate-900">{location}</td>
-                    <td className="border border-slate-900 py-1.5 px-2.5 font-bold bg-slate-100">Peserta Hadir</td>
-                    <td className="border border-slate-900 py-1.5 px-2.5 font-bold text-slate-900">{participantCount} Orang (Daftar Hadir Terlampir)</td>
+                    <td className="border border-slate-900 py-1.5 px-2.5 font-bold bg-slate-100 w-32">Tempat</td>
+                    <td className="border border-slate-900 py-1.5 px-2.5 text-slate-900 w-[30%]">{location}</td>
+                    {meetingType === 'pkk' ? (
+                      <td colSpan={2} className="border border-slate-900 p-0 align-top">
+                        <table className="w-full h-full">
+                          <tbody>
+                            <tr>
+                              <td className="py-1 px-2.5 font-bold bg-slate-100 border-b border-r border-slate-900 w-40">Jumlah Diundang</td>
+                              <td className="py-1 px-2.5 text-slate-900 border-b border-slate-900 font-bold">{invitedCount} Orang</td>
+                            </tr>
+                            <tr>
+                              <td className="py-1 px-2.5 font-bold bg-slate-100 border-b border-r border-slate-900">Peserta Hadir</td>
+                              <td className="py-1 px-2.5 text-slate-900 border-b border-slate-900 font-bold">{participantCount} Orang</td>
+                            </tr>
+                            <tr>
+                              <td className="py-1 px-2.5 font-bold bg-slate-100 border-r border-slate-900">Tidak Hadir</td>
+                              <td className="py-1 px-2.5 text-slate-900 font-bold">
+                                {Math.max(0, invitedCount - participantCount)} Orang
+                                {absentNames && <span className="font-normal block mt-0.5 text-xs">({absentNames})</span>}
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </td>
+                    ) : (
+                      <>
+                        <td className="border border-slate-900 py-1.5 px-2.5 font-bold bg-slate-100 w-40">Peserta Hadir</td>
+                        <td className="border border-slate-900 py-1.5 px-2.5 font-bold text-slate-900">{participantCount} Orang (Daftar Hadir Terlampir)</td>
+                      </>
+                    )}
                   </tr>
                   <tr>
                     <td className="border border-slate-900 py-1.5 px-2.5 font-bold bg-slate-100">Agenda Rapat</td>
@@ -1223,11 +1329,16 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                     ? 'I. Susunan Acara Pelaksanaan Kegiatan'
                     : 'I. Susunan Agenda / Acara Rapat'}
                 </div>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-[13px] print:text-[13px] pl-3 leading-relaxed text-slate-800">
+                <div className={`grid ${meetingType === 'pkk' ? 'grid-cols-1' : 'grid-cols-2'} gap-x-4 gap-y-1.5 text-[13px] print:text-[13px] pl-3 leading-relaxed text-slate-800`}>
                   {agendaItems.map((ag, i) => (
                     <div key={i} className="flex space-x-2">
                       <span className="font-bold text-slate-900">{i + 1}.</span>
-                      <span>{ag}</span>
+                      <span className="whitespace-pre-line">
+                        {ag}
+                        {meetingType === 'pkk' && ag.toLowerCase().includes('lain-lain') && (arisanUang || arisanBarang) && (
+                          <>{`\n      Uang : ${arisanUang || '-'}\n      Gula dan Telur : ${arisanBarang || '-'}`}</>
+                        )}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -1256,6 +1367,12 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                   {decisions}
                 </div>
               </div>
+
+              {closingSentence && (
+                <div className="text-[13px] print:text-[13px] text-slate-900 mb-6 text-justify">
+                  {closingSentence}
+                </div>
+              )}
 
               {/* Tanda Tangan Mengetahui */}
               <div className="mt-8 pt-4 grid grid-cols-2 gap-12 text-[13px] print:text-[13px] text-center print-avoid-break">

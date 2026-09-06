@@ -11,6 +11,8 @@ export const initialRtProfile: RtProfile = {
   ketuaRt: 'M. WAKHID NURJANAH',
   sekretaris: 'MUH ZAENUN',
   bendaharaRt: 'MUHAMMAD ERVAN',
+  ketuaPkk: 'TISNANI SUBANDIYAH',
+  sekretarisPkk: 'INDRIANAH',
   lurahName: 'Ita Setiyaningsih, S.E.',
   rwChairman: 'KARTO',
   year: 2026,
