@@ -1142,39 +1142,39 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
 
           {/* ================== VIEW 2: NOTULEN RAPAT (PAS 1 HALAMAN) ================== */}
           {docViewMode === 'notulen' && (
-            <div className="space-y-2 print-one-page text-slate-900 leading-tight">
+            <div className="space-y-4 print-one-page text-slate-900 leading-relaxed">
               {/* KOP Surat Resmi */}
-              <div className="flex items-center justify-between border-b-2 border-slate-900 pb-2 mb-2">
-                <div className="w-16 h-16 flex-shrink-0 flex items-center justify-center">
+              <div className="flex items-center justify-between border-b-4 border-double border-slate-900 pb-3 mb-4">
+                <div className="w-20 h-20 flex-shrink-0 flex items-center justify-center">
                   <img 
                     src={meetingType === 'pkk' ? (profile.pkkLogoUrl || profile.logoUrl || "https://upload.wikimedia.org/wikipedia/commons/e/e9/Coat_of_arms_of_Semarang.svg") : (profile.logoUrl || "https://upload.wikimedia.org/wikipedia/commons/e/e9/Coat_of_arms_of_Semarang.svg")} 
                     alt={meetingType === 'pkk' ? "Logo PKK" : "Logo Kota Semarang"} 
-                    className="w-14 h-14 object-contain"
+                    className="w-16 h-16 object-contain"
                   />
                 </div>
-                <div className="text-center flex-grow px-2">
-                  <div className="text-[12px] print:text-[12px] font-bold uppercase text-slate-800 leading-tight">
+                <div className="text-center flex-grow px-4">
+                  <div className="text-sm print:text-sm font-bold uppercase text-slate-800 leading-tight">
                     PEMERINTAH KOTA SEMARANG
                   </div>
-                  <div className="text-[12px] print:text-[12px] font-semibold uppercase text-slate-800 leading-tight">
+                  <div className="text-sm print:text-sm font-semibold uppercase text-slate-800 leading-tight">
                     KECAMATAN {profile.kecamatan.toUpperCase()}
                   </div>
-                  <div className="text-[12px] print:text-[12px] font-semibold uppercase text-slate-800 leading-tight">
+                  <div className="text-sm print:text-sm font-semibold uppercase text-slate-800 leading-tight">
                     KELURAHAN {profile.kelurahan.toUpperCase()}
                   </div>
-                  <div className="text-[16px] print:text-[16px] font-bold uppercase text-slate-900 leading-tight">
+                  <div className="text-xl print:text-xl font-bold uppercase text-slate-900 leading-tight mt-1">
                     RT {profile.rtNumber} RW {profile.rwNumber} NGABEAN
                   </div>
-                  <p className="text-[8px] print:text-[7.5px] text-slate-600 leading-none mt-0.5">
+                  <p className="text-xs print:text-xs text-slate-600 leading-relaxed mt-1">
                     Alamat: Ngabean RT {profile.rtNumber} RW {profile.rwNumber}, Kel. {profile.kelurahan}, Kec. {profile.kecamatan}, Kota Semarang
                   </p>
                 </div>
-                <div className="w-16 h-16 flex-shrink-0"></div>
+                <div className="w-20 h-20 flex-shrink-0"></div>
               </div>
 
               {/* Judul Notulen */}
-              <div className="text-center my-1">
-                <h1 className="text-xs print:text-[11px] font-black tracking-wider uppercase underline underline-offset-2 text-slate-900 leading-none">
+              <div className="text-center my-4">
+                <h1 className="text-base print:text-base font-black tracking-wider uppercase underline underline-offset-4 text-slate-900 leading-tight">
                   {selectedPresetId === 'notulen-tirakatan-16agustus'
                     ? 'BERITA ACARA & NOTULEN PELAKSANAAN MALAM TIRAKATAN HUT RI KE 81 TAHUN 2026'
                     : selectedPresetId === 'notulen-resepsi-23agustus'
@@ -1183,95 +1183,95 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                     ? `NOTULEN RAPAT RUTIN WARGA RT ${profile.rtNumber} RW ${profile.rwNumber}` 
                     : `NOTULEN PERTEMUAN RUTIN PKK RT ${profile.rtNumber} RW ${profile.rwNumber}`}
                 </h1>
-                <p className="text-[9px] print:text-[8px] font-bold uppercase text-slate-700 mt-0.5">
+                <p className="text-xs print:text-xs font-bold uppercase text-slate-700 mt-2">
                   Bulan {month} Tahun {profile.year}
                 </p>
               </div>
 
               {/* Tabel Meta Pertemuan (Grid 2 Kolom Ringkas) */}
-              <table className="w-full border-collapse border border-slate-900 text-[9px] print:text-[8px] mb-1.5 leading-tight">
+              <table className="w-full border-collapse border border-slate-900 text-[13px] print:text-[13px] mb-4 leading-relaxed">
                 <tbody>
                   <tr>
-                    <td className="border border-slate-900 py-0.5 px-1.5 font-bold bg-slate-100 w-24">Hari / Tanggal</td>
-                    <td className="border border-slate-900 py-0.5 px-1.5 font-semibold text-slate-900 w-[32%]">{formatDate(date)}</td>
-                    <td className="border border-slate-900 py-0.5 px-1.5 font-bold bg-slate-100 w-28">Pimpinan Rapat</td>
-                    <td className="border border-slate-900 py-0.5 px-1.5 font-semibold text-slate-900">{leader}</td>
+                    <td className="border border-slate-900 py-1.5 px-2.5 font-bold bg-slate-100 w-32">Hari / Tanggal</td>
+                    <td className="border border-slate-900 py-1.5 px-2.5 font-semibold text-slate-900 w-[30%]">{formatDate(date)}</td>
+                    <td className="border border-slate-900 py-1.5 px-2.5 font-bold bg-slate-100 w-40">Pimpinan Rapat</td>
+                    <td className="border border-slate-900 py-1.5 px-2.5 font-semibold text-slate-900">{leader}</td>
                   </tr>
                   <tr>
-                    <td className="border border-slate-900 py-0.5 px-1.5 font-bold bg-slate-100">Waktu / Pukul</td>
-                    <td className="border border-slate-900 py-0.5 px-1.5 text-slate-900">{time}</td>
-                    <td className="border border-slate-900 py-0.5 px-1.5 font-bold bg-slate-100">Notulis / Sekretaris</td>
-                    <td className="border border-slate-900 py-0.5 px-1.5 font-semibold text-slate-900">{secretary}</td>
+                    <td className="border border-slate-900 py-1.5 px-2.5 font-bold bg-slate-100">Waktu / Pukul</td>
+                    <td className="border border-slate-900 py-1.5 px-2.5 text-slate-900">{time}</td>
+                    <td className="border border-slate-900 py-1.5 px-2.5 font-bold bg-slate-100">Notulis / Sekretaris</td>
+                    <td className="border border-slate-900 py-1.5 px-2.5 font-semibold text-slate-900">{secretary}</td>
                   </tr>
                   <tr>
-                    <td className="border border-slate-900 py-0.5 px-1.5 font-bold bg-slate-100">Tempat</td>
-                    <td className="border border-slate-900 py-0.5 px-1.5 text-slate-900">{location}</td>
-                    <td className="border border-slate-900 py-0.5 px-1.5 font-bold bg-slate-100">Peserta Hadir</td>
-                    <td className="border border-slate-900 py-0.5 px-1.5 font-bold text-slate-900">{participantCount} Orang (Daftar Hadir Terlampir)</td>
+                    <td className="border border-slate-900 py-1.5 px-2.5 font-bold bg-slate-100">Tempat</td>
+                    <td className="border border-slate-900 py-1.5 px-2.5 text-slate-900">{location}</td>
+                    <td className="border border-slate-900 py-1.5 px-2.5 font-bold bg-slate-100">Peserta Hadir</td>
+                    <td className="border border-slate-900 py-1.5 px-2.5 font-bold text-slate-900">{participantCount} Orang (Daftar Hadir Terlampir)</td>
                   </tr>
                   <tr>
-                    <td className="border border-slate-900 py-0.5 px-1.5 font-bold bg-slate-100">Agenda Rapat</td>
-                    <td colSpan={3} className="border border-slate-900 py-0.5 px-1.5 font-bold text-slate-900">{agendaSummary}</td>
+                    <td className="border border-slate-900 py-1.5 px-2.5 font-bold bg-slate-100">Agenda Rapat</td>
+                    <td colSpan={3} className="border border-slate-900 py-1.5 px-2.5 font-bold text-slate-900">{agendaSummary}</td>
                   </tr>
                 </tbody>
               </table>
 
               {/* I. Susunan Acara Rapat (Kompak 2 Kolom) */}
-              <div className="mb-1.5">
-                <div className="text-[9.5px] print:text-[8.5px] font-bold uppercase bg-slate-100 py-0.5 px-1.5 border-l-2 border-slate-900 text-slate-900 mb-1">
+              <div className="mb-4">
+                <div className="text-sm print:text-sm font-bold uppercase bg-slate-100 py-1.5 px-2.5 border-l-4 border-slate-900 text-slate-900 mb-2">
                   {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus'
                     ? 'I. Susunan Acara Pelaksanaan Kegiatan'
                     : 'I. Susunan Agenda / Acara Rapat'}
                 </div>
-                <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-[8.5px] print:text-[8px] pl-1.5 leading-tight text-slate-800">
+                <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-[13px] print:text-[13px] pl-3 leading-relaxed text-slate-800">
                   {agendaItems.map((ag, i) => (
-                    <div key={i} className="flex space-x-1">
+                    <div key={i} className="flex space-x-2">
                       <span className="font-bold text-slate-900">{i + 1}.</span>
-                      <span className="truncate">{ag}</span>
+                      <span>{ag}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* II. Uraian Pembahasan / Jalannya Acara */}
-              <div className="mb-1.5">
-                <div className="text-[9.5px] print:text-[8.5px] font-bold uppercase bg-slate-100 py-0.5 px-1.5 border-l-2 border-slate-900 text-slate-900 mb-1">
+              <div className="mb-4">
+                <div className="text-sm print:text-sm font-bold uppercase bg-slate-100 py-1.5 px-2.5 border-l-4 border-slate-900 text-slate-900 mb-2">
                   {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus'
                     ? 'II. Uraian Jalannya Acara & Pelaksanaan Kegiatan'
                     : 'II. Uraian Pembahasan & Diskusi Rapat'}
                 </div>
-                <div className="text-[9px] print:text-[8px] text-justify leading-snug whitespace-pre-line text-slate-900 border border-slate-300 rounded p-1.5 bg-slate-50/40 print:bg-transparent print:p-0 print:border-none">
+                <div className="text-[13px] print:text-[13px] text-justify leading-relaxed whitespace-pre-line text-slate-900 border border-slate-300 rounded p-3 bg-slate-50/40 print:bg-transparent print:p-0 print:border-none">
                   {discussionNotes}
                 </div>
               </div>
 
               {/* III. Hasil Keputusan / Kesepakatan Warga */}
-              <div className="mb-1.5">
-                <div className="text-[9.5px] print:text-[8.5px] font-bold uppercase bg-slate-100 py-0.5 px-1.5 border-l-2 border-slate-900 text-slate-900 mb-1">
+              <div className="mb-6">
+                <div className="text-sm print:text-sm font-bold uppercase bg-slate-100 py-1.5 px-2.5 border-l-4 border-slate-900 text-slate-900 mb-2">
                   {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus'
                     ? 'III. Hasil Pelaksanaan Kegiatan & Kesimpulan'
                     : 'III. Hasil Keputusan & Kesepakatan Warga'}
                 </div>
-                <div className="text-[9px] print:text-[8px] text-justify leading-snug whitespace-pre-line text-slate-900 font-medium border border-slate-300 rounded p-1.5 bg-slate-50/40 print:bg-transparent print:p-0 print:border-none">
+                <div className="text-[13px] print:text-[13px] text-justify leading-relaxed whitespace-pre-line text-slate-900 font-medium border border-slate-300 rounded p-3 bg-slate-50/40 print:bg-transparent print:p-0 print:border-none">
                   {decisions}
                 </div>
               </div>
 
               {/* Tanda Tangan Mengetahui */}
-              <div className="mt-2 pt-1 grid grid-cols-2 gap-8 text-[9px] print:text-[8px] text-center print-avoid-break">
+              <div className="mt-8 pt-4 grid grid-cols-2 gap-12 text-[13px] print:text-[13px] text-center print-avoid-break">
                 <div>
                   <p className="font-bold uppercase">
                     {meetingType === 'rt' ? `Notulis / Sekretaris RT ${profile.rtNumber}` : `Sekretaris PKK RT ${profile.rtNumber}`}
                   </p>
-                  <div className="h-7 print:h-6"></div>
+                  <div className="h-20 print:h-20"></div>
                   <p className="font-extrabold underline uppercase">{secretary}</p>
                 </div>
                 <div>
-                  <p className="text-slate-600 mb-0.5">Semarang, {formatDate(date)}</p>
+                  <p className="text-slate-600 mb-1">Semarang, {formatDate(date)}</p>
                   <p className="font-bold uppercase">
                     {meetingType === 'rt' ? `Ketua RT ${profile.rtNumber}` : `Ketua PKK RT ${profile.rtNumber}`}
                   </p>
-                  <div className="h-7 print:h-6"></div>
+                  <div className="h-20 print:h-20"></div>
                   <p className="font-extrabold underline uppercase">{leader}</p>
                 </div>
               </div>
