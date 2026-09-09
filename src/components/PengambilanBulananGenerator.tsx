@@ -36,7 +36,6 @@ export const PengambilanBulananGenerator: React.FC<PengambilanBulananGeneratorPr
   const [endMonth, setEndMonth] = useState('Agustus');
   const [sisaBulanSebelumnya, setSisaBulanSebelumnya] = useState<number | ''>(0);
   const [customNominal, setCustomNominal] = useState<number | ''>('');
-  const [tableDisplayMode, setTableDisplayMode] = useState<'rekap' | 'detail'>('rekap');
   const [syncSuccess, setSyncSuccess] = useState(false);
 
   const monthsMap = [
@@ -413,37 +412,6 @@ export const PengambilanBulananGenerator: React.FC<PengambilanBulananGeneratorPr
                 </select>
               </div>
             )}
-
-            {/* Table layout switch */}
-            <div className="flex items-center space-x-1.5 text-xs">
-              <span className="text-slate-500">Format Tabel:</span>
-              <div className="inline-flex rounded-xl bg-slate-100 p-0.5">
-                <button
-                  type="button"
-                  onClick={() => setTableDisplayMode('rekap')}
-                  className={`px-2.5 py-1 rounded-lg ${
-                    tableDisplayMode === 'rekap'
-                      ? 'bg-white text-slate-900 font-bold shadow-xs'
-                      : 'text-slate-600'
-                  }`}
-                  title="Rekapitulasi per bulan (ringkas & disukai pihak Bank/Kelurahan)"
-                >
-                  Rekap Per Bulan
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setTableDisplayMode('detail')}
-                  className={`px-2.5 py-1 rounded-lg ${
-                    tableDisplayMode === 'detail'
-                      ? 'bg-white text-slate-900 font-bold shadow-xs'
-                      : 'text-slate-600'
-                  }`}
-                  title="Rincian per item belanja RAP"
-                >
-                  Rincian Penuh Item
-                </button>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -502,7 +470,7 @@ export const PengambilanBulananGenerator: React.FC<PengambilanBulananGeneratorPr
       {/* Official Printable Document Container */}
       <div className="bg-white p-10 sm:p-14 rounded-2xl border border-slate-200 shadow-sm max-w-3xl mx-auto text-slate-900 leading-relaxed font-arial-narrow official-doc">
         {/* Kop Surat Resmi */}
-        <div className="flex items-center justify-between border-b-2 border-slate-900 pb-4 mb-6">
+        <div className="flex items-center justify-between border-b-[3px] border-slate-900 pb-3 mb-6">
           <div className="w-24 h-24 print:w-24 print:h-24 flex-shrink-0 flex items-center justify-center">
             <img
               src={profile.logoUrl || DEFAULT_SEMARANG_LOGO}
@@ -511,19 +479,19 @@ export const PengambilanBulananGenerator: React.FC<PengambilanBulananGeneratorPr
             />
           </div>
           <div className="text-center flex-grow px-2">
-            <div className="text-[12px] font-bold uppercase text-slate-800 leading-tight">
+            <div className="text-[12px] font-bold uppercase text-slate-900 leading-tight">
               PEMERINTAH KOTA SEMARANG
             </div>
-            <div className="text-[12px] font-semibold uppercase text-slate-800 leading-tight">
-              KECAMATAN {profile.kecamatan.toUpperCase()}
+            <div className="text-[12px] font-bold uppercase text-slate-900 leading-tight">
+              KECAMATAN {profile.kecamatan}
             </div>
-            <div className="text-[12px] font-semibold uppercase text-slate-800 leading-tight">
-              KELURAHAN {profile.kelurahan.toUpperCase()}
+            <div className="text-[12px] font-bold uppercase text-slate-900 leading-tight">
+              KELURAHAN {profile.kelurahan}
             </div>
-            <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight">
+            <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight mt-1">
               RT {profile.rtNumber} RW {profile.rwNumber}
             </div>
-            <p className="text-[10px] text-slate-600 leading-tight">
+            <p className="text-[10px] text-slate-800 leading-tight mt-1">
               Alamat: Ngabean RT {profile.rtNumber} RW {profile.rwNumber} Kelurahan {profile.kelurahan}
             </p>
           </div>
@@ -531,171 +499,105 @@ export const PengambilanBulananGenerator: React.FC<PengambilanBulananGeneratorPr
         </div>
 
         {/* Document Title */}
-        <div className="text-center mb-6">
-          <h3 className="text-base font-bold uppercase underline tracking-wide">
-            PENGAMBILAN OPERASIONAL RT MELALUI BANK JAWA TENGAH
+        <div className="text-center mb-10 text-[15px]">
+          <h3 className="font-normal text-slate-900 tracking-wide">
+            Pengambilan Operasional RT
           </h3>
-          {mode === 'preset-jan-aug' && (
-            <p className="text-xs font-semibold text-slate-700 font-sans mt-0.5 uppercase tracking-wide">
-              (AKUMULASI RAPEL BULAN JANUARI S/D AGUSTUS TAHUN {profile.year})
-            </p>
-          )}
+          <h3 className="font-normal text-slate-900 tracking-wide mt-1">
+            Melalui Bank Jawa Tengah
+          </h3>
         </div>
 
         {/* Institution & Period Meta */}
-        <div className="space-y-1.5 text-xs sm:text-sm mb-6 max-w-xl font-sans">
-          <div className="flex">
-            <span className="w-48 font-semibold text-slate-700">Nama Lembaga</span>
-            <span>
-              : Ngabean RT {profile.rtNumber} RW {profile.rwNumber}
-            </span>
+        <div className="space-y-3 text-[13px] mb-8">
+          <div className="grid grid-cols-[160px_auto]">
+            <span className="font-medium text-slate-800">Nama Lembaga</span>
+            <span>: Ngabean RT {profile.rtNumber} RW. {profile.rwNumber}</span>
           </div>
-          <div className="flex">
-            <span className="w-48 font-semibold text-slate-700">Kelurahan</span>
+          <div className="grid grid-cols-[160px_auto]">
+            <span className="font-medium text-slate-800">Kelurahan</span>
             <span>: {profile.kelurahan}</span>
           </div>
-          <div className="flex">
-            <span className="w-48 font-semibold text-slate-700">Kecamatan</span>
+          <div className="grid grid-cols-[160px_auto]">
+            <span className="font-medium text-slate-800">Kecamatan</span>
             <span>: {profile.kecamatan}</span>
           </div>
-          <div className="flex">
-            <span className="w-48 font-semibold text-slate-700">Nomor Rekening Bank</span>
-            <span className="font-mono">: {profile.bankAccountNumber} (Bank Jateng)</span>
-          </div>
-          <div className="flex">
-            <span className="w-48 font-semibold text-slate-700">Untuk Kegiatan Bulan</span>
-            <span className="font-bold text-red-700">: {periodeLabel}</span>
+          <div className="grid grid-cols-[160px_auto]">
+            <span className="font-medium text-slate-800">Untuk Kegiatan Bulan</span>
+            <span>: {periodeLabel}</span>
           </div>
         </div>
 
-        {/* TABLE OPTION 1: Rekapitulasi Per Bulan (Direkomendasikan untuk Bank & Kelurahan) */}
-        {tableDisplayMode === 'rekap' && (
-          <div className="mb-6">
-            <table className="w-full text-xs border-collapse border border-slate-300 font-sans">
-              <thead>
-                <tr className="bg-slate-100 text-slate-800">
-                  <th className="border border-slate-300 py-2 px-2 text-center w-8">No.</th>
-                  <th className="border border-slate-300 py-2 px-3 text-left w-32">Bulan Alokasi</th>
-                  <th className="border border-slate-300 py-2 px-3 text-left">
-                    Uraian Pokok Kegiatan Sesuai RAP
-                  </th>
-                  <th className="border border-slate-300 py-2 px-2 text-center w-24">Item/Kegiatan</th>
-                  <th className="border border-slate-300 py-2 px-3 text-right w-36">
-                    Alokasi Anggaran (Rp)
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {monthlyBreakdown.map((m, idx) => (
-                  <tr key={m.monthNumber} className="hover:bg-slate-50">
-                    <td className="border border-slate-300 py-2 px-2 text-center">{idx + 1}</td>
-                    <td className="border border-slate-300 py-2 px-3 font-semibold text-slate-900">
-                      Bulan {m.monthName}
-                    </td>
-                    <td className="border border-slate-300 py-2 px-3 text-slate-700">
-                      <div>{m.summary}</div>
-                    </td>
-                    <td className="border border-slate-300 py-2 px-2 text-center text-slate-600">
-                      {m.count > 0 ? `${m.count} Rincian` : '-'}
-                    </td>
-                    <td className="border border-slate-300 py-2 px-3 text-right font-medium font-mono">
-                      {m.subtotal.toLocaleString('id-ID')}
-                    </td>
-                  </tr>
-                ))}
-                <tr className="bg-slate-100 font-bold">
-                  <td colSpan={4} className="border border-slate-300 py-2.5 px-3 text-right uppercase">
-                    Jumlah Total Alokasi:
-                  </td>
-                  <td className="border border-slate-300 py-2.5 px-3 text-right text-red-700 font-mono text-sm">
-                    {calculatedRapTotal.toLocaleString('id-ID')}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        {/* TABLE OPTION 2: Rincian Penuh Item Belanja RAP */}
-        {tableDisplayMode === 'detail' && (
-          <div className="mb-6">
-            <table className="w-full text-xs border-collapse border border-slate-300 font-sans">
-              <thead>
-                <tr className="bg-slate-100 text-slate-800">
-                  <th className="border border-slate-300 py-2 px-1 text-center w-8">No.</th>
-                  <th className="border border-slate-300 py-2 px-2 text-left w-20">Bulan</th>
-                  <th className="border border-slate-300 py-2 px-2 text-left">Uraian Kegiatan</th>
-                  <th className="border border-slate-300 py-2 px-1 text-center w-20">Vol.</th>
-                  <th className="border border-slate-300 py-2 px-2 text-right w-24">Harga (Rp)</th>
-                  <th className="border border-slate-300 py-2 px-2 text-right w-28">Total (Rp)</th>
+        {/* TABLE OPTION 2: Rincian Penuh Item Belanja RAP - Matching Screenshot Format */}
+        <div className="mb-2">
+          <table className="w-full text-[13px] border-collapse border border-slate-900">
+            <thead>
+              <tr className="text-slate-900 border-b border-slate-900">
+                  <th className="border-r border-slate-900 py-3 px-2 text-center font-normal w-12">No.</th>
+                  <th className="border-r border-slate-900 py-3 px-4 text-center font-normal">Uraian Kegiatan</th>
+                  <th className="border-r border-slate-900 py-3 px-2 text-center font-normal w-24">Satuan/<br/>Volume</th>
+                  <th className="border-r border-slate-900 py-3 px-2 text-center font-normal w-32">Anggaran</th>
+                  <th className="py-3 px-4 text-center font-normal w-64">Keterangan</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredRapItems.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="border border-slate-300 py-6 text-center text-slate-400">
+                    <td colSpan={5} className="py-8 text-center text-slate-400">
                       Tidak ada rincian RAP pada periode ini.
                     </td>
                   </tr>
                 ) : (
                   filteredRapItems.map((item, idx) => (
-                    <tr key={item.id} className="hover:bg-slate-50">
-                      <td className="border border-slate-300 py-1.5 px-1 text-center">{idx + 1}</td>
-                      <td className="border border-slate-300 py-1.5 px-2 text-slate-600">
-                        {item.month}
-                      </td>
-                      <td className="border border-slate-300 py-1.5 px-2 font-medium">
+                    <tr key={item.id} className="border-b border-slate-900">
+                      <td className="border-r border-slate-900 py-2 px-2 text-center align-top">{idx + 1}.</td>
+                      <td className="border-r border-slate-900 py-2 px-4 align-top">
                         {item.description}
                       </td>
-                      <td className="border border-slate-300 py-1.5 px-1 text-center">
+                      <td className="border-r border-slate-900 py-2 px-2 text-center align-top">
                         {item.qty} {item.unit}
                       </td>
-                      <td className="border border-slate-300 py-1.5 px-2 text-right font-mono">
-                        {item.price.toLocaleString('id-ID')}
+                      <td className="border-r border-slate-900 py-2 px-3 align-top">
+                        <div className="flex justify-between">
+                          <span>Rp.</span>
+                          <span className="text-right">{item.total.toLocaleString('id-ID')}</span>
+                        </div>
                       </td>
-                      <td className="border border-slate-300 py-1.5 px-2 text-right font-semibold font-mono">
-                        {item.total.toLocaleString('id-ID')}
+                      <td className="py-2 px-4 align-top text-[12px] leading-tight">
+                        {/* Keterangan omitted or placeholder if we don't have it in DB, let's just leave it empty or put note */}
+                        {item.month === 'Agustus' && item.description.toLowerCase().includes('hut ri') ? 
+                          'Lomba,hadiah,konsumsi,umbul-umbul,bendera,soundsystem,Lampu hias. spanduk dll.' : 
+                          item.description.toLowerCase().includes('pertemuan') ? 'Konsumsi Makan' : 
+                          item.description.toLowerCase().includes('administrasi') ? 'ATK,Rak Penyimpanan Arsip,Buku, Kertas,MAP,Materai dll.' : ''}
                       </td>
                     </tr>
                   ))
                 )}
-                <tr className="bg-slate-100 font-bold">
-                  <td colSpan={5} className="border border-slate-300 py-2 px-3 text-right uppercase">
-                    Jumlah Total :
+                <tr className="border-b border-slate-900">
+                  <td colSpan={3} className="border-r border-slate-900 py-2 px-4 text-center font-bold">
+                    Jumlah
                   </td>
-                  <td className="border border-slate-300 py-2 px-2 text-right text-red-700 font-mono text-xs">
-                    {calculatedRapTotal.toLocaleString('id-ID')}
+                  <td className="border-r border-slate-900 py-2 px-3 font-bold">
+                    <div className="flex justify-between">
+                      <span>Rp.</span>
+                      <span className="text-right">{calculatedRapTotal.toLocaleString('id-ID')}</span>
+                    </div>
+                  </td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td colSpan={5} className="py-3 px-4 font-bold text-[13px] italic">
+                    <span className="font-normal not-italic">Terbilang : </span>
+                    {terbilang(calculatedRapTotal)} Rupiah
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
-        )}
-
-        {/* Calculation Box: Sisa, Penarikan & Terbilang */}
-        <div className="border border-slate-300 text-xs mb-6 divide-y divide-slate-300 font-sans">
-          <div className="flex py-2 px-3">
-            <span className="w-56 font-semibold">Sisa Bulan Sebelumnya</span>
-            <span>
-              :{' '}
-              {sisaBulanSebelumnya === '' || sisaBulanSebelumnya === 0
-                ? 'Rp 0,- (Nihil)'
-                : formatRupiah(Number(sisaBulanSebelumnya))}
-            </span>
-          </div>
-          <div className="flex py-2.5 px-3 bg-slate-50 font-bold text-slate-900">
-            <span className="w-56">Pengambilan Operasional Periode Ini</span>
-            <span className="text-red-700 font-mono text-sm">: {formatRupiah(finalNominal)},-</span>
-          </div>
-          <div className="flex py-2 px-3 italic bg-slate-50/50">
-            <span className="w-56 font-semibold">Terbilang</span>
-            <span className="font-semibold text-slate-800">: {terbilang(finalNominal)}</span>
-          </div>
-        </div>
 
         {/* Catatan Resmi Penarikan Rapel */}
         {mode === 'preset-jan-aug' && (
-          <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 text-[11px] text-slate-700 mb-8 font-sans leading-relaxed">
+          <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 text-[11px] text-slate-700 mb-8 leading-relaxed">
             <strong>Catatan Resmi Penarikan Rapel:</strong> Penarikan operasional RT periode Januari
             s/d Agustus {profile.year} dilaksanakan secara akumulatif (rapel) pada bulan Agustus{' '}
             {profile.year} sesuai realisasi jadwal penyaluran dana Bantuan Operasional RT dari Kas
@@ -705,33 +607,32 @@ export const PengambilanBulananGenerator: React.FC<PengambilanBulananGeneratorPr
           </div>
         )}
 
-        {/* Signatures (Ketua RT, Bendahara RT, Mengetahui Lurah Gunungpati) */}
-        <div className="mt-8 grid grid-cols-2 gap-8 text-xs text-center page-break-inside-avoid">
-          <div>
-            <p className="text-slate-600 mb-1">
-              Semarang, 05 Agustus {profile.year}
-            </p>
-            <p className="font-semibold uppercase text-slate-800">Yang Mengambil,</p>
-            <p className="font-bold uppercase text-slate-900">
-              Ketua RT {profile.rtNumber} RW {profile.rwNumber}
-            </p>
-            <div className="h-20"></div>
-            <p className="font-bold underline uppercase text-slate-900">{profile.ketuaRt}</p>
+        {/* Signatures */}
+        <div className="mt-8 text-[13px] page-break-inside-avoid">
+          <div className="text-center mb-4">
+            <p className="mb-2">Semarang, &nbsp;&nbsp;&nbsp;&nbsp; {periodeLabel} {profile.year}</p>
+            <p className="mb-6">Yang Mengambil</p>
           </div>
-          <div>
-            <p className="text-slate-600 mb-1">&nbsp;</p>
-            <p className="font-semibold uppercase text-slate-800">&nbsp;</p>
-            <p className="font-bold uppercase text-slate-900">Bendahara RT {profile.rtNumber}</p>
-            <div className="h-20"></div>
-            <p className="font-bold underline uppercase text-slate-900">{profile.bendaharaRt}</p>
+          
+          <div className="flex justify-between px-16 text-center">
+            <div>
+              <p>Ketua RT {profile.rtNumber} RW {profile.rwNumber}</p>
+              <div className="h-24"></div>
+              <p>{profile.ketuaRt}</p>
+            </div>
+            <div>
+              <p>Bendahara</p>
+              <div className="h-24"></div>
+              <p>{profile.bendaharaRt}</p>
+            </div>
           </div>
-        </div>
 
-        <div className="mt-8 text-center page-break-inside-avoid">
-          <p className="text-xs font-semibold text-slate-700">Mengetahui,</p>
-          <p className="text-xs font-bold uppercase text-slate-900">Lurah {profile.kelurahan}</p>
-          <div className="h-20"></div>
-          <p className="text-xs font-bold underline uppercase text-slate-900">{profile.lurahName}</p>
+          <div className="mt-8 text-center">
+            <p className="mb-1">Mengetahui</p>
+            <p>Lurah {profile.kelurahan}</p>
+            <div className="h-24"></div>
+            <p>{profile.lurahName}</p>
+          </div>
         </div>
       </div>
     </div>
