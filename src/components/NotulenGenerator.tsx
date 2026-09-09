@@ -8,18 +8,20 @@ import {
   Users, 
   BookOpen, 
   Sparkles,
+  Mail,
   CheckCircle2,
   Award,
   Layers
 } from 'lucide-react';
 import { executePrint } from '../utils/printHelper';
+import { Bot, Loader2 } from 'lucide-react';
 
 interface NotulenGeneratorProps {
   profile: RtProfile;
 }
 
 export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) => {
-  const [docViewMode, setDocViewMode] = useState<'daftar-hadir' | 'notulen'>('daftar-hadir');
+  const [docViewMode, setDocViewMode] = useState<'daftar-hadir' | 'notulen' | 'undangan'>('undangan');
   const [meetingType, setMeetingType] = useState<'rt' | 'pkk'>('rt');
   const [selectedPresetId, setSelectedPresetId] = useState<string>('notulen-januari');
   const [tableLayoutMode, setTableLayoutMode] = useState<'auto' | '1-kolom' | '2-kolom-100' | '2-kolom'>('1-kolom');
@@ -41,6 +43,8 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
   const [discussionNotes, setDiscussionNotes] = useState(firstPreset.discussionNotes);
   const [decisions, setDecisions] = useState(firstPreset.decisions);
   const [closingSentence, setClosingSentence] = useState('');
+  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+  const [aiError, setAiError] = useState('');
   const [agendaSummary, setAgendaSummary] = useState(firstPreset.agendaItems[1] || firstPreset.agendaItems[0]);
 
   // Attendee list management
@@ -99,6 +103,36 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
     handleSelectPreset(targetId, type);
   };
 
+  const handleGenerateAI = async () => {
+    setIsGeneratingAI(true);
+    setAiError('');
+    try {
+      const response = await fetch('/api/generate-notulen', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          agendaItems,
+          location,
+          meetingType,
+          participantCount,
+          month
+        })
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to generate content');
+      }
+      const data = await response.json();
+      if (data.discussionNotes) setDiscussionNotes(data.discussionNotes);
+      if (data.decisions) setDecisions(data.decisions);
+    } catch (err: any) {
+      console.error(err);
+      setAiError(err.message || 'Terjadi kesalahan saat memanggil AI.');
+    } finally {
+      setIsGeneratingAI(false);
+    }
+  };
+
   const handleAddAgenda = () => {
     if (!newAgenda.trim()) return;
     setAgendaItems([...agendaItems, newAgenda.trim()]);
@@ -110,7 +144,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
   };
 
   const handlePrint = () => {
-    executePrint(`${docViewMode === 'daftar-hadir' ? 'Daftar Hadir' : 'Notulen'} - ${month} ${profile.year}`);
+    executePrint(`${docViewMode === 'daftar-hadir' ? 'Daftar Hadir' : docViewMode === 'undangan' ? 'Surat Undangan' : 'Notulen'} - ${month} ${profile.year}`);
   };
 
   const activeAttendees = meetingType === 'rt' ? rtAttendees : pkkAttendees;
@@ -242,6 +276,15 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                   : 'Notulen Rapat'}
               </span>
             </button>
+            <button
+              onClick={() => setDocViewMode('undangan')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition-all ${
+                docViewMode === 'undangan' ? 'bg-white text-blue-600 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Mail className="w-3.5 h-3.5" />
+              <span>Surat Undangan</span>
+            </button>
           </div>
 
           {/* Meeting Category Switcher */}
@@ -269,7 +312,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
             className="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-xl shadow-xs flex items-center space-x-2 text-xs transition-all"
           >
             <Printer className="w-4 h-4" />
-            <span>{docViewMode === 'daftar-hadir' ? 'Cetak Daftar Hadir (PDF)' : 'Cetak Notulen (PDF)'}</span>
+            <span>{docViewMode === 'daftar-hadir' ? 'Cetak Daftar Hadir (PDF)' : docViewMode === 'undangan' ? 'Cetak Undangan (PDF)' : 'Cetak Notulen (PDF)'}</span>
           </button>
         </div>
       </div>
@@ -794,12 +837,29 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                 </ul>
               </div>
 
-              <div>
-                <label className="block font-semibold text-slate-700 uppercase mb-1">
-                  {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus'
-                    ? 'Uraian Jalannya Acara & Pelaksanaan'
-                    : 'Uraian Pembahasan Rapat'}
-                </label>
+              <div className="pt-2">
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block font-semibold text-slate-700 uppercase">
+                    {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus'
+                      ? 'Uraian Jalannya Acara & Pelaksanaan'
+                      : 'Uraian Pembahasan Rapat'}
+                  </label>
+                  <button
+                    onClick={handleGenerateAI}
+                    disabled={isGeneratingAI || agendaItems.length === 0}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300 rounded-lg text-xs font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isGeneratingAI ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Bot className="w-3.5 h-3.5" />
+                    )}
+                    Generate AI
+                  </button>
+                </div>
+                {aiError && (
+                  <div className="text-red-500 text-[10px] mb-2">{aiError}</div>
+                )}
                 <textarea
                   rows={4}
                   value={discussionNotes}
