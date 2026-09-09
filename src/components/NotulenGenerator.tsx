@@ -1,6 +1,6 @@
 import { DEFAULT_SEMARANG_LOGO } from '../data/initialData';
-import React, { useState } from 'react';
-import { RtProfile, AttendeeItem } from '../types';
+import React, { useState, useEffect } from 'react';
+import { RtProfile, AttendeeItem, NotulenPreset } from '../types';
 import { formatDate } from '../utils/formatters';
 import { rtNotulenPresets, pkkNotulenPresets, defaultRtAttendees, defaultPkkAttendees } from '../data/initialData';
 import { 
@@ -30,7 +30,25 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
   const [tableLayoutMode, setTableLayoutMode] = useState<'auto' | '1-kolom' | '2-kolom-100' | '2-kolom'>('1-kolom');
   
   // Initialize with the 1st preset (Januari 2026 - Persiapan Haul)
-  const firstPreset = rtNotulenPresets[0];
+  const [rtPresets, setRtPresets] = useState<NotulenPreset[]>(() => {
+    const saved = localStorage.getItem('rtNotulenPresets');
+    return saved ? JSON.parse(saved) : rtNotulenPresets;
+  });
+
+  const [pkkPresets, setPkkPresets] = useState<NotulenPreset[]>(() => {
+    const saved = localStorage.getItem('pkkNotulenPresets');
+    return saved ? JSON.parse(saved) : pkkNotulenPresets;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('rtNotulenPresets', JSON.stringify(rtPresets));
+  }, [rtPresets]);
+
+  useEffect(() => {
+    localStorage.setItem('pkkNotulenPresets', JSON.stringify(pkkPresets));
+  }, [pkkPresets]);
+
+  const firstPreset = rtPresets[0] || rtNotulenPresets[0];
   const [month, setMonth] = useState(firstPreset.month);
   const [date, setDate] = useState(firstPreset.date);
   const [time, setTime] = useState(firstPreset.time);
@@ -102,7 +120,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
   const [undanganDateCustom, setUndanganDateCustom] = useState<string>('');
 
   const handleSelectPreset = (presetId: string, type: 'rt' | 'pkk' = meetingType) => {
-    const list = type === 'pkk' ? pkkNotulenPresets : rtNotulenPresets;
+    const list = type === 'pkk' ? pkkPresets : rtPresets;
     const preset = list.find((p) => p.id === presetId);
     if (!preset) return;
     setSelectedPresetId(presetId);
@@ -111,7 +129,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
     setTime(preset.time);
     setLocation(preset.location);
     if (type === 'pkk') {
-      setLeader(preset.leader || profile.ketuaPkk || 'TISNANI SUBANDIYAH');
+      setLeader(preset.leader || profile.ketuaPkk || 'TISTANI SUBANDIYAH');
       setSecretary(preset.secretary || profile.sekretarisPkk || 'INDRIANAH');
     } else {
       setLeader(preset.leader || profile.ketuaRt);
@@ -174,6 +192,80 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
       setAiError(err.message || 'Terjadi kesalahan saat memanggil AI.');
     } finally {
       setIsGeneratingAI(false);
+    }
+  };
+
+  const handleSavePreset = () => {
+    const updatedPreset = {
+      id: selectedPresetId,
+      month,
+      date,
+      time,
+      location,
+      participantCount: 40,
+      leader,
+      secretary,
+      agendaTitle: (meetingType === 'rt' ? rtPresets : pkkPresets).find(p => p.id === selectedPresetId)?.agendaTitle,
+      agendaItems: [...agendaItems]
+    };
+
+    if (meetingType === 'rt') {
+      setRtPresets(prev => prev.map(p => p.id === selectedPresetId ? updatedPreset : p));
+    } else {
+      setPkkPresets(prev => prev.map(p => p.id === selectedPresetId ? updatedPreset : p));
+    }
+    // simple UI feedback without full alert if possible, but alert is fine for simple app
+    alert('Jadwal/Notulen berhasil disimpan!');
+  };
+
+  const handleAddPreset = () => {
+    const newId = `${meetingType}-notulen-${Date.now()}`;
+    const newPreset = {
+      id: newId,
+      month: 'Baru',
+      date: new Date().toISOString().split('T')[0],
+      time: '19:30 - selesai',
+      location: meetingType === 'rt' ? 'Kediaman ...' : 'Kediaman Ibu Tistani Subandiyah',
+      participantCount: 40,
+      leader,
+      secretary,
+      agendaItems: ['Agenda Baru']
+    };
+
+    if (meetingType === 'rt') {
+      setRtPresets(prev => [...prev, newPreset]);
+    } else {
+      setPkkPresets(prev => [...prev, newPreset]);
+    }
+    
+    // Select it
+    setSelectedPresetId(newId);
+    setMonth(newPreset.month);
+    setDate(newPreset.date);
+    setTime(newPreset.time);
+    setLocation(newPreset.location);
+    setAgendaItems([...newPreset.agendaItems]);
+  };
+
+  const handleDeletePreset = () => {
+    if (confirm('Yakin ingin menghapus jadwal ini?')) {
+      if (meetingType === 'rt') {
+        setRtPresets(prev => {
+          const filtered = prev.filter(p => p.id !== selectedPresetId);
+          if (filtered.length > 0) {
+            setTimeout(() => handleSelectPreset(filtered[0].id, 'rt'), 0);
+          }
+          return filtered;
+        });
+      } else {
+        setPkkPresets(prev => {
+          const filtered = prev.filter(p => p.id !== selectedPresetId);
+          if (filtered.length > 0) {
+            setTimeout(() => handleSelectPreset(filtered[0].id, 'pkk'), 0);
+          }
+          return filtered;
+        });
+      }
     }
   };
 
@@ -288,7 +380,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
               </>
             )}
             <p className="text-[10px] text-slate-800 leading-tight mt-1">
-              Alamat: Ngabean RT {profile.rtNumber} RW {profile.rwNumber}, Kel. {profile.kelurahan}, Kec. {profile.kecamatan}, Kota Semarang 50225
+              Alamat: Ngabean RT {profile.rtNumber} RW {profile.rwNumber} Kelurahan {profile.kelurahan}
             </p>
           </div>
           <div className={`${logoSize} flex-shrink-0 flex items-center justify-center opacity-0 print:opacity-0`}>
@@ -301,242 +393,158 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
           <div className="space-y-0.5">
             <div className="flex">
               <span className="w-20 sm:w-24 font-semibold">Nomor</span>
-              <span className="w-3">:</span>
-              <span className="font-mono font-medium">{currentNomorSurat}</span>
-            </div>
-            <div className="flex">
-              <span className="w-20 sm:w-24 font-semibold">Sifat</span>
-              <span className="w-3">:</span>
-              <span>Penting / Biasa</span>
+              <span className="w-4">:</span>
+              <span>-</span>
             </div>
             <div className="flex">
               <span className="w-20 sm:w-24 font-semibold">Lampiran</span>
-              <span className="w-3">:</span>
+              <span className="w-4">:</span>
               <span>-</span>
             </div>
-            <div className="flex items-start">
-              <span className="w-20 sm:w-24 font-semibold">Hal</span>
-              <span className="w-3">:</span>
-              <span className="font-bold underline">{currentHalSurat}</span>
+            <div className="flex">
+              <span className="w-20 sm:w-24 font-semibold">Perihal</span>
+              <span className="w-4">:</span>
+              <span className="font-bold underline uppercase">{currentAcara}</span>
             </div>
           </div>
-
           <div className="text-right">
-            <p className="font-medium">
-              Semarang, {formatDate(currentUndanganDate)}
-            </p>
+            <span className="font-semibold block mb-0.5">Semarang, {formatDate(currentUndanganDate)}</span>
+            <span>Kepada Yth.</span>
+            <br />
+            <span className="font-bold">{currentPenerima}</span>
+            <br />
+            <span>di Tempat</span>
           </div>
         </div>
 
-        {/* Tujuan Penerima */}
-        <div className={`${textSize} pt-0.5`}>
-          <p>Kepada Yth.</p>
-          <p className="font-bold uppercase text-slate-900">{currentPenerima}</p>
-          <p>di Tempat</p>
-        </div>
+        {/* Isi Surat */}
+        <div className={`text-justify leading-relaxed mt-4 ${textSize}`}>
+          <p className="mb-2 font-bold">{currentSalamPembuka}</p>
+          <p className="mb-2 whitespace-pre-line">{currentPengantar}</p>
+          
+          <table className={`w-11/12 mx-auto my-3 font-semibold ${tablePadding}`}>
+            <tbody>
+              <tr>
+                <td className="w-32 py-1">Hari, Tanggal</td>
+                <td className="w-4 py-1">:</td>
+                <td className="py-1">{formatDate(date)}</td>
+              </tr>
+              <tr>
+                <td className="py-1">Waktu</td>
+                <td className="py-1">:</td>
+                <td className="py-1">{time}</td>
+              </tr>
+              <tr>
+                <td className="py-1 align-top">Tempat</td>
+                <td className="py-1 align-top">:</td>
+                <td className="py-1 leading-normal uppercase">{location}</td>
+              </tr>
+              <tr>
+                <td className="py-1 align-top">Acara</td>
+                <td className="py-1 align-top">:</td>
+                <td className="py-1 leading-normal uppercase">{currentAcara}</td>
+              </tr>
+              {showAgendaDetailsInUndangan && (
+                <tr>
+                  <td className="py-1 align-top">Detail Agenda</td>
+                  <td className="py-1 align-top">:</td>
+                  <td className="py-1 font-normal text-[11px] print:text-[10px]">
+                    <ul className="list-disc pl-4 space-y-0.5">
+                      {agendaItems.map((ag, i) => (
+                         <li key={i}>{ag}</li>
+                      ))}
+                    </ul>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
 
-        {/* Salam & Paragraf Pengantar */}
-        <div className={`${textSize} space-y-1 text-justify`}>
-          <p className="font-semibold">{currentSalamPembuka}</p>
-          <p className="font-semibold">Dengan hormat,</p>
-          <p className="leading-relaxed">
-            {currentPengantar}
-          </p>
-        </div>
-
-        {/* Rincian Waktu, Tempat, dan Acara (Sesuai Format Template Baku Pengguna) */}
-        <div className={`my-1 pl-3 sm:pl-6 ${textSize} space-y-1`}>
-          <div className="flex items-start">
-            <span className="w-28 sm:w-32 font-semibold text-slate-800">Hari/tanggal</span>
-            <span className="w-4 font-bold text-center">:</span>
-            <span className="text-slate-900 font-semibold">
-              {getIndonesianDayName(date)}, {formatDate(date)}
-            </span>
-          </div>
-          <div className="flex items-start">
-            <span className="w-28 sm:w-32 font-semibold text-slate-800">Waktu</span>
-            <span className="w-4 font-bold text-center">:</span>
-            <span className="text-slate-900 font-medium">{time} Wib - Selesai</span>
-          </div>
-          <div className="flex items-start">
-            <span className="w-28 sm:w-32 font-semibold text-slate-800">Tempat</span>
-            <span className="w-4 font-bold text-center">:</span>
-            <span className="text-slate-900 font-medium">{location}</span>
-          </div>
-          <div className="flex items-start">
-            <span className="w-28 sm:w-32 font-semibold text-slate-800">Acara</span>
-            <span className="w-4 font-bold text-center">:</span>
-            <span className="text-slate-900 font-semibold">{currentAcara}</span>
-          </div>
-
-          {showAgendaDetailsInUndangan && agendaItems.length > 0 && (
-            <div className="flex items-start pt-1 text-xs">
-              <span className="w-28 sm:w-32 font-semibold text-slate-600">Rincian Agenda</span>
-              <span className="w-4 font-bold text-center">:</span>
-              <ol className="list-decimal pl-4 space-y-0.5 text-slate-700">
-                {agendaItems.map((ag, idx) => (
-                  <li key={idx}>{ag}</li>
-                ))}
-              </ol>
+          {undanganCatatan && (
+            <div className="mb-2 p-2 border-l-2 border-slate-900 bg-slate-50 text-[10px] print:text-[9.5px]">
+              <span className="font-bold">Catatan Tambahan:</span><br/>
+              <span className="whitespace-pre-line">{undanganCatatan}</span>
             </div>
           )}
+
+          <p className="mb-4 whitespace-pre-line">{currentPenutup}</p>
+          <p className="font-bold">{currentSalamPenutup}</p>
         </div>
 
-        {/* Catatan / NB (opsional jika diisi) */}
-        {undanganCatatan && (
-          <div className={`border-l-4 border-slate-600 bg-slate-50 ${isCompact ? 'p-1.5 text-[9.5px]' : 'p-2 text-[11px]'} rounded-r italic text-slate-700`}>
-            <span className="font-bold not-italic">Catatan: </span>
-            {undanganCatatan}
-          </div>
-        )}
-
-        {/* Paragraf Penutup & Salam Penutup */}
-        <div className={`${textSize} space-y-1.5 text-justify`}>
-          <p className="leading-relaxed">
-            {currentPenutup}
-          </p>
-          <p className="font-semibold">{currentSalamPenutup}</p>
-        </div>
-
-        {/* Blok Tanda Tangan Mengetahui */}
-        <div className={`pt-1.5 grid grid-cols-2 text-center ${textSize} leading-tight`}>
-          <div>
-            <p className="font-semibold uppercase text-slate-700">Mengetahui,</p>
-            <p className="font-bold uppercase text-slate-900 mt-0.5">
-              {meetingType === 'rt' ? `Sekretaris RT ${profile.rtNumber}` : `Sekretaris PKK RT ${profile.rtNumber}`}
-            </p>
-            <div className={ttdHeight}></div>
-            <p className="font-extrabold underline uppercase tracking-wide text-slate-900">{secretary}</p>
-          </div>
-
-          <div>
-            <p className="text-slate-600 mb-0.5">Semarang, {formatDate(currentUndanganDate)}</p>
-            <p className="font-bold uppercase text-slate-900">
+        {/* Tanda Tangan */}
+        <div className="mt-4 pt-2 flex justify-end text-center">
+          <div className="w-48">
+            <p className="font-bold uppercase text-[12px] print:text-[11px]">
               {meetingType === 'rt' ? `Ketua RT ${profile.rtNumber}` : `Ketua PKK RT ${profile.rtNumber}`}
             </p>
             <div className={ttdHeight}></div>
-            <p className="font-extrabold underline uppercase tracking-wide text-slate-900">{leader}</p>
+            <p className="font-extrabold underline uppercase text-[12px] print:text-[11px]">{leader}</p>
           </div>
         </div>
       </div>
     );
   };
 
-  const activeAttendees = meetingType === 'rt' ? rtAttendees : pkkAttendees;
-  const displayAttendees: AttendeeItem[] = activeAttendees.slice(0, Math.max(participantCount, 1));
-  const isDualColumn =
-    tableLayoutMode === '2-kolom-100' ||
-    tableLayoutMode === '2-kolom' ||
-    (tableLayoutMode === 'auto' && participantCount > 40);
-
-  const midPoint = Math.ceil(displayAttendees.length / 2);
-  const col1Attendees = displayAttendees.slice(0, midPoint);
-  const col2Attendees = displayAttendees.slice(midPoint);
-  const isUltraCompact = displayAttendees.length > 50;
-  const dualRowHeight = isUltraCompact
-    ? (showSignatureBlock ? 'h-[13.5px] print:h-[13px]' : 'h-[15.5px] print:h-[14.5px]')
-    : (showSignatureBlock ? 'h-[16.5px] print:h-[15.5px]' : 'h-[19px] print:h-[17.5px]');
-  const dualHeaderFont = isUltraCompact ? 'text-[7.5px] print:text-[7px]' : 'text-[8.5px] print:text-[8px]';
-  const dualTableFont = isUltraCompact ? 'text-[8px] print:text-[7.5px]' : 'text-[9px] print:text-[8.5px]';
-
-  // Dynamic row sizing for 1-Kolom Standar so that the table fills the A4 page right down to the bottom
-  const getSingleRowStyle = (count: number) => {
-    if (count <= 20) {
-      return {
-        rowHeight: 'h-[36px] print:h-[9.5mm]',
-        fontSize: 'text-[11px] print:text-[10.5px]',
-        thHeight: 'h-[28px] print:h-[8mm]',
-        py: 'py-1',
-      };
-    }
-    if (count <= 25) {
-      return {
-        rowHeight: 'h-[30px] print:h-[7.8mm]',
-        fontSize: 'text-[10.5px] print:text-[10px]',
-        thHeight: 'h-[26px] print:h-[7.5mm]',
-        py: 'py-1',
-      };
-    }
-    if (count <= 30) {
-      return {
-        rowHeight: 'h-[26px] print:h-[6.6mm]',
-        fontSize: 'text-[10px] print:text-[9.5px]',
-        thHeight: 'h-[24px] print:h-[7mm]',
-        py: 'py-0.5',
-      };
-    }
-    if (count <= 35) {
-      return {
-        rowHeight: 'h-[23px] print:h-[5.7mm]',
-        fontSize: 'text-[9.5px] print:text-[9px]',
-        thHeight: 'h-[22px] print:h-[6.5mm]',
-        py: 'py-0.5',
-      };
-    }
-    if (count <= 40) {
-      // 40 rows: precisely fills the A4 sheet down to the bottom margin without spilling
-      return {
-        rowHeight: 'h-[21px] print:h-[4.95mm]',
-        fontSize: 'text-[9px] print:text-[8.5px]',
-        thHeight: 'h-[22px] print:h-[6.5mm]',
-        py: 'py-0',
-      };
-    }
-    if (count <= 45) {
-      return {
-        rowHeight: 'h-[18.5px] print:h-[4.3mm]',
-        fontSize: 'text-[8.5px] print:text-[8px]',
-        thHeight: 'h-[20px] print:h-[6mm]',
-        py: 'py-0',
-      };
-    }
-    return {
-      rowHeight: 'h-[16.5px] print:h-[3.9mm]',
-      fontSize: 'text-[8px] print:text-[7.5px]',
-      thHeight: 'h-[18px] print:h-[5.5mm]',
-      py: 'py-0',
-    };
-  };
-
-  const singleStyle = getSingleRowStyle(displayAttendees.length);
-
-  const singleColWidths = includeAddressColumn
-    ? nameWidthMode === 'ringkas'
-      ? { no: 'w-[6%]', name: 'w-[26%]', gender: 'w-[10%]', addr: 'w-[22%]', ttd: 'w-[18%]', ttdTotal: 'w-[36%]' }
-      : nameWidthMode === 'leluasa'
-      ? { no: 'w-[6%]', name: 'w-[34%]', gender: 'w-[10%]', addr: 'w-[18%]', ttd: 'w-[16%]', ttdTotal: 'w-[32%]' }
-      : { no: 'w-[7%]', name: 'w-[28%]', gender: 'w-[11%]', addr: 'w-[20%]', ttd: 'w-[17%]', ttdTotal: 'w-[34%]' }
-    : nameWidthMode === 'ringkas'
-    ? { no: 'w-[7%]', name: 'w-[28%]', gender: 'w-[15%]', addr: '', ttd: 'w-[25%]', ttdTotal: 'w-[50%]' }
-    : nameWidthMode === 'leluasa'
-    ? { no: 'w-[10%]', name: 'w-[40%]', gender: 'w-[14%]', addr: '', ttd: 'w-[18%]', ttdTotal: 'w-[36%]' }
-    : { no: 'w-[10%]', name: 'w-[35%]', gender: 'w-[15%]', addr: '', ttd: 'w-[20%]', ttdTotal: 'w-[40%]' };
-
   return (
     <div className="space-y-6">
-      {/* Control Bar */}
-      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs print:hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      {/* Header/Controls */}
+      <div className="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 flex items-center space-x-2">
-            <BookOpen className="w-5 h-5 text-red-600" />
-            <span>Notulen & Daftar Hadir Resmi</span>
+          <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+            <BookOpen className="w-5 h-5 text-indigo-600" />
+            Generator Notulen & Undangan
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Format resmi KOP Surat Pemerintah Kota Semarang lengkap dengan Notulen Rapat dan Daftar Hadir bertanda tangan silang (ganjil di kiri, genap di kanan).
+          <p className="text-slate-500 text-xs mt-1">
+            Buat Undangan, Daftar Hadir, dan Notulen kegiatan bulanan warga RT dan PKK.
           </p>
         </div>
+        <div className="flex items-center bg-slate-100 p-1 rounded-xl shadow-inner border border-slate-200">
+          <button
+            onClick={() => {
+              setMeetingType('rt');
+              handleSelectPreset(rtPresets[0]?.id || 'notulen-januari', 'rt');
+            }}
+            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+              meetingType === 'rt' ? 'bg-white text-indigo-600 shadow-sm ring-1 ring-slate-200' : 'text-slate-600 hover:text-slate-800'
+            }`}
+          >
+            Rapat RT
+          </button>
+          <button
+            onClick={() => {
+              setMeetingType('pkk');
+              handleSelectPreset(pkkPresets[0]?.id || 'pkk-notulen-januari', 'pkk');
+            }}
+            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+              meetingType === 'pkk' ? 'bg-white text-rose-600 shadow-sm ring-1 ring-slate-200' : 'text-slate-600 hover:text-slate-800'
+            }`}
+          >
+            Rapat PKK
+          </button>
+        </div>
+      </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
-          {/* Document Type Switcher */}
-          <div className="inline-flex bg-slate-100 p-1 rounded-xl">
+      {/* Control Panel / Presets */}
+      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+        <div className="flex flex-col md:flex-row justify-between gap-4 mb-4">
+          <div className="flex flex-col">
+            <div className="flex items-center space-x-2">
+              <Sparkles className="w-4 h-4 text-slate-500" />
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                {meetingType === 'rt' ? 'Pertemuan Rutin Warga RT 04 (2026)' : 'Pertemuan Rutin PKK RT 04 (2026)'}
+              </span>
+            </div>
+          </div>
+          
+          <div className="flex flex-wrap gap-2 items-center bg-slate-50 p-1.5 rounded-xl border border-slate-200">
             <button
               onClick={() => setDocViewMode('daftar-hadir')}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition-all ${
-                docViewMode === 'daftar-hadir' ? 'bg-white text-red-600 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                docViewMode === 'daftar-hadir' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <Users className="w-3.5 h-3.5" />
-              <span>Daftar Hadir (Format Silang)</span>
+              <span>Daftar Hadir</span>
             </button>
             <button
               onClick={() => setDocViewMode('notulen')}
@@ -545,11 +553,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
               }`}
             >
               <FileText className="w-3.5 h-3.5" />
-              <span>
-                {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus'
-                  ? 'Berita Acara Pelaksanaan'
-                  : 'Notulen Rapat'}
-              </span>
+              <span>Notulen Rapat</span>
             </button>
             <button
               onClick={() => setDocViewMode('undangan')}
@@ -561,201 +565,51 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
               <span>Surat Undangan</span>
             </button>
           </div>
-
-          {/* Meeting Category Switcher */}
-          <div className="inline-flex bg-slate-100 p-1 rounded-xl">
-            <button
-              onClick={() => switchMeetingType('rt')}
-              className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                meetingType === 'rt' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600'
-              }`}
-            >
-              RT {profile.rtNumber}
-            </button>
-            <button
-              onClick={() => switchMeetingType('pkk')}
-              className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                meetingType === 'pkk' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600'
-              }`}
-            >
-              PKK RT {profile.rtNumber}
-            </button>
-          </div>
-
-          <button
-            onClick={handlePrint}
-            className="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-xl shadow-xs flex items-center space-x-2 text-xs transition-all"
-          >
-            <Printer className="w-4 h-4" />
-            <span>{docViewMode === 'daftar-hadir' ? 'Cetak Daftar Hadir (PDF)' : docViewMode === 'undangan' ? 'Cetak Undangan (PDF)' : 'Cetak Notulen (PDF)'}</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Quick Select Bar for RT 04 Meetings */}
-      <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 print:hidden space-y-3.5">
-        {/* Special Agustusan LPJ 100 Person Presets */}
-          {meetingType === 'rt' && (
-          <div className="bg-gradient-to-r from-red-500/10 via-amber-500/10 to-red-500/10 border border-red-200 rounded-xl p-3 mb-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2">
-              <div className="flex items-center space-x-2">
-                <span className="flex h-2 w-2 rounded-full bg-red-600 animate-pulse"></span>
-                <span className="text-xs font-black uppercase tracking-wider text-red-900">
-                  🇮🇩 Dokumen Khusus LPJ Agustusan (100 Warga / 1 Lembar Pas Cetak)
-                </span>
-              </div>
-              <span className="text-[11px] font-bold text-red-700 bg-red-100 px-2 py-0.5 rounded-full w-fit">
-                Layout 2 Kolom • Tanda Tangan Silang • Hemat Kertas
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              {/* Preset 1: Malam Tirakatan 16 Agustus 2026 */}
-              <button
-                type="button"
-                onClick={() => handleSelectPreset('notulen-tirakatan-16agustus')}
-                className={`text-left p-3 rounded-xl border transition-all flex items-start justify-between gap-3 ${
-                  selectedPresetId === 'notulen-tirakatan-16agustus'
-                    ? 'bg-red-600 border-red-600 text-white shadow-sm ring-2 ring-red-400/40'
-                    : 'bg-white border-red-200 hover:border-red-400 hover:bg-red-50/50 text-slate-800'
-                }`}
-              >
-                <div className="space-y-1 min-w-0">
-                  <div className="flex items-center space-x-1.5">
-                    <span className={`text-[10px] font-black uppercase px-1.5 py-0.5 rounded ${
-                      selectedPresetId === 'notulen-tirakatan-16agustus' ? 'bg-red-700 text-white' : 'bg-red-100 text-red-800'
-                    }`}>
-                      16 Agustus 2026
-                    </span>
-                    <span className={`text-[11px] font-bold truncate ${
-                      selectedPresetId === 'notulen-tirakatan-16agustus' ? 'text-white' : 'text-slate-900'
-                    }`}>
-                      Malam Tirakatan HUT RI Ke 81 Tahun 2026
-                    </span>
-                  </div>
-                  <p className={`text-[11px] line-clamp-1 ${
-                    selectedPresetId === 'notulen-tirakatan-16agustus' ? 'text-red-100' : 'text-slate-600'
-                  }`}>
-                    Indonesia Raya, Sambutan RW, Tumpeng, Ramah Tamah, Lomba Bapak/Ibu & Remaja
-                  </p>
-                  <div className="flex items-center space-x-2 text-[10px] pt-1">
-                    <span className={`font-semibold ${selectedPresetId === 'notulen-tirakatan-16agustus' ? 'text-red-100' : 'text-slate-500'}`}>
-                      📍 Balai Warga RT 04
-                    </span>
-                    <span>•</span>
-                    <span className={`font-bold ${selectedPresetId === 'notulen-tirakatan-16agustus' ? 'text-white' : 'text-red-600'}`}>
-                      100 Warga (1 Lembar)
-                    </span>
-                  </div>
-                </div>
-                <Award className={`w-5 h-5 shrink-0 mt-0.5 ${
-                  selectedPresetId === 'notulen-tirakatan-16agustus' ? 'text-amber-300' : 'text-red-500'
-                }`} />
-              </button>
-
-              {/* Preset 2: Malam Resepsi / Puncak 23 Agustus 2026 */}
-              <button
-                type="button"
-                onClick={() => handleSelectPreset('notulen-resepsi-23agustus')}
-                className={`text-left p-3 rounded-xl border transition-all flex items-start justify-between gap-3 ${
-                  selectedPresetId === 'notulen-resepsi-23agustus'
-                    ? 'bg-red-600 border-red-600 text-white shadow-sm ring-2 ring-red-400/40'
-                    : 'bg-white border-red-200 hover:border-red-400 hover:bg-red-50/50 text-slate-800'
-                }`}
-              >
-                <div className="space-y-1 min-w-0">
-                  <div className="flex items-center space-x-1.5">
-                    <span className={`text-[10px] font-black uppercase px-1.5 py-0.5 rounded ${
-                      selectedPresetId === 'notulen-resepsi-23agustus' ? 'bg-red-700 text-white' : 'bg-red-100 text-red-800'
-                    }`}>
-                      23 Agustus 2026
-                    </span>
-                    <span className={`text-[11px] font-bold truncate ${
-                      selectedPresetId === 'notulen-resepsi-23agustus' ? 'text-white' : 'text-slate-900'
-                    }`}>
-                      Malam Resepsi HUT RI Ke 81 Tahun 2026
-                    </span>
-                  </div>
-                  <p className={`text-[11px] line-clamp-1 ${
-                    selectedPresetId === 'notulen-resepsi-23agustus' ? 'text-red-100' : 'text-slate-600'
-                  }`}>
-                    Sambutan RW & Panitia, Pentas Seni Anak, UMKM & Hiburan Solo Organ
-                  </p>
-                  <div className="flex items-center space-x-2 text-[10px] pt-1">
-                    <span className={`font-semibold ${selectedPresetId === 'notulen-resepsi-23agustus' ? 'text-red-100' : 'text-slate-500'}`}>
-                      📍 Panggung RT 04 Ngabean
-                    </span>
-                    <span>•</span>
-                    <span className={`font-bold ${selectedPresetId === 'notulen-resepsi-23agustus' ? 'text-white' : 'text-red-600'}`}>
-                      100 Warga (1 Lembar)
-                    </span>
-                  </div>
-                </div>
-                <Award className={`w-5 h-5 shrink-0 mt-0.5 ${
-                  selectedPresetId === 'notulen-resepsi-23agustus' ? 'text-amber-300' : 'text-red-500'
-                }`} />
-              </button>
-            </div>
-          </div>
-
-          )}
-          {/* 8 Regular Monthly Meetings */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Sparkles className="w-4 h-4 text-slate-500" />
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
-                  Pertemuan Rutin Warga RT 04 (Januari - Agustus 2026)
-                </span>
-              </div>
-              <span className="text-[11px] text-slate-500 font-medium">
-                40 Hadir • 19:30 WIB • Kediaman Bergilir
-              </span>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
-              {rtNotulenPresets.slice(0, 8).map((preset, idx) => {
-                const isActive = selectedPresetId === preset.id;
-                return (
-                  <button
-                    key={preset.id}
-                    onClick={() => handleSelectPreset(preset.id)}
-                    className={`text-left p-2.5 rounded-xl border transition-all flex flex-col justify-between ${
-                      isActive
-                        ? 'bg-slate-900 border-slate-900 text-white shadow-xs scale-[1.02]'
-                        : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-800'
-                    }`}
-                  >
-                    <div>
-                      <div className={`text-[10px] font-bold uppercase ${isActive ? 'text-slate-300' : 'text-red-700'}`}>
-                        {idx + 1}. {preset.month}
-                      </div>
-                      <div className="text-[11px] font-extrabold leading-tight mt-0.5 truncate" title={preset.agendaItems[1] || preset.agendaItems[0]}>
-                        {meetingType === 'rt' ? (
-                          preset.month === 'Januari' ? 'Persiapan Haul' :
-                          preset.month === 'Pebruari' ? 'Tabungan Warga' :
-                          preset.month === 'Maret' ? 'Buka Bersama' :
-                          preset.month === 'April' ? 'Halal Bi Halal' :
-                          preset.month === 'Mei' ? 'Taman TOGA PKK' :
-                          preset.month === 'Juni' ? 'Zarkasi Jogja' :
-                          preset.month === 'Juli' ? 'Sosialisasi BOP' :
-                          'HUT RI Ke-81'
-                        ) : (
-                          preset.month === 'Januari' ? 'Proker PKK' :
-                          'Laporan Bulanan'
-                        )}
-                      </div>
-                    </div>
-                    <div className={`text-[9px] mt-1.5 pt-1 border-t truncate ${isActive ? 'border-slate-700 text-slate-300' : 'border-slate-100 text-slate-500'}`}>
-                      {preset.location.replace('Kediaman ', '')}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
         </div>
 
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2">
+          {(meetingType === 'rt' ? rtPresets : pkkPresets).map((preset, idx) => {
+            const isActive = selectedPresetId === preset.id;
+            return (
+              <button
+                key={preset.id}
+                onClick={() => handleSelectPreset(preset.id)}
+                className={`text-left p-2.5 rounded-xl border transition-all flex flex-col justify-between ${
+                  isActive
+                    ? 'bg-slate-900 border-slate-900 text-white shadow-xs scale-[1.02]'
+                    : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-800'
+                }`}
+              >
+                <div>
+                  <div className={`text-[10px] font-bold uppercase ${isActive ? 'text-slate-300' : 'text-red-700'}`}>
+                    {idx + 1}. {preset.month}
+                  </div>
+                  <div className="text-[11px] font-extrabold leading-tight mt-0.5 truncate" title={preset.agendaTitle || preset.agendaItems[0]}>
+                    {preset.agendaTitle || 
+                      (meetingType === 'rt' ? (
+                        preset.month === 'Januari' ? 'Persiapan Haul' :
+                        preset.month === 'Pebruari' ? 'Tabungan Warga' :
+                        preset.month === 'Maret' ? 'Buka Bersama' :
+                        preset.month === 'April' ? 'Halal Bi Halal' :
+                        preset.month === 'Mei' ? 'Taman TOGA PKK' :
+                        preset.month === 'Juni' ? 'Zarkasi Jogja' :
+                        preset.month === 'Juli' ? 'Sosialisasi BOP' :
+                        preset.month === 'Agustus' ? 'HUT RI Ke-81' : 'Rapat Rutin'
+                      ) : (
+                        preset.month === 'Januari' ? 'Proker PKK' :
+                        preset.month === 'Pebruari' || preset.month === 'Maret' || preset.month === 'April' || preset.month === 'Mei' || preset.month === 'Juni' || preset.month === 'Juli' || preset.month === 'Agustus' ? 'Laporan Bulanan' : 'Pertemuan PKK'
+                      ))
+                    }
+                  </div>
+                </div>
+                <div className={`text-[9px] mt-1.5 pt-1 border-t truncate ${isActive ? 'border-slate-700 text-slate-300' : 'border-slate-100 text-slate-500'}`}>
+                  {meetingType === 'rt' ? preset.location.replace('Kediaman ', '') : preset.location.replace('Kediaman Ibu ', 'Ibu ')}
+                </div>
+              </button>
+            );
+          })}
+          </div>
+        </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 print:block">
         {/* Editor Form (Hidden on print) */}
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs print:hidden space-y-4 text-xs">
@@ -1078,6 +932,150 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
           )}
 
           {/* Additional fields for Notulen view */}
+                    {/* ================== VIEW 1: DAFTAR HADIR (FORMAT KERTAS A4) ================== */}
+          {docViewMode === 'daftar-hadir' && (
+            <div className="space-y-4 print-one-page text-slate-900 leading-relaxed">
+              {/* KOP Surat Resmi */}
+              <div className="flex items-center justify-between border-b-4 border-double border-slate-900 pb-3 mb-4">
+                <div className="w-24 h-24 sm:w-28 sm:h-28 print:w-24 print:h-24 flex-shrink-0 flex items-center justify-center">
+                  <img 
+                    src={meetingType === 'pkk' ? (profile.pkkLogoUrl || profile.logoUrl || DEFAULT_SEMARANG_LOGO) : (profile.logoUrl || DEFAULT_SEMARANG_LOGO)} 
+                    alt={meetingType === 'pkk' ? "Logo PKK" : "Logo Kota Semarang"} 
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <div className="text-center flex-grow px-4">
+                  <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
+                    PEMERINTAH KOTA SEMARANG
+                  </div>
+                  <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
+                    KECAMATAN {profile.kecamatan}
+                  </div>
+                  <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
+                    KELURAHAN {profile.kelurahan}
+                  </div>
+                  <div className="text-[18px] font-bold uppercase text-slate-900 leading-tight mt-1">
+                    RT {profile.rtNumber} RW {profile.rwNumber} NGABEAN
+                  </div>
+                  <p className="text-[10px] text-slate-800 leading-tight mt-1">
+                    Alamat: Ngabean RT {profile.rtNumber} RW {profile.rwNumber} Kelurahan {profile.kelurahan}
+                  </p>
+                </div>
+                <div className="w-24 h-24 sm:w-28 sm:h-28 print:w-24 print:h-24 flex-shrink-0"></div>
+              </div>
+
+              {/* Judul Daftar Hadir */}
+              <div className="text-center my-4">
+                <h1 className="text-base print:text-base font-black tracking-wider uppercase underline underline-offset-4 text-slate-900 leading-tight">
+                  {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus' 
+                    ? agendaSummary.toUpperCase()
+                    : (meetingType === 'rt' 
+                      ? `DAFTAR HADIR RAPAT RUTIN WARGA RT ${profile.rtNumber} RW ${profile.rwNumber}` 
+                      : `DAFTAR HADIR PERTEMUAN RUTIN PKK RT ${profile.rtNumber} RW ${profile.rwNumber}`)}
+                </h1>
+                <p className="text-xs print:text-xs font-bold uppercase text-slate-700 mt-2">
+                  Bulan {month} Tahun {profile.year}
+                </p>
+              </div>
+
+              {/* Tabel Meta Pertemuan */}
+              <div className="flex justify-between items-end mb-2">
+                <table className="w-2/3 border-none text-[13px] print:text-[13px] leading-relaxed">
+                  <tbody>
+                    <tr>
+                      <td className="py-0.5 font-bold w-32">Hari / Tanggal</td>
+                      <td className="py-0.5 w-4 font-bold">:</td>
+                      <td className="py-0.5">{formatDate(date)}</td>
+                    </tr>
+                    <tr>
+                      <td className="py-0.5 font-bold w-32">Waktu / Pukul</td>
+                      <td className="py-0.5 w-4 font-bold">:</td>
+                      <td className="py-0.5">{time}</td>
+                    </tr>
+                    <tr>
+                      <td className="py-0.5 font-bold w-32">Tempat</td>
+                      <td className="py-0.5 w-4 font-bold">:</td>
+                      <td className="py-0.5 font-bold uppercase">{location}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Tabel Kehadiran (Format Ringkas - 2 Kolom untuk menghemat kertas) */}
+              <div className="grid grid-cols-2 gap-4 print:gap-x-8">
+                {/* Kolom Kiri */}
+                <table className="w-full border-collapse border border-slate-900 text-[11px] print:text-[11px] leading-tight">
+                  <thead>
+                    <tr className="bg-slate-100">
+                      <th className="border border-slate-900 py-1.5 px-2 w-10 text-center">No</th>
+                      <th className="border border-slate-900 py-1.5 px-2 text-left">{meetingType === 'rt' ? 'Nama Kepala Keluarga' : 'Nama Ibu / Anggota PKK'}</th>
+                      <th className="border border-slate-900 py-1.5 px-2 w-20 text-center">Tanda Tangan</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {attendees.slice(0, Math.ceil(attendees.length / 2)).map((att, idx) => (
+                      <tr key={idx}>
+                        <td className="border border-slate-900 py-1.5 px-2 text-center">{idx + 1}</td>
+                        <td className="border border-slate-900 py-1.5 px-2">{att.name}</td>
+                        <td className="border border-slate-900 py-1.5 px-2 relative">
+                          <span className={`absolute top-1/2 -translate-y-1/2 text-[9px] text-slate-400 ${(idx + 1) % 2 === 1 ? 'left-2' : 'right-2'}`}>
+                            {idx + 1}.
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                {/* Kolom Kanan */}
+                <table className="w-full border-collapse border border-slate-900 text-[11px] print:text-[11px] leading-tight">
+                  <thead>
+                    <tr className="bg-slate-100">
+                      <th className="border border-slate-900 py-1.5 px-2 w-10 text-center">No</th>
+                      <th className="border border-slate-900 py-1.5 px-2 text-left">{meetingType === 'rt' ? 'Nama Kepala Keluarga' : 'Nama Ibu / Anggota PKK'}</th>
+                      <th className="border border-slate-900 py-1.5 px-2 w-20 text-center">Tanda Tangan</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {attendees.slice(Math.ceil(attendees.length / 2)).map((att, idx) => {
+                      const realIdx = Math.ceil(attendees.length / 2) + idx;
+                      return (
+                        <tr key={realIdx}>
+                          <td className="border border-slate-900 py-1.5 px-2 text-center">{realIdx + 1}</td>
+                          <td className="border border-slate-900 py-1.5 px-2">{att.name}</td>
+                          <td className="border border-slate-900 py-1.5 px-2 relative">
+                            <span className={`absolute top-1/2 -translate-y-1/2 text-[9px] text-slate-400 ${(realIdx + 1) % 2 === 1 ? 'left-2' : 'right-2'}`}>
+                              {realIdx + 1}.
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Tanda Tangan Mengetahui */}
+              <div className="mt-8 pt-4 grid grid-cols-2 gap-12 text-[13px] print:text-[13px] text-center print-avoid-break">
+                <div>
+                  <p className="font-bold uppercase">
+                    {meetingType === 'rt' ? `Notulis / Sekretaris RT ${profile.rtNumber}` : `Sekretaris PKK RT ${profile.rtNumber}`}
+                  </p>
+                  <div className="h-20 print:h-20"></div>
+                  <p className="font-extrabold underline uppercase">{secretary}</p>
+                </div>
+                <div>
+                  <p className="text-slate-600 mb-1">Semarang, {formatDate(date)}</p>
+                  <p className="font-bold uppercase">
+                    {meetingType === 'rt' ? `Ketua RT ${profile.rtNumber}` : `Ketua PKK RT ${profile.rtNumber}`}
+                  </p>
+                  <div className="h-20 print:h-20"></div>
+                  <p className="font-extrabold underline uppercase">{leader}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {docViewMode === 'notulen' && (
             <>
               <div>
@@ -1099,6 +1097,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                   </button>
                 </div>
                 <ul className="space-y-1">
+
                   {agendaItems.map((ag, i) => (
                     <li key={i} className="flex justify-between items-center bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-200">
                       <span>{i + 1}. {ag}</span>
