@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { ActiveTab, Transaction, RtProfile, MusyawarahRecord, RapItem, MonthlySpjRecord, CategoryDefinition } from './types';
 import { initialTransactions, initialRtProfile, initialMusyawarah, initialRapItems, initialMonthlySpj, defaultCategories } from './data/initialData';
+import { subscribeBopData, saveBopDataToCloud } from './lib/syncService';
+import { testConnection } from './lib/firebase';
 import { Sidebar } from './components/Sidebar';
 import { Dashboard } from './components/Dashboard';
 import { TransactionList } from './components/TransactionList';
@@ -114,8 +116,33 @@ export default function App() {
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+  const [syncStatus, setSyncStatus] = useState<'synced' | 'syncing' | 'offline'>('syncing');
 
-  // Sync to localStorage
+  // Test Firestore connection on boot
+  useEffect(() => {
+    testConnection().then((connected) => {
+      setSyncStatus(connected ? 'synced' : 'offline');
+    });
+  }, []);
+
+  // Real-time Firestore Sync (Listen for Cloud Changes across devices)
+  useEffect(() => {
+    const unsubscribe = subscribeBopData((cloudData) => {
+      if (cloudData.profile) setProfile(cloudData.profile);
+      if (cloudData.transactions) setTransactions(cloudData.transactions);
+      if (cloudData.categories) setCategories(cloudData.categories);
+      if (cloudData.rapItems) setRapItems(cloudData.rapItems);
+      if (cloudData.spjRecords) setSpjRecords(cloudData.spjRecords);
+      if (cloudData.musyawarahRecords) setMusyawarahRecords(cloudData.musyawarahRecords);
+      setSyncStatus('synced');
+    }, () => {
+      setSyncStatus('offline');
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Sync to localStorage as offline fast cache + debounced sync to Firestore
   useEffect(() => {
     localStorage.setItem('bop_rt_profile', JSON.stringify(profile));
   }, [profile]);
@@ -140,32 +167,56 @@ export default function App() {
     localStorage.setItem('bop_rt_categories', JSON.stringify(categories));
   }, [categories]);
 
+  // Push updates to Firestore Cloud when admin performs any write/edit
+  const persistToCloud = (updates: {
+    profile?: RtProfile;
+    transactions?: Transaction[];
+    categories?: CategoryDefinition[];
+    rapItems?: RapItem[];
+    spjRecords?: MonthlySpjRecord[];
+    musyawarahRecords?: MusyawarahRecord[];
+  }) => {
+    setSyncStatus('syncing');
+    saveBopDataToCloud(updates)
+      .then(() => setSyncStatus('synced'))
+      .catch(() => setSyncStatus('offline'));
+  };
+
   const handleAddCategory = (newCat: CategoryDefinition) => {
     setCategories((prev) => {
       if (prev.some((c) => c.id === newCat.id)) return prev;
-      return [...prev, newCat];
+      const updated = [...prev, newCat];
+      persistToCloud({ categories: updated });
+      return updated;
     });
   };
 
   const handleDeleteCategory = (catId: string) => {
-    setCategories((prev) => prev.filter((c) => c.id !== catId));
+    setCategories((prev) => {
+      const updated = prev.filter((c) => c.id !== catId);
+      persistToCloud({ categories: updated });
+      return updated;
+    });
   };
 
   const handleSaveTransaction = (tx: Transaction) => {
     if (!guardAdminAction()) return;
     setTransactions((prev) => {
       const exists = prev.some((t) => t.id === tx.id);
-      if (exists) {
-        return prev.map((t) => (t.id === tx.id ? tx : t));
-      }
-      return [tx, ...prev];
+      const updated = exists ? prev.map((t) => (t.id === tx.id ? tx : t)) : [tx, ...prev];
+      persistToCloud({ transactions: updated });
+      return updated;
     });
   };
 
   const handleDeleteTransaction = (id: string) => {
     if (!guardAdminAction()) return;
     if (window.confirm('Apakah Anda yakin ingin menghapus transaksi ini?')) {
-      setTransactions((prev) => prev.filter((t) => t.id !== id));
+      setTransactions((prev) => {
+        const updated = prev.filter((t) => t.id !== id);
+        persistToCloud({ transactions: updated });
+        return updated;
+      });
     }
   };
 
@@ -177,7 +228,29 @@ export default function App() {
 
   const handleAddMusyawarah = (rec: MusyawarahRecord) => {
     if (!guardAdminAction()) return;
-    setMusyawarahRecords((prev) => [rec, ...prev]);
+    setMusyawarahRecords((prev) => {
+      const updated = [rec, ...prev];
+      persistToCloud({ musyawarahRecords: updated });
+      return updated;
+    });
+  };
+
+  const handleUpdateRap = (items: RapItem[]) => {
+    if (!guardAdminAction()) return;
+    setRapItems(items);
+    persistToCloud({ rapItems: items });
+  };
+
+  const handleUpdateProfile = (newProfile: RtProfile) => {
+    if (!guardAdminAction()) return;
+    setProfile(newProfile);
+    persistToCloud({ profile: newProfile });
+  };
+
+  const handleUpdateSpj = (newSpj: MonthlySpjRecord[]) => {
+    if (!guardAdminAction()) return;
+    setSpjRecords(newSpj);
+    persistToCloud({ spjRecords: newSpj });
   };
 
   const totalExpense = transactions
@@ -216,6 +289,7 @@ export default function App() {
           setAuthRole(null);
         }}
         authRole={authRole}
+        syncStatus={syncStatus}
       />
 
       <div className="flex-1 md:pl-72 flex flex-col print:pl-0 print:m-0">
@@ -242,7 +316,7 @@ export default function App() {
         )}
 
         {activeTab === 'rap' && (
-          <RapManager rapItems={rapItems} onUpdateRap={setRapItems} profile={profile} />
+          <RapManager rapItems={rapItems} onUpdateRap={handleUpdateRap} profile={profile} />
         )}
 
         {activeTab === 'sptjm' && (
@@ -290,7 +364,7 @@ export default function App() {
             profile={profile}
             rapItems={rapItems}
             spjRecords={spjRecords}
-            onSaveSpj={setSpjRecords}
+            onSaveSpj={handleUpdateSpj}
             onNavigateToNotulen={() => setActiveTab('notulen')}
           />
         )}
@@ -308,7 +382,7 @@ export default function App() {
         )}
 
         {activeTab === 'settings' && (
-          <SettingsModal profile={profile} onUpdateProfile={setProfile} />
+          <SettingsModal profile={profile} onUpdateProfile={handleUpdateProfile} />
         )}
         </main>
       </div>

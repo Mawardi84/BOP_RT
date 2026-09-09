@@ -388,33 +388,36 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
           </div>
         </div>
 
-        {/* Tanggal & Nomor Bar */}
-        <div className={`flex justify-between items-start ${textSize}`}>
-          <div className="space-y-0.5">
-            <div className="flex">
-              <span className="w-20 sm:w-24 font-semibold">Nomor</span>
-              <span className="w-4">:</span>
-              <span>-</span>
-            </div>
-            <div className="flex">
-              <span className="w-20 sm:w-24 font-semibold">Lampiran</span>
-              <span className="w-4">:</span>
-              <span>-</span>
-            </div>
-            <div className="flex">
-              <span className="w-20 sm:w-24 font-semibold">Perihal</span>
-              <span className="w-4">:</span>
-              <span className="font-bold underline uppercase">{currentAcara}</span>
-            </div>
+        {/* Tanggal Surat di Kanan Atas */}
+        <div className={`flex justify-end ${textSize} mb-1`}>
+          <span className="font-semibold">Semarang, {formatDate(currentUndanganDate)}</span>
+        </div>
+
+        {/* Baris Nomor, Lampiran, Perihal */}
+        <div className={`space-y-0.5 ${textSize}`}>
+          <div className="flex">
+            <span className="w-20 sm:w-24 font-semibold">Nomor</span>
+            <span className="w-4">:</span>
+            <span className="font-medium">{currentNomorSurat || '-'}</span>
           </div>
-          <div className="text-right">
-            <span className="font-semibold block mb-0.5">Semarang, {formatDate(currentUndanganDate)}</span>
-            <span>Kepada Yth.</span>
-            <br />
-            <span className="font-bold">{currentPenerima}</span>
-            <br />
-            <span>di Tempat</span>
+          <div className="flex">
+            <span className="w-20 sm:w-24 font-semibold">Lampiran</span>
+            <span className="w-4">:</span>
+            <span>-</span>
           </div>
+          <div className="flex">
+            <span className="w-20 sm:w-24 font-semibold">Perihal</span>
+            <span className="w-4">:</span>
+            <span className="font-bold underline uppercase">{currentAcara}</span>
+          </div>
+        </div>
+
+        {/* Kepada Yth. Berada Tepat di Bawah Nomor Surat */}
+        <div className={`${isCompact ? 'mt-2.5' : 'mt-4'} ${textSize}`}>
+          <p>Kepada Yth.</p>
+          <p className="font-bold">{currentPenerima}</p>
+          <p>di -</p>
+          <p className="pl-4 font-semibold">TEMPAT</p>
         </div>
 
         {/* Isi Surat */}
@@ -486,9 +489,9 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 print:space-y-0 print:m-0 print:p-0">
       {/* Header/Controls */}
-      <div className="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 print:hidden">
         <div>
           <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-indigo-600" />
@@ -525,7 +528,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
       </div>
 
       {/* Control Panel / Presets */}
-      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs print:hidden">
         <div className="flex flex-col md:flex-row justify-between gap-4 mb-4">
           <div className="flex flex-col">
             <div className="flex items-center space-x-2">

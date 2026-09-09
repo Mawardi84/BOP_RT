@@ -9,6 +9,16 @@ async function startServer() {
 
   app.use(express.json());
 
+  // Health and System Info API
+  app.get("/api/health", (_req, res) => {
+    res.json({
+      status: "ok",
+      backend: "Node.js Express",
+      database: "Google Cloud Firestore (Enterprise)",
+      timestamp: new Date().toISOString()
+    });
+  });
+
   // API routes
   app.post("/api/generate-notulen", async (req, res) => {
     try {

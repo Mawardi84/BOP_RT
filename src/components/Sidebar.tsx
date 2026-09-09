@@ -27,6 +27,7 @@ interface SidebarProps {
   totalExpense: number;
   onLogout?: () => void;
   authRole?: 'admin' | 'public';
+  syncStatus?: 'synced' | 'syncing' | 'offline';
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -36,6 +37,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   totalExpense,
   onLogout,
   authRole = 'admin',
+  syncStatus = 'synced',
 }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const remainingBudget = profile.totalPagu - totalExpense;
@@ -180,6 +182,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Sidebar Footer Info */}
         <div className="p-4 border-t border-slate-100 bg-slate-50/50 space-y-2">
+          {/* Cloud Database Sync Indicator */}
+          <div className="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 text-[11px]">
+            <span className="text-slate-500 font-medium flex items-center gap-1.5">
+              <span className={`w-2 h-2 rounded-full ${syncStatus === 'synced' ? 'bg-emerald-500 animate-pulse' : syncStatus === 'syncing' ? 'bg-amber-500 animate-spin' : 'bg-slate-400'}`}></span>
+              Cloud Database
+            </span>
+            <span className={`font-bold ${syncStatus === 'synced' ? 'text-emerald-700' : syncStatus === 'syncing' ? 'text-amber-700' : 'text-slate-600'}`}>
+              {syncStatus === 'synced' ? 'Terhubung (Online)' : syncStatus === 'syncing' ? 'Menyinkronkan...' : 'Offline (Cache)'}
+            </span>
+          </div>
+
           <div>
             <div className="flex items-center justify-between">
               <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-slate-200 text-slate-700">
