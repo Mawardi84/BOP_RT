@@ -16,7 +16,8 @@ import {
   Calendar,
   MapPin,
   FileText,
-  Sparkles
+  Sparkles,
+  LayoutGrid
 } from 'lucide-react';
 import { executePrint } from '../utils/printHelper';
 import { getDefaultPhotosForMonth, getTirakatanPhotos, getResepsiPhotos } from '../utils/photoHelpers';
@@ -28,6 +29,8 @@ interface FotoDokumentasiLampiranProps {
   onUpdatePhotos: (photos: DocumentationPhoto[]) => void;
   onPrint?: () => void;
   standalone?: boolean;
+  photosPerPage?: 2 | 4;
+  onPhotosPerPageChange?: (count: 2 | 4) => void;
 }
 
 export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = ({
@@ -37,12 +40,29 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
   onUpdatePhotos,
   onPrint,
   standalone = false,
+  photosPerPage: controlledPhotosPerPage,
+  onPhotosPerPageChange,
 }) => {
+  const [internalPhotosPerPage, setInternalPhotosPerPage] = useState<2 | 4>(() => {
+    const saved = localStorage.getItem('si_bop_photos_per_page');
+    return saved === '2' ? 2 : 4;
+  });
+
+  const photosPerPage = controlledPhotosPerPage ?? internalPhotosPerPage;
+
+  const handleSetPhotosPerPage = (val: 2 | 4) => {
+    localStorage.setItem('si_bop_photos_per_page', String(val));
+    setInternalPhotosPerPage(val);
+    if (onPhotosPerPageChange) {
+      onPhotosPerPageChange(val);
+    }
+  };
+
   const [activePhotoIndex, setActivePhotoIndex] = useState<number | null>(0);
   const [showEditor, setShowEditor] = useState<boolean>(true);
 
-  // Split photos into chunks of 4 (1 sheet = 4 photos)
-  const chunkSize = 4;
+  // Split photos into chunks of 2 or 4 according to selected layout
+  const chunkSize = photosPerPage;
   const sheets: DocumentationPhoto[][] = [];
   for (let i = 0; i < photos.length; i += chunkSize) {
     sheets.push(photos.slice(i, i + chunkSize));
@@ -192,6 +212,41 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
           </div>
 
           <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+            {/* Pilihan Layout: 2 Foto vs 4 Foto */}
+            <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs">
+              <span className="text-[11px] font-semibold text-slate-500 px-2 flex items-center space-x-1">
+                <LayoutGrid className="w-3.5 h-3.5 text-slate-600" />
+                <span>Format Lembar:</span>
+              </span>
+              <button
+                type="button"
+                onClick={() => handleSetPhotosPerPage(2)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-1.5 transition-all ${
+                  photosPerPage === 2
+                    ? 'bg-white text-red-700 shadow-xs ring-1 ring-slate-200'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+                title="Format 2 Foto per Lembar (Ukuran Besar Postcard 10x15cm dengan Rincian Lengkap)"
+              >
+                <span className="w-2 h-2 rounded-full bg-red-600"></span>
+                <span>2 Foto / Lembar</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleSetPhotosPerPage(4)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-1.5 transition-all ${
+                  photosPerPage === 4
+                    ? 'bg-white text-red-700 shadow-xs ring-1 ring-slate-200'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+                title="Format 4 Foto per Lembar (Grid 2x2 Hemat Kertas)"
+              >
+                <span className="w-2 h-2 rounded-full bg-blue-600"></span>
+                <span>4 Foto / Lembar</span>
+              </button>
+            </div>
+
             <button
               type="button"
               onClick={() => setShowEditor(!showEditor)}
@@ -241,9 +296,9 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
             </button>
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-3">
             <span className="text-slate-600 text-xs">
-              Total: <strong>{photos.length} Foto</strong> ({sheets.length} Lembar Cetak)
+              Total: <strong>{photos.length} Foto</strong> ({sheets.length} Lembar Cetak • Format <strong>{photosPerPage} Foto</strong>/Lembar)
             </span>
             <button
               type="button"
@@ -483,7 +538,7 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
       )}
 
       {/* ========================================================================= */}
-      {/* PRINTABLE DOSSIER: 1 LEMBAR 2 FOTO UKURAN POSTCARD (10 x 15 cm)           */}
+      {/* PRINTABLE DOSSIER: PILIHAN 2 FOTO ATAU 4 FOTO PER LEMBAR                  */}
       {/* ========================================================================= */}
       <div className="space-y-8 font-arial-narrow official-doc text-slate-900">
         {sheets.map((sheetPhotos, sheetIdx) => {
@@ -493,8 +548,8 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
           return (
             <div
               key={`sheet-${sheetIdx}`}
-              className="bg-white p-6 sm:p-10 rounded-2xl border border-slate-200 shadow-sm print-avoid-break print-page-break flex flex-col justify-start"
-              style={{ minHeight: '290mm', maxHeight: '310mm' }}
+              className="bg-white p-6 sm:p-10 rounded-2xl border border-slate-200 shadow-sm print-page-break flex flex-col justify-start"
+              style={{ minHeight: '290mm' }}
             >
               {/* Official Header / KOP Surat Resmi */}
               <div className="pb-1 mb-3">
@@ -535,66 +590,202 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
                   LAMPIRAN FOTO DOKUMENTASI KEGIATAN
                 </h1>
                 <p className="text-[10px] text-slate-600 font-medium mt-1">
-                  Bulan {month} Tahun {profile.year} • Lembar ke-{sheetNumber} dari {totalSheets}
+                  Bulan {month} Tahun {profile.year} • Lembar ke-{sheetNumber} dari {totalSheets} (Format {photosPerPage} Foto/Lembar)
                 </p>
               </div>
 
-              {/* Main Content: The Photos */}
-              <div className="grid grid-cols-2 gap-4 flex-1 content-start mt-2">
-                {sheetPhotos.map((photo, photoInSheetIdx) => {
-                  const globalPhotoNumber = sheetIdx * chunkSize + photoInSheetIdx + 1;
+              {/* Layout Content: 2 Foto vs 4 Foto */}
+              {photosPerPage === 2 ? (
+                /* --- PILIHAN 1: FORMAT 2 FOTO PER LEMBAR (UKURAN BESAR POSTCARD 10X15 CM + RINCIAN) --- */
+                <div className="space-y-4 flex-1 content-start mt-1">
+                  {sheetPhotos.map((photo, photoInSheetIdx) => {
+                    const globalPhotoNumber = sheetIdx * 2 + photoInSheetIdx + 1;
 
-                  return (
-                    <div
-                      key={photo.id || photoInSheetIdx}
-                      className="border border-slate-300 rounded-lg p-2 bg-white print:border-slate-400 print-avoid-break h-[95mm] flex flex-col"
-                    >
-                      {/* Top Bar for each photo */}
-                      <div className="flex items-center pb-1 mb-1.5 border-b border-slate-200 text-[10px]">
-                        <div className="flex items-center space-x-1.5">
-                          <span className="bg-slate-900 text-white font-bold text-[9px] px-1.5 py-0.5 rounded">
-                            FOTO {globalPhotoNumber}
-                          </span>
-                          <span className="font-bold text-slate-900 text-[10px] truncate max-w-[55mm]">
-                            {photo.title || `Dokumentasi Kegiatan ${globalPhotoNumber}`}
-                          </span>
+                    return (
+                      <div
+                        key={photo.id || photoInSheetIdx}
+                        className="border border-slate-300 rounded-lg p-3 bg-white print:border-slate-400 print-avoid-break min-h-[102mm] max-h-[114mm] flex flex-col justify-between"
+                      >
+                        {/* Top Bar for each photo */}
+                        <div className="flex items-center justify-between pb-1.5 mb-2 border-b border-slate-200 text-xs">
+                          <div className="flex items-center space-x-2 truncate">
+                            <span className="bg-slate-900 text-white font-bold text-[10px] px-2 py-0.5 rounded shrink-0">
+                              FOTO {globalPhotoNumber}
+                            </span>
+                            <span className="font-bold text-slate-900 text-xs sm:text-sm truncate">
+                              {photo.title || `Dokumentasi Kegiatan ${globalPhotoNumber}`}
+                            </span>
+                          </div>
+                          <div className="text-[10px] text-slate-600 font-medium shrink-0 flex items-center space-x-2">
+                            {photo.date && (
+                              <span className="bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                                📅 {photo.date}
+                              </span>
+                            )}
+                            {photo.location && (
+                              <span className="bg-slate-100 px-2 py-0.5 rounded border border-slate-200 hidden sm:inline">
+                                📍 {photo.location}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Side-by-Side Content: Foto Besar (Kiri) + Keterangan Lengkap (Kanan) */}
+                        <div className="flex flex-col sm:flex-row gap-3 flex-1 items-stretch">
+                          {/* Foto Container (Setara Postcard 10x15cm) */}
+                          <div className="w-full sm:w-[58%] h-[78mm] sm:h-[88mm] bg-slate-50 border border-slate-700 rounded-lg flex items-center justify-center overflow-hidden shrink-0">
+                            {photo.imageUrl ? (
+                              <img
+                                src={photo.imageUrl}
+                                alt={photo.title}
+                                className={photo.fitMode === 'contain' ? 'max-w-full max-h-full object-contain' : 'w-full h-full object-cover'}
+                              />
+                            ) : null}
+                          </div>
+
+                          {/* Keterangan & Rincian di Kanan */}
+                          <div className="w-full sm:w-[42%] flex flex-col justify-between bg-slate-50/80 border border-slate-200 rounded-lg p-3 text-xs leading-relaxed">
+                            <div className="space-y-2">
+                              <div>
+                                <span className="text-[9.5px] font-bold text-slate-500 uppercase tracking-wider block">
+                                  Kegiatan / Pembelanjaan:
+                                </span>
+                                <div className="font-bold text-slate-900 text-xs mt-0.5">
+                                  {photo.title || `Dokumentasi Kegiatan ${globalPhotoNumber}`}
+                                </div>
+                              </div>
+
+                              <div className="pt-1.5 border-t border-slate-200 space-y-1 text-[10.5px]">
+                                {photo.date && (
+                                  <div>
+                                    <span className="text-slate-500">Tanggal: </span>
+                                    <span className="font-semibold text-slate-800">{photo.date}</span>
+                                  </div>
+                                )}
+                                {photo.location && (
+                                  <div>
+                                    <span className="text-slate-500">Lokasi: </span>
+                                    <span className="font-semibold text-slate-800">{photo.location}</span>
+                                  </div>
+                                )}
+                              </div>
+
+                              <div className="pt-1.5 border-t border-slate-200">
+                                <span className="text-[9.5px] font-bold text-slate-500 uppercase tracking-wider block mb-0.5">
+                                  Uraian Pelaksanaan:
+                                </span>
+                                <p className="text-[10.5px] text-slate-700 leading-relaxed text-justify line-clamp-4 print:line-clamp-none">
+                                  {photo.description || 'Dokumentasi pelaksanaan kegiatan warga dan penggunaan anggaran operasional RT 04 / RW 04 Kelurahan Gunungpati.'}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="mt-2 pt-1.5 border-t border-dashed border-slate-300 text-[9px] text-slate-500 flex justify-between items-center">
+                              <span>RT 04 / RW 04 Ngabean</span>
+                              <span className="font-semibold text-slate-700">Bukti Fisik SPJ</span>
+                            </div>
+                          </div>
                         </div>
                       </div>
+                    );
+                  })}
 
-                      {/* Photo Layout */}
-                      <div className="flex-1 flex flex-col h-full mt-1">
-                        <div 
-                          className="w-full h-full bg-slate-100 border border-slate-800 rounded flex items-center justify-center overflow-hidden"
-                        >
-                          {photo.imageUrl ? (
-                            <img
-                              src={photo.imageUrl}
-                              alt={photo.title}
-                              className={photo.fitMode === 'contain' ? 'max-w-full max-h-full object-contain' : 'w-full h-full object-cover'}
-                            />
-                          ) : (
-                            <span className="text-[8px] text-slate-400">Tidak ada foto</span>
+                  {/* Empty slot jika ganjil (1 foto tersisa pada lembar ganjil) - Bersih tanpa watermark, tersembunyi saat cetak */}
+                  {Array.from({ length: 2 - sheetPhotos.length }).map((_, emptyIdx) => (
+                    <div
+                      key={`empty-2-${emptyIdx}`}
+                      className="print:hidden border border-dashed border-slate-200 rounded-lg p-6 text-center text-xs flex flex-col items-center justify-center min-h-[102mm] bg-slate-50/40 hover:bg-slate-50 transition-colors"
+                    >
+                      <button
+                        type="button"
+                        onClick={handleAddPhoto}
+                        className="bg-white hover:bg-red-50 text-slate-700 hover:text-red-700 border border-slate-300 px-4 py-2 rounded-lg text-xs font-semibold shadow-2xs transition-all"
+                      >
+                        + Tambah Foto Dokumentasi
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                /* --- PILIHAN 2: FORMAT 4 FOTO PER LEMBAR (GRID 2x2 RINGKAS & HEMAT KERTAS) --- */
+                <div className="grid grid-cols-2 gap-3.5 flex-1 content-start mt-1">
+                  {sheetPhotos.map((photo, photoInSheetIdx) => {
+                    const globalPhotoNumber = sheetIdx * 4 + photoInSheetIdx + 1;
+
+                    return (
+                      <div
+                        key={photo.id || photoInSheetIdx}
+                        className="border border-slate-300 rounded-lg p-2.5 bg-white print:border-slate-400 print-avoid-break h-[95mm] flex flex-col justify-between"
+                      >
+                        {/* Top Bar for each photo */}
+                        <div className="flex items-center justify-between pb-1 mb-1 border-b border-slate-200 text-[10px]">
+                          <div className="flex items-center space-x-1.5 truncate">
+                            <span className="bg-slate-900 text-white font-bold text-[9px] px-1.5 py-0.5 rounded shrink-0">
+                              FOTO {globalPhotoNumber}
+                            </span>
+                            <span className="font-bold text-slate-900 text-[10px] truncate max-w-[50mm]">
+                              {photo.title || `Dokumentasi ${globalPhotoNumber}`}
+                            </span>
+                          </div>
+                          {photo.date && (
+                            <span className="text-[9px] text-slate-500 truncate shrink-0 hidden sm:inline">
+                              {photo.date}
+                            </span>
                           )}
                         </div>
-                      </div>
-                    </div>
-                  );
-                })}
 
-                {/* Fill empty slots in the grid (up to 4) */}
-                {Array.from({ length: 4 - sheetPhotos.length }).map((_, emptyIdx) => (
-                  <div key={`empty-${emptyIdx}`} className="border border-dashed border-slate-300 rounded-lg p-6 text-center text-slate-400 text-xs flex flex-col items-center justify-center h-[95mm]">
-                    <ImageIcon className="w-8 h-8 text-slate-300 mb-1" />
-                    <span>Slot Foto Kosong</span>
-                    <button
-                      type="button"
-                      onClick={handleAddPhoto}
-                      className="print:hidden mt-2 text-red-600 hover:text-red-700 font-semibold"
+                        {/* Photo Layout */}
+                        <div className="flex-1 flex flex-col h-full my-1">
+                          <div 
+                            className="w-full h-full bg-slate-50 border border-slate-700 rounded flex items-center justify-center overflow-hidden"
+                          >
+                            {photo.imageUrl ? (
+                              <img
+                                src={photo.imageUrl}
+                                alt={photo.title}
+                                className={photo.fitMode === 'contain' ? 'max-w-full max-h-full object-contain' : 'w-full h-full object-cover'}
+                              />
+                            ) : null}
+                          </div>
+                        </div>
+
+                        {/* Keterangan singkat bawah */}
+                        <div className="pt-1 border-t border-slate-200 text-[9px] text-slate-600 truncate">
+                          <span className="font-semibold text-slate-800">Ket: </span>
+                          {photo.description || photo.title || 'Dokumentasi kegiatan warga RT 04 / RW 04.'}
+                        </div>
+                      </div>
+                    );
+                  })}
+
+                  {/* Fill empty slots in the grid (up to 4) - Bersih tanpa watermark, tersembunyi saat cetak */}
+                  {Array.from({ length: 4 - sheetPhotos.length }).map((_, emptyIdx) => (
+                    <div
+                      key={`empty-4-${emptyIdx}`}
+                      className="print:hidden border border-dashed border-slate-200 rounded-lg p-4 text-center text-xs flex flex-col items-center justify-center h-[95mm] bg-slate-50/40 hover:bg-slate-50 transition-colors"
                     >
-                      + Tambah Foto
-                    </button>
-                  </div>
-                ))}
+                      <button
+                        type="button"
+                        onClick={handleAddPhoto}
+                        className="bg-white hover:bg-red-50 text-slate-700 hover:text-red-700 border border-slate-300 px-3 py-1.5 rounded-lg text-xs font-semibold shadow-2xs transition-all"
+                      >
+                        + Tambah Foto
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Footer Pengesahan Lampiran */}
+              <div className="mt-3 pt-2 border-t border-slate-300 flex justify-between items-end text-[10px] text-slate-700">
+                <div>
+                  <div className="text-[9px] text-slate-500">Lampiran SPJ Bantuan Operasional RT</div>
+                  <div className="font-bold">Wilayah RT 04 / RW 04 Kelurahan Gunungpati</div>
+                </div>
+                <div className="text-right">
+                  <div>Semarang, {month} {profile.year}</div>
+                  <div className="font-bold uppercase mt-0.5">Ketua RT 04: {profile.ketuaRt}</div>
+                </div>
               </div>
             </div>
           );

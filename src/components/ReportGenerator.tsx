@@ -772,26 +772,20 @@ export const ReportGenerator: React.FC<ReportGeneratorProps> = ({
           <div className="grid grid-cols-3 gap-6 text-xs text-center">
             <div>
               <p className="font-semibold text-slate-700">Sekretaris RT {profile.rtNumber}</p>
-              <div className="h-16 flex items-center justify-center text-slate-300 font-arial-narrow italic text-xs">
-                (Tanda Tangan)
-              </div>
+              <div className="h-16"></div>
               <p className="font-bold underline uppercase text-slate-900">{profile.sekretaris}</p>
             </div>
 
             <div>
               <p className="text-slate-500 mb-0.5">Semarang, {formatDate(reportDate)}</p>
               <p className="font-semibold text-slate-700">Ketua RT {profile.rtNumber}</p>
-              <div className="h-16 flex items-center justify-center text-slate-300 font-arial-narrow italic text-xs">
-                (Tanda Tangan & Stempel)
-              </div>
+              <div className="h-16"></div>
               <p className="font-bold underline uppercase text-slate-900">{profile.ketuaRt}</p>
             </div>
 
             <div>
               <p className="font-semibold text-slate-700">Bendahara RT {profile.rtNumber}</p>
-              <div className="h-16 flex items-center justify-center text-slate-300 font-arial-narrow italic text-xs">
-                (Tanda Tangan)
-              </div>
+              <div className="h-16"></div>
               <p className="font-bold underline uppercase text-slate-900">{profile.bendaharaRt}</p>
             </div>
           </div>
@@ -800,18 +794,14 @@ export const ReportGenerator: React.FC<ReportGeneratorProps> = ({
             <div>
               <p className="font-semibold text-slate-700">Mengetahui,</p>
               <p className="font-semibold uppercase text-slate-900">Ketua RW {profile.rwNumber}</p>
-              <div className="h-16 flex items-center justify-center text-slate-300 font-arial-narrow italic text-xs">
-                (Tanda Tangan)
-              </div>
+              <div className="h-16"></div>
               <p className="font-bold underline uppercase text-slate-900">{profile.rwChairman}</p>
             </div>
 
             <div>
               <p className="font-semibold text-slate-700">Mengesahkan,</p>
               <p className="font-semibold uppercase text-slate-900">Lurah {profile.kelurahan}</p>
-              <div className="h-16 flex items-center justify-center text-slate-300 font-arial-narrow italic text-xs">
-                (Tanda Tangan & Stempel Kelurahan)
-              </div>
+              <div className="h-16"></div>
               <p className="font-bold underline uppercase text-slate-900">{profile.lurahName}</p>
             </div>
           </div>

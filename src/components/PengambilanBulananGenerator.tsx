@@ -715,18 +715,14 @@ export const PengambilanBulananGenerator: React.FC<PengambilanBulananGeneratorPr
             <p className="font-bold uppercase text-slate-900">
               Ketua RT {profile.rtNumber} RW {profile.rwNumber}
             </p>
-            <div className="h-20 flex items-center justify-center text-slate-300 italic text-[11px]">
-              (Tanda Tangan & Stempel RT)
-            </div>
+            <div className="h-20"></div>
             <p className="font-bold underline uppercase text-slate-900">{profile.ketuaRt}</p>
           </div>
           <div>
             <p className="text-slate-600 mb-1">&nbsp;</p>
             <p className="font-semibold uppercase text-slate-800">&nbsp;</p>
             <p className="font-bold uppercase text-slate-900">Bendahara RT {profile.rtNumber}</p>
-            <div className="h-20 flex items-center justify-center text-slate-300 italic text-[11px]">
-              (Tanda Tangan)
-            </div>
+            <div className="h-20"></div>
             <p className="font-bold underline uppercase text-slate-900">{profile.bendaharaRt}</p>
           </div>
         </div>
@@ -734,9 +730,7 @@ export const PengambilanBulananGenerator: React.FC<PengambilanBulananGeneratorPr
         <div className="mt-8 text-center page-break-inside-avoid">
           <p className="text-xs font-semibold text-slate-700">Mengetahui,</p>
           <p className="text-xs font-bold uppercase text-slate-900">Lurah {profile.kelurahan}</p>
-          <div className="h-20 flex items-center justify-center text-slate-300 italic text-[11px]">
-            (Tanda Tangan & Stempel Kelurahan)
-          </div>
+          <div className="h-20"></div>
           <p className="text-xs font-bold underline uppercase text-slate-900">{profile.lurahName}</p>
         </div>
       </div>

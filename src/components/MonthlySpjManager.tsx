@@ -36,6 +36,15 @@ export const MonthlySpjManager: React.FC<MonthlySpjManagerProps> = ({
 }) => {
   const [selectedMonth, setSelectedMonth] = useState('Agustus');
   const [viewMode, setViewMode] = useState<'spj' | 'foto-terpisah' | 'all'>('foto-terpisah');
+  const [photosPerPage, setPhotosPerPage] = useState<2 | 4>(() => {
+    const saved = localStorage.getItem('si_bop_photos_per_page');
+    return saved === '2' ? 2 : 4;
+  });
+
+  const handlePhotosPerPageChange = (count: 2 | 4) => {
+    localStorage.setItem('si_bop_photos_per_page', String(count));
+    setPhotosPerPage(count);
+  };
 
   const months = [
     'Januari',
@@ -163,7 +172,7 @@ export const MonthlySpjManager: React.FC<MonthlySpjManagerProps> = ({
               <span>Pelaporan & Bukti Fisik Bulanan (SPJ)</span>
             </h2>
             <p className="text-xs text-slate-500 mt-0.5">
-              Berkas SPJ resmi Kelurahan: Notulen RT/PKK, Partisipasi Warga, serta <strong>Lampiran Foto Terpisah (1 Lembar 4 Foto)</strong>.
+              Berkas SPJ resmi Kelurahan: Notulen RT/PKK, Partisipasi Warga, serta <strong>Lampiran Foto Terpisah (Pilihan {photosPerPage} Foto / Lembar)</strong>.
             </p>
           </div>
 
@@ -179,6 +188,35 @@ export const MonthlySpjManager: React.FC<MonthlySpjManagerProps> = ({
                 </option>
               ))}
             </select>
+
+            {/* Quick Switcher 2 Foto vs 4 Foto */}
+            <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs">
+              <span className="text-[11px] font-semibold text-slate-500 px-2">Format:</span>
+              <button
+                type="button"
+                onClick={() => handlePhotosPerPageChange(2)}
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                  photosPerPage === 2
+                    ? 'bg-white text-red-700 shadow-xs ring-1 ring-slate-200'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+                title="Format 2 Foto / Lembar"
+              >
+                2 Foto
+              </button>
+              <button
+                type="button"
+                onClick={() => handlePhotosPerPageChange(4)}
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                  photosPerPage === 4
+                    ? 'bg-white text-red-700 shadow-xs ring-1 ring-slate-200'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+                title="Format 4 Foto / Lembar"
+              >
+                4 Foto
+              </button>
+            </div>
 
             <button
               type="button"
@@ -215,7 +253,7 @@ export const MonthlySpjManager: React.FC<MonthlySpjManagerProps> = ({
               }`}
             >
               <Camera className="w-3.5 h-3.5 text-red-600" />
-              <span>📸 Lampiran Foto Terpisah (1 Lembar 4 Foto)</span>
+              <span>📸 Lampiran Foto ({photosPerPage} Foto / Lembar)</span>
             </button>
 
             <button
@@ -251,6 +289,10 @@ export const MonthlySpjManager: React.FC<MonthlySpjManagerProps> = ({
             </span>
             <span className="text-slate-300">|</span>
             <span>
+              Format: <strong>{photosPerPage} Foto/Lembar</strong>
+            </span>
+            <span className="text-slate-300">|</span>
+            <span>
               Orientasi: <strong>{landscapeCount} Landscape</strong>, <strong>{portraitCount} Portrait</strong>
             </span>
           </div>
@@ -258,7 +300,7 @@ export const MonthlySpjManager: React.FC<MonthlySpjManagerProps> = ({
       </div>
 
       {/* ========================================================================= */}
-      {/* MODE 1: LAMPIRAN FOTO DOKUMENTASI TERPISAH (1 Lembar 2 Foto Postcard)      */}
+      {/* MODE 1: LAMPIRAN FOTO DOKUMENTASI TERPISAH (Pilihan 2 atau 4 Foto)         */}
       {/* ========================================================================= */}
       {viewMode === 'foto-terpisah' && (
         <div>
@@ -269,6 +311,8 @@ export const MonthlySpjManager: React.FC<MonthlySpjManagerProps> = ({
             onUpdatePhotos={handleUpdatePhotos}
             onPrint={handlePrintCurrentView}
             standalone={true}
+            photosPerPage={photosPerPage}
+            onPhotosPerPageChange={handlePhotosPerPageChange}
           />
         </div>
       )}
@@ -345,14 +389,31 @@ export const MonthlySpjManager: React.FC<MonthlySpjManagerProps> = ({
                 <div className="flex items-center justify-between">
                   <span className="font-bold flex items-center space-x-1.5">
                     <Camera className="w-4 h-4 text-amber-600" />
-                    <span>Lampiran Foto Postcard ({photosList.length} Foto)</span>
+                    <span>Lampiran Foto ({photosList.length} Foto)</span>
                   </span>
-                  <span className="text-[10px] bg-amber-200/80 px-2 py-0.5 rounded font-semibold">
-                    1 Lembar 4 Foto
-                  </span>
+                  <div className="flex items-center space-x-1">
+                    <button
+                      type="button"
+                      onClick={() => handlePhotosPerPageChange(2)}
+                      className={`text-[10px] px-2 py-0.5 rounded font-semibold transition-colors ${
+                        photosPerPage === 2 ? 'bg-amber-600 text-white font-bold' : 'bg-amber-200/80 text-amber-800'
+                      }`}
+                    >
+                      2 Foto
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handlePhotosPerPageChange(4)}
+                      className={`text-[10px] px-2 py-0.5 rounded font-semibold transition-colors ${
+                        photosPerPage === 4 ? 'bg-amber-600 text-white font-bold' : 'bg-amber-200/80 text-amber-800'
+                      }`}
+                    >
+                      4 Foto
+                    </button>
+                  </div>
                 </div>
                 <p className="text-[11px] text-amber-800 leading-relaxed">
-                  Foto dokumentasi diatur pada lembar lampiran terpisah.
+                  Format aktif: <strong>{photosPerPage} Foto per lembar</strong>. Foto dokumentasi diatur pada lembar lampiran terpisah.
                 </p>
                 <button
                   type="button"
@@ -360,7 +421,7 @@ export const MonthlySpjManager: React.FC<MonthlySpjManagerProps> = ({
                   className="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold py-1.5 px-3 rounded-lg text-xs flex items-center justify-center space-x-1.5 transition-colors"
                 >
                   <ExternalLink className="w-3.5 h-3.5" />
-                  <span>Buka Editor & Pengaturan Foto Dokumentasi</span>
+                  <span>Buka Editor & Pengaturan Foto ({photosPerPage} Foto / Lembar)</span>
                 </button>
               </div>
 
@@ -582,9 +643,7 @@ export const MonthlySpjManager: React.FC<MonthlySpjManagerProps> = ({
                           alt={photo.title} 
                           className={photo.fitMode === 'contain' ? 'max-w-full max-h-full object-contain' : 'w-full h-full object-cover'} 
                         />
-                      ) : (
-                        <span className="text-[10px] text-slate-400">Belum ada foto</span>
-                      )}
+                      ) : null}
                     </div>
                     <p className="text-[10px] font-semibold text-slate-800 truncate mt-1">
                       {photo.title}
@@ -651,6 +710,8 @@ export const MonthlySpjManager: React.FC<MonthlySpjManagerProps> = ({
             onUpdatePhotos={handleUpdatePhotos}
             onPrint={handlePrintCurrentView}
             standalone={false}
+            photosPerPage={photosPerPage}
+            onPhotosPerPageChange={handlePhotosPerPageChange}
           />
         </div>
       )}
