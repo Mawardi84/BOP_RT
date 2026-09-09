@@ -60,6 +60,16 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
 
   const [activePhotoIndex, setActivePhotoIndex] = useState<number | null>(0);
   const [showEditor, setShowEditor] = useState<boolean>(true);
+  const [showKeterangan, setShowKeterangan] = useState<boolean>(() => {
+    const saved = localStorage.getItem('si_bop_show_photo_keterangan');
+    return saved !== null ? JSON.parse(saved) : false; // Default false (keterangan dihapus/disembunyikan)
+  });
+
+  const handleToggleKeterangan = () => {
+    const next = !showKeterangan;
+    setShowKeterangan(next);
+    localStorage.setItem('si_bop_show_photo_keterangan', JSON.stringify(next));
+  };
 
   // Split photos into chunks of 2 or 4 according to selected layout
   const chunkSize = photosPerPage;
@@ -247,13 +257,31 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
               </button>
             </div>
 
+            {/* Opsi Keterangan (Opsional) */}
+            <button
+              type="button"
+              onClick={handleToggleKeterangan}
+              className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center space-x-1.5 border transition-all ${
+                showKeterangan
+                  ? 'bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100'
+                  : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
+              }`}
+              title="Aktifkan atau nonaktifkan tampilan keterangan di lembar foto"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span>Keterangan (Opsional):</span>
+              <span className={`font-bold ${showKeterangan ? 'text-amber-700' : 'text-slate-500'}`}>
+                {showKeterangan ? 'Aktif' : 'Dihapus'}
+              </span>
+            </button>
+
             <button
               type="button"
               onClick={() => setShowEditor(!showEditor)}
               className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-3 py-2 rounded-xl text-xs flex items-center space-x-1.5 transition-colors"
             >
               <FileText className="w-4 h-4" />
-              <span>{showEditor ? 'Tutup Pengaturan Foto' : 'Edit Keterangan & Foto'}</span>
+              <span>{showEditor ? 'Tutup Pengaturan Foto' : 'Edit Foto'}</span>
             </button>
 
             <button
@@ -520,14 +548,15 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
                 </div>
 
                 <div className="md:col-span-2">
-                  <label className="block font-semibold text-slate-700 uppercase text-[11px] mb-1">
-                    Uraian / Keterangan Dokumentasi Kegiatan
+                  <label className="block font-semibold text-slate-700 uppercase text-[11px] mb-1 flex items-center justify-between">
+                    <span>Keterangan (Opsional)</span>
+                    <span className="text-[10px] text-slate-400 font-normal">Tidak wajib diisi</span>
                   </label>
                   <textarea
                     rows={2}
-                    value={photos[activePhotoIndex].description}
+                    value={photos[activePhotoIndex].description || ''}
                     onChange={(e) => handleUpdateField(activePhotoIndex, 'description', e.target.value)}
-                    placeholder="Jelaskan aktivitas atau rincian pembelanjaan yang terekam dalam foto ini..."
+                    placeholder="Opsional: Keterangan singkat aktivitas atau pembelanjaan..."
                     className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs"
                   ></textarea>
                 </div>
@@ -643,8 +672,8 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
                             ) : null}
                           </div>
 
-                          {/* Keterangan & Rincian di Kanan */}
-                          <div className="w-full sm:w-[42%] flex flex-col justify-between bg-slate-50/80 border border-slate-200 rounded-lg p-3 text-xs leading-relaxed">
+                          {/* Rincian Kegiatan di Kanan */}
+                          <div className="w-full sm:w-[42%] flex flex-col justify-start bg-slate-50/80 border border-slate-200 rounded-lg p-3 text-xs leading-relaxed">
                             <div className="space-y-2">
                               <div>
                                 <span className="text-[9.5px] font-bold text-slate-500 uppercase tracking-wider block">
@@ -670,19 +699,16 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
                                 )}
                               </div>
 
-                              <div className="pt-1.5 border-t border-slate-200">
-                                <span className="text-[9.5px] font-bold text-slate-500 uppercase tracking-wider block mb-0.5">
-                                  Uraian Pelaksanaan:
-                                </span>
-                                <p className="text-[10.5px] text-slate-700 leading-relaxed text-justify line-clamp-4 print:line-clamp-none">
-                                  {photo.description || 'Dokumentasi pelaksanaan kegiatan warga dan penggunaan anggaran operasional RT 04 / RW 04 Kelurahan Gunungpati.'}
-                                </p>
-                              </div>
-                            </div>
-
-                            <div className="mt-2 pt-1.5 border-t border-dashed border-slate-300 text-[9px] text-slate-500 flex justify-between items-center">
-                              <span>RT 04 / RW 04 Ngabean</span>
-                              <span className="font-semibold text-slate-700">Bukti Fisik SPJ</span>
+                              {showKeterangan && photo.description?.trim() && (
+                                <div className="pt-1.5 border-t border-slate-200">
+                                  <span className="text-[9.5px] font-bold text-slate-500 uppercase tracking-wider block mb-0.5">
+                                    Keterangan:
+                                  </span>
+                                  <p className="text-[10.5px] text-slate-700 leading-relaxed text-justify line-clamp-4 print:line-clamp-none">
+                                    {photo.description}
+                                  </p>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -749,11 +775,13 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
                           </div>
                         </div>
 
-                        {/* Keterangan singkat bawah */}
-                        <div className="pt-1 border-t border-slate-200 text-[9px] text-slate-600 truncate">
-                          <span className="font-semibold text-slate-800">Ket: </span>
-                          {photo.description || photo.title || 'Dokumentasi kegiatan warga RT 04 / RW 04.'}
-                        </div>
+                        {/* Keterangan singkat bawah (Opsional) */}
+                        {showKeterangan && photo.description?.trim() && (
+                          <div className="pt-1 border-t border-slate-200 text-[9px] text-slate-600 truncate">
+                            <span className="font-semibold text-slate-800">Ket: </span>
+                            {photo.description}
+                          </div>
+                        )}
                       </div>
                     );
                   })}
@@ -775,18 +803,6 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
                   ))}
                 </div>
               )}
-
-              {/* Footer Pengesahan Lampiran */}
-              <div className="mt-3 pt-2 border-t border-slate-300 flex justify-between items-end text-[10px] text-slate-700">
-                <div>
-                  <div className="text-[9px] text-slate-500">Lampiran SPJ Bantuan Operasional RT</div>
-                  <div className="font-bold">Wilayah RT 04 / RW 04 Kelurahan Gunungpati</div>
-                </div>
-                <div className="text-right">
-                  <div>Semarang, {month} {profile.year}</div>
-                  <div className="font-bold uppercase mt-0.5">Ketua RT 04: {profile.ketuaRt}</div>
-                </div>
-              </div>
             </div>
           );
         })}
