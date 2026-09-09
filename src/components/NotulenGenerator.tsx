@@ -1,3 +1,4 @@
+import { DEFAULT_SEMARANG_LOGO } from '../data/initialData';
 import React, { useState } from 'react';
 import { RtProfile, AttendeeItem } from '../types';
 import { formatDate } from '../utils/formatters';
@@ -11,7 +12,9 @@ import {
   Mail,
   CheckCircle2,
   Award,
-  Layers
+  Layers,
+  Scissors,
+  RotateCcw
 } from 'lucide-react';
 import { executePrint } from '../utils/printHelper';
 import { Bot, Loader2 } from 'lucide-react';
@@ -56,6 +59,41 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
   const [showSignatureBlock, setShowSignatureBlock] = useState<boolean>(false);
 
   const [newAgenda, setNewAgenda] = useState('');
+
+  // Roman numeral and month index helpers for official documents
+  const getRomanMonth = (m: string) => {
+    const map: Record<string, string> = {
+      'Januari': 'I', 'Februari': 'II', 'Maret': 'III', 'April': 'IV',
+      'Mei': 'V', 'Juni': 'VI', 'Juli': 'VII', 'Agustus': 'VIII',
+      'September': 'IX', 'Oktober': 'X', 'November': 'XI', 'Desember': 'XII'
+    };
+    return map[m] || 'I';
+  };
+
+  const getMonthIndexNumber = (m: string) => {
+    const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    const idx = months.indexOf(m);
+    return idx >= 0 ? String(idx + 1).padStart(3, '0') : '001';
+  };
+
+  const getIndonesianDayName = (dateStr: string) => {
+    try {
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return 'Hari H';
+      const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+      return days[d.getDay()];
+    } catch {
+      return 'Hari H';
+    }
+  };
+
+  // Surat Undangan specific states
+  const [undanganNomorCustom, setUndanganNomorCustom] = useState<string>('');
+  const [undanganHalCustom, setUndanganHalCustom] = useState<string>('');
+  const [undanganPenerimaCustom, setUndanganPenerimaCustom] = useState<string>('');
+  const [undanganCatatan, setUndanganCatatan] = useState<string>('Mohon hadir tepat waktu demi kelancaran bersama dan membawa buku catatan / iuran kas warga.');
+  const [undanganLayout, setUndanganLayout] = useState<'1-halaman' | '2-in-1'>('1-halaman');
+  const [undanganDateCustom, setUndanganDateCustom] = useState<string>('');
 
   const handleSelectPreset = (presetId: string, type: 'rt' | 'pkk' = meetingType) => {
     const list = type === 'pkk' ? pkkNotulenPresets : rtNotulenPresets;
@@ -145,6 +183,221 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
 
   const handlePrint = () => {
     executePrint(`${docViewMode === 'daftar-hadir' ? 'Daftar Hadir' : docViewMode === 'undangan' ? 'Surat Undangan' : 'Notulen'} - ${month} ${profile.year}`);
+  };
+
+  const romanMonth = getRomanMonth(month);
+  const numMonth = getMonthIndexNumber(month);
+  const defaultNomorSurat = meetingType === 'rt'
+    ? `${numMonth}/UND-RT.04/${romanMonth}/${profile.year}`
+    : `${numMonth}/PKK-RT.04/${romanMonth}/${profile.year}`;
+  const currentNomorSurat = undanganNomorCustom || defaultNomorSurat;
+
+  const defaultHalSurat = meetingType === 'rt'
+    ? `Undangan Pertemuan Rutin Warga RT ${profile.rtNumber} RW ${profile.rwNumber}`
+    : `Undangan Pertemuan Rutin PKK RT ${profile.rtNumber} RW ${profile.rwNumber}`;
+  const currentHalSurat = undanganHalCustom || defaultHalSurat;
+
+  const defaultPenerima = meetingType === 'rt'
+    ? `Bapak / Ibu / Saudara Warga RT ${profile.rtNumber} RW ${profile.rwNumber}`
+    : `Ibu-Ibu Anggota PKK RT ${profile.rtNumber} RW ${profile.rwNumber}`;
+  const currentPenerima = undanganPenerimaCustom || defaultPenerima;
+
+  const currentUndanganDate = undanganDateCustom || date;
+
+  const renderUndanganBody = (isCompact: boolean = false) => {
+    const kopTitleSize = isCompact ? 'text-[11px] print:text-[10px]' : 'text-[13px] print:text-[13px]';
+    const kopSubSize = isCompact ? 'text-[9.5px] print:text-[9px]' : 'text-[12px] print:text-[12px]';
+    const kopRtSize = isCompact ? 'text-[13px] print:text-[12px]' : 'text-[16px] print:text-[15px]';
+    const kopAddressSize = isCompact ? 'text-[8px] print:text-[7.5px]' : 'text-[9.5px] print:text-[9px]';
+    const logoSize = isCompact ? 'w-11 h-11 print:w-10 print:h-10' : 'w-16 h-16 print:w-16 print:h-16';
+    const textSize = isCompact ? 'text-[10.5px] print:text-[9.5px]' : 'text-[13px] print:text-[12.5px]';
+    const spacingClass = isCompact ? 'space-y-2' : 'space-y-3.5';
+    const tablePadding = isCompact ? 'py-0.5' : 'py-1';
+    const ttdHeight = isCompact ? 'h-12 print:h-11' : 'h-20 print:h-18';
+
+    return (
+      <div className={`text-slate-900 leading-normal ${spacingClass}`}>
+        {/* KOP Surat Resmi */}
+        <div className="flex items-center justify-between border-b-4 border-double border-slate-900 pb-2 mb-3">
+          <div className={`${logoSize} flex-shrink-0 flex items-center justify-center`}>
+            <img 
+              src={meetingType === 'pkk' ? (profile.pkkLogoUrl || profile.logoUrl || DEFAULT_SEMARANG_LOGO) : (profile.logoUrl || DEFAULT_SEMARANG_LOGO)} 
+              alt={meetingType === 'pkk' ? "Logo PKK" : "Logo Kota Semarang"} 
+              className="max-h-full max-w-full object-contain"
+            />
+          </div>
+          <div className="text-center flex-grow px-2">
+            {meetingType === 'rt' ? (
+              <>
+                <div className={`${kopTitleSize} font-bold uppercase tracking-wider text-slate-800 leading-tight`}>
+                  PEMERINTAH KOTA SEMARANG
+                </div>
+                <div className={`${kopSubSize} font-semibold uppercase text-slate-800 leading-tight`}>
+                  KECAMATAN {profile.kecamatan.toUpperCase()}
+                </div>
+                <div className={`${kopSubSize} font-semibold uppercase text-slate-800 leading-tight`}>
+                  KELURAHAN {profile.kelurahan.toUpperCase()}
+                </div>
+                <div className={`${kopRtSize} font-extrabold uppercase text-slate-900 tracking-wide leading-tight mt-0.5`}>
+                  RUKUN TETANGGA {profile.rtNumber} RUKUN WARGA {profile.rwNumber} NGABEAN
+                </div>
+              </>
+            ) : (
+              <>
+                <div className={`${kopTitleSize} font-bold uppercase tracking-wider text-slate-800 leading-tight`}>
+                  PEMBERDAYAAN DAN KESEJAHTERAAN KELUARGA (PKK)
+                </div>
+                <div className={`${kopSubSize} font-semibold uppercase text-slate-800 leading-tight`}>
+                  TIM PENGGERAK PKK RT {profile.rtNumber} RW {profile.rwNumber} NGABEAN
+                </div>
+                <div className={`${kopSubSize} font-semibold uppercase text-slate-800 leading-tight`}>
+                  KELURAHAN {profile.kelurahan.toUpperCase()} KECAMATAN {profile.kecamatan.toUpperCase()}
+                </div>
+                <div className={`${kopRtSize} font-extrabold uppercase text-slate-900 tracking-wide leading-tight mt-0.5`}>
+                  KOTA SEMARANG
+                </div>
+              </>
+            )}
+            <p className={`${kopAddressSize} text-slate-600 leading-none mt-1`}>
+              Alamat: Ngabean RT {profile.rtNumber} RW {profile.rwNumber}, Kel. {profile.kelurahan}, Kec. {profile.kecamatan}, Kota Semarang 50225
+            </p>
+          </div>
+          <div className={`${logoSize} flex-shrink-0 flex items-center justify-center opacity-0 print:opacity-0`}>
+            <div className="w-12 h-12"></div>
+          </div>
+        </div>
+
+        {/* Tanggal & Nomor Bar */}
+        <div className={`flex justify-between items-start ${textSize}`}>
+          <div className="space-y-0.5">
+            <div className="flex">
+              <span className="w-20 sm:w-24 font-semibold">Nomor</span>
+              <span className="w-3">:</span>
+              <span className="font-mono font-medium">{currentNomorSurat}</span>
+            </div>
+            <div className="flex">
+              <span className="w-20 sm:w-24 font-semibold">Sifat</span>
+              <span className="w-3">:</span>
+              <span>Penting / Biasa</span>
+            </div>
+            <div className="flex">
+              <span className="w-20 sm:w-24 font-semibold">Lampiran</span>
+              <span className="w-3">:</span>
+              <span>-</span>
+            </div>
+            <div className="flex items-start">
+              <span className="w-20 sm:w-24 font-semibold">Hal</span>
+              <span className="w-3">:</span>
+              <span className="font-bold underline">{currentHalSurat}</span>
+            </div>
+          </div>
+
+          <div className="text-right">
+            <p className="font-medium">
+              Semarang, {formatDate(currentUndanganDate)}
+            </p>
+          </div>
+        </div>
+
+        {/* Tujuan Penerima */}
+        <div className={`${textSize} pt-0.5`}>
+          <p>Kepada Yth.</p>
+          <p className="font-bold uppercase text-slate-900">{currentPenerima}</p>
+          <p>di Tempat</p>
+        </div>
+
+        {/* Salam & Paragraf Pengantar */}
+        <div className={`${textSize} space-y-1.5 text-justify`}>
+          <p className="font-semibold italic">Dengan hormat,</p>
+          <p className="leading-relaxed indent-8">
+            {meetingType === 'rt' ? (
+              <>
+                Puji syukur senantiasa kita panjatkan kehadirat Tuhan Yang Maha Esa atas segala limpahan rahmat, taufik, dan hidayah-Nya. Sehubungan dengan agenda rutin bulanan warga RT {profile.rtNumber} RW {profile.rwNumber} Ngabean serta koordinasi pelaksanaan Bantuan Operasional RT (BOP RT) Tahun Anggaran {profile.year}, bersama ini kami mengharap dengan hormat kehadiran Bapak/Ibu/Saudara dalam Pertemuan Rutin Warga RT {profile.rtNumber} yang akan diselenggarakan besok pada:
+              </>
+            ) : (
+              <>
+                Puji syukur senantiasa kita panjatkan kehadirat Tuhan Yang Maha Esa atas segala limpahan berkah dan karunia-Nya. Dalam rangka mempererat tali silaturahmi, pelaksanaan 10 Program Pokok PKK, serta koordinasi kegiatan bulanan ibu-ibu warga RT {profile.rtNumber} RW {profile.rwNumber} Ngabean, bersama ini kami mengundang Ibu-Ibu warga untuk hadir dalam Pertemuan Rutin PKK RT {profile.rtNumber} yang akan diselenggarakan besok pada:
+              </>
+            )}
+          </p>
+        </div>
+
+        {/* Rincian Waktu, Tempat, dan Acara */}
+        <div className={`bg-slate-50/70 border border-slate-300 rounded-lg ${isCompact ? 'p-2' : 'p-3'} ${textSize} space-y-0.5`}>
+          <div className={`grid grid-cols-12 ${tablePadding}`}>
+            <div className="col-span-4 sm:col-span-3 font-semibold text-slate-800">Hari / Tanggal</div>
+            <div className="col-span-1 text-center font-bold">:</div>
+            <div className="col-span-7 sm:col-span-8 font-bold text-slate-900">
+              {getIndonesianDayName(date)}, {formatDate(date)}
+            </div>
+          </div>
+          <div className={`grid grid-cols-12 ${tablePadding}`}>
+            <div className="col-span-4 sm:col-span-3 font-semibold text-slate-800">Waktu / Pukul</div>
+            <div className="col-span-1 text-center font-bold">:</div>
+            <div className="col-span-7 sm:col-span-8 font-semibold">
+              {time} WIB s/d selesai
+            </div>
+          </div>
+          <div className={`grid grid-cols-12 ${tablePadding}`}>
+            <div className="col-span-4 sm:col-span-3 font-semibold text-slate-800">Tempat</div>
+            <div className="col-span-1 text-center font-bold">:</div>
+            <div className="col-span-7 sm:col-span-8 font-medium">
+              {location}
+            </div>
+          </div>
+          <div className={`grid grid-cols-12 ${tablePadding} items-start`}>
+            <div className="col-span-4 sm:col-span-3 font-semibold text-slate-800">Acara / Agenda</div>
+            <div className="col-span-1 text-center font-bold">:</div>
+            <div className="col-span-7 sm:col-span-8">
+              <ol className="list-decimal pl-4 space-y-0.5">
+                {agendaItems.map((item, idx) => (
+                  <li key={idx} className="text-slate-800">{item}</li>
+                ))}
+              </ol>
+            </div>
+          </div>
+        </div>
+
+        {/* Catatan / NB */}
+        {undanganCatatan && (
+          <div className={`border-l-4 border-slate-700 bg-slate-100/80 ${isCompact ? 'p-1.5 text-[9.5px]' : 'p-2 text-[11px]'} rounded-r italic text-slate-800`}>
+            <span className="font-bold not-italic">Catatan: </span>
+            {undanganCatatan}
+          </div>
+        )}
+
+        {/* Paragraf Penutup */}
+        <div className={`${textSize} space-y-1 text-justify`}>
+          <p className="leading-relaxed indent-8">
+            Mengingat pentingnya acara ini demi kebersamaan, kemajuan, dan kelancaran kegiatan lingkungan RT kita, kami sangat mengharapkan kehadiran Bapak/Ibu tepat pada waktunya.
+          </p>
+          <p className="leading-relaxed">
+            Demikian surat undangan ini kami sampaikan. Atas perhatian, kerja sama, dan kehadirannya, kami haturkan terima kasih.
+          </p>
+        </div>
+
+        {/* Blok Tanda Tangan Mengetahui */}
+        <div className={`pt-1.5 grid grid-cols-2 text-center ${textSize} leading-tight`}>
+          <div>
+            <p className="font-semibold uppercase text-slate-700">Mengetahui,</p>
+            <p className="font-bold uppercase text-slate-900 mt-0.5">
+              {meetingType === 'rt' ? `Sekretaris RT ${profile.rtNumber}` : `Sekretaris PKK RT ${profile.rtNumber}`}
+            </p>
+            <div className={ttdHeight}></div>
+            <p className="font-extrabold underline uppercase tracking-wide text-slate-900">{secretary}</p>
+          </div>
+
+          <div>
+            <p className="text-slate-600 mb-0.5">Semarang, {formatDate(currentUndanganDate)}</p>
+            <p className="font-bold uppercase text-slate-900">
+              {meetingType === 'rt' ? `Ketua RT ${profile.rtNumber}` : `Ketua PKK RT ${profile.rtNumber}`}
+            </p>
+            <div className={ttdHeight}></div>
+            <p className="font-extrabold underline uppercase tracking-wide text-slate-900">{leader}</p>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   const activeAttendees = meetingType === 'rt' ? rtAttendees : pkkAttendees;
@@ -488,6 +741,8 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
             <span className="font-bold text-slate-800 uppercase tracking-wider text-xs">
               {docViewMode === 'daftar-hadir' 
                 ? 'Pengaturan Daftar Hadir' 
+                : docViewMode === 'undangan'
+                ? (meetingType === 'rt' ? 'Pengaturan Surat Undangan RT' : 'Pengaturan Surat Undangan PKK')
                 : selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus'
                 ? 'Formulir Berita Acara Pelaksanaan'
                 : 'Formulir Notulen Rapat'}
@@ -912,6 +1167,182 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
               </div>
             </>
           )}
+
+          {/* Controls for Surat Undangan */}
+          {docViewMode === 'undangan' && (
+            <div className="space-y-4 pt-2">
+              <div className="p-3.5 bg-blue-50/80 border border-blue-200 rounded-xl space-y-2.5">
+                <label className="block font-bold text-blue-900 uppercase text-[11px] flex items-center justify-between">
+                  <span className="flex items-center space-x-1.5">
+                    <FileText className="w-3.5 h-3.5 text-blue-700" />
+                    <span>Format Lembar Cetak Undangan</span>
+                  </span>
+                  <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-[9px] font-extrabold uppercase">
+                    {undanganLayout === '1-halaman' ? '1 Lembar A4' : '2-in-1 Selebaran'}
+                  </span>
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setUndanganLayout('1-halaman')}
+                    className={`p-2.5 rounded-lg border text-left flex items-center space-x-2 transition-all ${
+                      undanganLayout === '1-halaman'
+                        ? 'bg-slate-900 border-slate-900 text-white font-bold shadow-xs'
+                        : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
+                    }`}
+                  >
+                    <FileText className="w-4 h-4 shrink-0" />
+                    <div className="min-w-0">
+                      <div className="text-xs font-semibold truncate">Surat Resmi A4</div>
+                      <div className={`text-[9px] ${undanganLayout === '1-halaman' ? 'text-slate-300' : 'text-slate-500'}`}>
+                        1 Surat Penuh
+                      </div>
+                    </div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setUndanganLayout('2-in-1')}
+                    className={`p-2.5 rounded-lg border text-left flex items-center space-x-2 transition-all ${
+                      undanganLayout === '2-in-1'
+                        ? 'bg-slate-900 border-slate-900 text-white font-bold shadow-xs'
+                        : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
+                    }`}
+                  >
+                    <Scissors className="w-4 h-4 shrink-0" />
+                    <div className="min-w-0">
+                      <div className="text-xs font-semibold truncate">2-in-1 Selebaran</div>
+                      <div className={`text-[9px] ${undanganLayout === '2-in-1' ? 'text-slate-300' : 'text-slate-500'}`}>
+                        2 Undangan / Lembar
+                      </div>
+                    </div>
+                  </button>
+                </div>
+                <p className="text-[10px] text-blue-800 leading-snug">
+                  {undanganLayout === '1-halaman' 
+                    ? 'Format surat resmi 1 lembar A4 lengkap dengan KOP Surat, rincian acara, dan tanda tangan Ketua & Sekretaris.'
+                    : 'Format selebaran hemat: mencetak 2 surat undangan berukuran presisi dalam 1 lembar kertas A4 dengan garis potong (cocok diedarkan ke warga).'}
+                </p>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 uppercase mb-1">
+                  Nomor Surat Undangan
+                </label>
+                <div className="flex space-x-2">
+                  <input
+                    type="text"
+                    value={currentNomorSurat}
+                    onChange={(e) => setUndanganNomorCustom(e.target.value)}
+                    className="flex-1 bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-mono"
+                  />
+                  {undanganNomorCustom && (
+                    <button
+                      type="button"
+                      title="Reset ke format nomor otomatis"
+                      onClick={() => setUndanganNomorCustom('')}
+                      className="px-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-600"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 uppercase mb-1">
+                  Perihal / Hal Surat
+                </label>
+                <input
+                  type="text"
+                  value={currentHalSurat}
+                  onChange={(e) => setUndanganHalCustom(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 uppercase mb-1">
+                  Penerima Undangan (Kepada Yth.)
+                </label>
+                <input
+                  type="text"
+                  value={currentPenerima}
+                  onChange={(e) => setUndanganPenerimaCustom(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 uppercase mb-1">
+                  Tanggal Surat Dikeluarkan
+                </label>
+                <input
+                  type="date"
+                  value={currentUndanganDate}
+                  onChange={(e) => setUndanganDateCustom(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs"
+                />
+                <p className="text-[10px] text-slate-500 mt-1">
+                  Default otomatis mengikuti tanggal pertemuan atau dapat disesuaikan (misal 2 hari sebelumnya).
+                </p>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 uppercase mb-1">
+                  Catatan Tambahan (NB)
+                </label>
+                <textarea
+                  rows={2}
+                  value={undanganCatatan}
+                  onChange={(e) => setUndanganCatatan(e.target.value)}
+                  placeholder="Contoh: Mohon hadir tepat waktu dan membawa buku catatan / iuran kas warga..."
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 uppercase mb-1">
+                  Susunan Acara / Agenda pada Undangan
+                </label>
+                <div className="flex space-x-2 mb-2">
+                  <input
+                    type="text"
+                    placeholder="Tambah agenda undangan..."
+                    value={newAgenda}
+                    onChange={(e) => setNewAgenda(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddAgenda();
+                      }
+                    }}
+                    className="flex-1 bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddAgenda}
+                    className="bg-slate-900 hover:bg-slate-800 text-white px-3 py-2 rounded-xl font-semibold shrink-0"
+                  >
+                    Tambah
+                  </button>
+                </div>
+                <ul className="space-y-1 max-h-48 overflow-y-auto">
+                  {agendaItems.map((ag, i) => (
+                    <li key={i} className="flex justify-between items-center bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs">
+                      <span>{i + 1}. {ag}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveAgenda(i)}
+                        className="text-red-500 hover:text-red-700 font-bold px-1"
+                      >
+                        ×
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* ================================================================ */}
@@ -928,7 +1359,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                 <div className="flex items-center justify-between border-b-2 border-slate-900 pb-2 mb-2">
                   <div className="w-16 h-16 flex-shrink-0 flex items-center justify-center">
                     <img 
-                      src={meetingType === 'pkk' ? (profile.pkkLogoUrl || profile.logoUrl || "https://upload.wikimedia.org/wikipedia/commons/e/e9/Coat_of_arms_of_Semarang.svg") : (profile.logoUrl || "https://upload.wikimedia.org/wikipedia/commons/e/e9/Coat_of_arms_of_Semarang.svg")} 
+                      src={meetingType === 'pkk' ? (profile.pkkLogoUrl || profile.logoUrl || DEFAULT_SEMARANG_LOGO) : (profile.logoUrl || DEFAULT_SEMARANG_LOGO)} 
                       alt={meetingType === 'pkk' ? "Logo PKK" : "Logo Kota Semarang"} 
                       className="w-14 h-14 object-contain"
                     />
@@ -1114,7 +1545,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                 <div className="flex items-center justify-between border-b-2 border-slate-900 pb-2 mb-2">
                   <div className="w-16 h-16 flex-shrink-0 flex items-center justify-center">
                     <img 
-                      src={meetingType === 'pkk' ? (profile.pkkLogoUrl || profile.logoUrl || "https://upload.wikimedia.org/wikipedia/commons/e/e9/Coat_of_arms_of_Semarang.svg") : (profile.logoUrl || "https://upload.wikimedia.org/wikipedia/commons/e/e9/Coat_of_arms_of_Semarang.svg")} 
+                      src={meetingType === 'pkk' ? (profile.pkkLogoUrl || profile.logoUrl || DEFAULT_SEMARANG_LOGO) : (profile.logoUrl || DEFAULT_SEMARANG_LOGO)} 
                       alt={meetingType === 'pkk' ? "Logo PKK" : "Logo Kota Semarang"} 
                       className="w-14 h-14 object-contain"
                     />
@@ -1277,7 +1708,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
               <div className="flex items-center justify-between border-b-4 border-double border-slate-900 pb-3 mb-4">
                 <div className="w-20 h-20 flex-shrink-0 flex items-center justify-center">
                   <img 
-                    src={meetingType === 'pkk' ? (profile.pkkLogoUrl || profile.logoUrl || "https://upload.wikimedia.org/wikipedia/commons/e/e9/Coat_of_arms_of_Semarang.svg") : (profile.logoUrl || "https://upload.wikimedia.org/wikipedia/commons/e/e9/Coat_of_arms_of_Semarang.svg")} 
+                    src={meetingType === 'pkk' ? (profile.pkkLogoUrl || profile.logoUrl || DEFAULT_SEMARANG_LOGO) : (profile.logoUrl || DEFAULT_SEMARANG_LOGO)} 
                     alt={meetingType === 'pkk' ? "Logo PKK" : "Logo Kota Semarang"} 
                     className="w-16 h-16 object-contain"
                   />
@@ -1443,6 +1874,28 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                 </div>
               </div>
             </div>
+          )}
+
+          {/* ================== VIEW 3: SURAT UNDANGAN PERTEMUAN RUTIN (RT & PKK) ================== */}
+          {docViewMode === 'undangan' && (
+            undanganLayout === '2-in-1' ? (
+              /* ================= 2-IN-1 FORMAT SELEBARAN POTONG DUA ================= */
+              <div className="space-y-4 print-one-page text-slate-900">
+                {renderUndanganBody(true)}
+
+                <div className="border-t-2 border-dashed border-slate-400 my-4 py-1 flex items-center justify-center space-x-2 text-slate-500 text-[10px] font-mono print:my-2">
+                  <Scissors className="w-3.5 h-3.5 shrink-0" />
+                  <span>✂ Potong / Gunting di sini (Format 2 Undangan Selebaran per Lembar A4) ✂</span>
+                </div>
+
+                {renderUndanganBody(true)}
+              </div>
+            ) : (
+              /* ================= 1 LEMBAR PENUH (SURAT RESMI A4) ================= */
+              <div className="print-one-page text-slate-900">
+                {renderUndanganBody(false)}
+              </div>
+            )
           )}
 
         </div>

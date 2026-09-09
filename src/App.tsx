@@ -31,7 +31,12 @@ export default function App() {
     const saved = localStorage.getItem('bop_rt_profile');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        // If logoUrl is the old broken/external URL or empty, replace with clean local logo
+        if (!parsed.logoUrl || parsed.logoUrl.includes('Coat_of_arms_of_Semarang.svg')) {
+          parsed.logoUrl = initialRtProfile.logoUrl;
+        }
+        return parsed;
       } catch {
         return initialRtProfile;
       }

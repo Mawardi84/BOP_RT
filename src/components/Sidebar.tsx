@@ -1,3 +1,4 @@
+import { DEFAULT_SEMARANG_LOGO } from '../data/initialData';
 import React, { useState } from 'react';
 import { ActiveTab, RtProfile } from '../types';
 import { 
@@ -49,7 +50,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'transactions', label: 'Pencatatan Kas', icon: Receipt },
     { id: 'reports', label: 'Laporan & SPJ (BKU)', icon: FileText },
     { id: 'spj-bulanan', label: 'Pelaporan & Bukti SPJ', icon: FileText },
-    { id: 'notulen', label: 'Notulen & Daftar Hadir', icon: BookOpen },
+    { id: 'notulen', label: 'Undangan & Notulen SPJ', icon: BookOpen },
     { id: 'musyawarah', label: 'Musyawarah Warga', icon: Users },
     { id: 'settings', label: 'Profil & Pengaturan', icon: Settings },
   ];
@@ -71,7 +72,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
               <div className="w-10 h-10 p-1 bg-white border border-slate-200 rounded-xl shadow-2xs flex items-center justify-center shrink-0">
                 <img
-                  src={profile.logoUrl || "https://upload.wikimedia.org/wikipedia/commons/e/e9/Coat_of_arms_of_Semarang.svg"}
+                  src={profile.logoUrl || DEFAULT_SEMARANG_LOGO}
                   alt="Logo Kota Semarang"
                   className="max-h-full max-w-full object-contain"
                 />

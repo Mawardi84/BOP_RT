@@ -25,6 +25,17 @@
   letter-spacing: -0.01em;
 }
 
+/* Ensure KOP logos have clean transparent background without box shadows */
+.official-doc img,
+.document-sheet img,
+.print-document img,
+img[alt*="Logo"] {
+  box-shadow: none !important;
+  filter: none !important;
+  -webkit-filter: none !important;
+  background-color: transparent !important;
+}
+
 /* Print Optimization for Arial Narrow & Exact Official Document Matching */
 @media print {
   * {

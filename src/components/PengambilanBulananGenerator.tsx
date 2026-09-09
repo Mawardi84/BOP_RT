@@ -1,3 +1,4 @@
+import { DEFAULT_SEMARANG_LOGO } from '../data/initialData';
 import React, { useState, useMemo } from 'react';
 import { RtProfile, RapItem, Transaction } from '../types';
 import { formatRupiah } from '../utils/formatters';
@@ -504,7 +505,7 @@ export const PengambilanBulananGenerator: React.FC<PengambilanBulananGeneratorPr
         <div className="flex items-center justify-between border-b-2 border-slate-900 pb-4 mb-6">
           <div className="w-16 h-16 flex-shrink-0 flex items-center justify-center">
             <img
-              src={profile.logoUrl || "https://upload.wikimedia.org/wikipedia/commons/e/e9/Coat_of_arms_of_Semarang.svg"}
+              src={profile.logoUrl || DEFAULT_SEMARANG_LOGO}
               alt="Logo Kota Semarang"
               className="w-14 h-14 object-contain"
             />

@@ -1,3 +1,4 @@
+import { DEFAULT_SEMARANG_LOGO } from '../data/initialData';
 import React, { useState } from 'react';
 import { DocumentationPhoto, RtProfile } from '../types';
 import { 
@@ -500,7 +501,7 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
                 <div className="flex items-center justify-between">
                   <div className="w-14 h-14 flex-shrink-0 flex items-center justify-center">
                     <img 
-                      src={profile.logoUrl || "https://upload.wikimedia.org/wikipedia/commons/e/e9/Coat_of_arms_of_Semarang.svg"} 
+                      src={profile.logoUrl || DEFAULT_SEMARANG_LOGO} 
                       alt="Logo Kota Semarang" 
                       className="w-12 h-12 object-contain"
                     />

@@ -1,6 +1,7 @@
 import { RtProfile, Transaction, MusyawarahRecord, RapItem, MonthlySpjRecord, CategoryDefinition, NotulenPreset, AttendeeItem } from '../types';
+import { SEMARANG_LOGO_DATA_URI } from './semarangLogoUri';
 
-export const DEFAULT_SEMARANG_LOGO = 'https://upload.wikimedia.org/wikipedia/commons/e/e9/Coat_of_arms_of_Semarang.svg';
+export const DEFAULT_SEMARANG_LOGO = SEMARANG_LOGO_DATA_URI;
 
 export const initialRtProfile: RtProfile = {
   rtNumber: '04',

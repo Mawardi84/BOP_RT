@@ -1,3 +1,4 @@
+import { DEFAULT_SEMARANG_LOGO } from '../data/initialData';
 import React, { useState } from 'react';
 import { RtProfile, MusyawarahRecord } from '../types';
 import { formatDate } from '../utils/formatters';
@@ -129,7 +130,7 @@ export const BaKesepakatanManager: React.FC<BaKesepakatanManagerProps> = ({
         <div className="flex items-center justify-between border-b-2 border-slate-900 pb-4 mb-8">
           <div className="w-16 h-16 flex-shrink-0 flex items-center justify-center">
             <img
-              src={profile.logoUrl || "https://upload.wikimedia.org/wikipedia/commons/e/e9/Coat_of_arms_of_Semarang.svg"}
+              src={profile.logoUrl || DEFAULT_SEMARANG_LOGO}
               alt="Logo Kota Semarang"
               className="w-14 h-14 object-contain"
             />

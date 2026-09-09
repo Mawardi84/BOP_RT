@@ -419,7 +419,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 {/* Mini Kop Surat Preview Box */}
                 <div className="p-3 bg-white border border-slate-200 rounded-lg text-slate-900 font-arial-narrow shadow-inner">
                   <div className="flex items-center space-x-3 pb-2 border-b-2 border-slate-900">
-                    <div className="w-12 h-12 shrink-0 flex items-center justify-center p-0.5 bg-slate-50 border border-slate-100 rounded">
+                    <div className="w-12 h-12 shrink-0 flex items-center justify-center">
                       <img
                         src={logoUrl}
                         alt="Logo Kop Surat"
@@ -595,7 +595,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 {/* Mini Kop PKK Preview Box */}
                 <div className="p-3 bg-white border border-slate-200 rounded-lg text-slate-900 font-arial-narrow shadow-inner">
                   <div className="flex items-center space-x-3 pb-2 border-b-2 border-slate-900">
-                    <div className="w-12 h-12 shrink-0 flex items-center justify-center p-0.5 bg-slate-50 border border-slate-100 rounded">
+                    <div className="w-12 h-12 shrink-0 flex items-center justify-center">
                       <img
                         src={pkkLogoUrl || DEFAULT_SEMARANG_LOGO}
                         alt="Logo PKK"

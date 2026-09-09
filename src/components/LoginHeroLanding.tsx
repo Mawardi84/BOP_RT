@@ -1,3 +1,4 @@
+import { DEFAULT_SEMARANG_LOGO } from '../data/initialData';
 import React, { useState } from 'react';
 import { RtProfile } from '../types';
 import { ShieldCheck, FileCheck, Printer, ArrowRight, Lock, Building2, CheckCircle2, KeyRound } from 'lucide-react';
@@ -26,9 +27,9 @@ export const LoginHeroLanding: React.FC<LoginHeroLandingProps> = ({ profile, onL
       <header className="max-w-7xl w-full mx-auto px-6 py-6 flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <img
-            src={profile.logoUrl || "https://upload.wikimedia.org/wikipedia/commons/e/e9/Coat_of_arms_of_Semarang.svg"}
+            src={profile.logoUrl || DEFAULT_SEMARANG_LOGO}
             alt="Logo Semarang"
-            className="w-10 h-10 object-contain drop-shadow"
+            className="w-10 h-10 object-contain"
           />
           <div>
             <span className="text-xs uppercase font-bold tracking-wider text-emerald-400 block leading-none">
