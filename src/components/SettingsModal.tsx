@@ -431,17 +431,20 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                       />
                     </div>
                     <div className="text-center flex-1 min-w-0">
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-800 leading-tight">
+                      <div className="text-[10px] font-bold uppercase text-slate-900 leading-tight">
                         PEMERINTAH KOTA SEMARANG
                       </div>
-                      <div className="text-[9px] font-semibold uppercase text-slate-700 leading-tight">
-                        KECAMATAN {kecamatan.toUpperCase()} • KELURAHAN {kelurahan.toUpperCase()}
+                      <div className="text-[10px] font-bold uppercase text-slate-900 leading-tight">
+                        KECAMATAN {kecamatan.toUpperCase()}
                       </div>
-                      <div className="text-[10px] font-extrabold uppercase text-slate-950 leading-tight mt-0.5">
-                        RUKUN TETANGGA {rtNumber} / RUKUN WARGA {rwNumber}
+                      <div className="text-[10px] font-bold uppercase text-slate-900 leading-tight">
+                        KELURAHAN {kelurahan.toUpperCase()}
                       </div>
-                      <div className="text-[8px] text-slate-500 italic leading-tight">
-                        Sekretariat: RT {rtNumber} RW {rwNumber}, Kel. {kelurahan}, Kec. {kecamatan}, Kota Semarang
+                      <div className="text-[12px] font-bold uppercase text-slate-900 leading-tight mt-1">
+                        RT {rtNumber} RW {rwNumber}
+                      </div>
+                      <div className="text-[8px] text-slate-800 leading-tight mt-1">
+                        Alamat: Ngabean RT {rtNumber} RW {rwNumber} Kelurahan {kelurahan}
                       </div>
                     </div>
                   </div>
@@ -606,17 +609,20 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                       />
                     </div>
                     <div className="text-center flex-1 min-w-0">
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-800 leading-tight">
+                      <div className="text-[10px] font-bold uppercase text-slate-900 leading-tight">
                         TIM PENGGERAK PKK RT {rtNumber} RW {rwNumber}
                       </div>
-                      <div className="text-[9px] font-semibold uppercase text-slate-700 leading-tight">
-                        KELURAHAN {kelurahan.toUpperCase()} • KECAMATAN {kecamatan.toUpperCase()}
+                      <div className="text-[10px] font-bold uppercase text-slate-900 leading-tight">
+                        KECAMATAN {kecamatan.toUpperCase()}
                       </div>
-                      <div className="text-[10px] font-extrabold uppercase text-slate-950 leading-tight mt-0.5">
+                      <div className="text-[10px] font-bold uppercase text-slate-900 leading-tight">
+                        KELURAHAN {kelurahan.toUpperCase()}
+                      </div>
+                      <div className="text-[12px] font-bold uppercase text-slate-900 leading-tight mt-1">
                         KOTA SEMARANG
                       </div>
-                      <div className="text-[8px] text-slate-500 italic leading-tight">
-                        Sekretariat: RT {rtNumber} RW {rwNumber}, Kel. {kelurahan}, Kec. {kecamatan}, Kota Semarang
+                      <div className="text-[8px] text-slate-800 leading-tight mt-1">
+                        Alamat: Ngabean RT {rtNumber} RW {rwNumber} Kelurahan {kelurahan}
                       </div>
                     </div>
                   </div>

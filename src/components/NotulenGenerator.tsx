@@ -255,36 +255,39 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
           <div className="text-center flex-grow px-2">
             {meetingType === 'rt' ? (
               <>
-                <div className={`${kopTitleSize} font-bold uppercase tracking-wider text-slate-800 leading-tight`}>
+                <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
                   PEMERINTAH KOTA SEMARANG
                 </div>
-                <div className={`${kopSubSize} font-semibold uppercase text-slate-800 leading-tight`}>
-                  KECAMATAN {profile.kecamatan.toUpperCase()}
+                <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
+                  KECAMATAN {profile.kecamatan}
                 </div>
-                <div className={`${kopSubSize} font-semibold uppercase text-slate-800 leading-tight`}>
-                  KELURAHAN {profile.kelurahan.toUpperCase()}
+                <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
+                  KELURAHAN {profile.kelurahan}
                 </div>
-                <div className={`${kopRtSize} font-extrabold uppercase text-slate-900 tracking-wide leading-tight mt-0.5`}>
-                  RUKUN TETANGGA {profile.rtNumber} RUKUN WARGA {profile.rwNumber} NGABEAN
+                <div className="text-[18px] font-bold uppercase text-slate-900 leading-tight mt-1">
+                  RT {profile.rtNumber} RW {profile.rwNumber}
                 </div>
               </>
             ) : (
               <>
-                <div className={`${kopTitleSize} font-bold uppercase tracking-wider text-slate-800 leading-tight`}>
+                <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
                   PEMBERDAYAAN DAN KESEJAHTERAAN KELUARGA (PKK)
                 </div>
-                <div className={`${kopSubSize} font-semibold uppercase text-slate-800 leading-tight`}>
+                <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
                   TIM PENGGERAK PKK RT {profile.rtNumber} RW {profile.rwNumber} NGABEAN
                 </div>
-                <div className={`${kopSubSize} font-semibold uppercase text-slate-800 leading-tight`}>
-                  KELURAHAN {profile.kelurahan.toUpperCase()} KECAMATAN {profile.kecamatan.toUpperCase()}
+                <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
+                  KECAMATAN {profile.kecamatan}
                 </div>
-                <div className={`${kopRtSize} font-extrabold uppercase text-slate-900 tracking-wide leading-tight mt-0.5`}>
+                <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
+                  KELURAHAN {profile.kelurahan}
+                </div>
+                <div className="text-[18px] font-bold uppercase text-slate-900 leading-tight mt-1">
                   KOTA SEMARANG
                 </div>
               </>
             )}
-            <p className={`${kopAddressSize} text-slate-600 leading-none mt-1`}>
+            <p className="text-[10px] text-slate-800 leading-tight mt-1">
               Alamat: Ngabean RT {profile.rtNumber} RW {profile.rwNumber}, Kel. {profile.kelurahan}, Kec. {profile.kecamatan}, Kota Semarang 50225
             </p>
           </div>
@@ -1804,20 +1807,20 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                   />
                 </div>
                 <div className="text-center flex-grow px-4">
-                  <div className="text-sm print:text-sm font-bold uppercase text-slate-800 leading-tight">
+                  <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
                     PEMERINTAH KOTA SEMARANG
                   </div>
-                  <div className="text-sm print:text-sm font-semibold uppercase text-slate-800 leading-tight">
-                    KECAMATAN {profile.kecamatan.toUpperCase()}
+                  <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
+                    KECAMATAN {profile.kecamatan}
                   </div>
-                  <div className="text-sm print:text-sm font-semibold uppercase text-slate-800 leading-tight">
-                    KELURAHAN {profile.kelurahan.toUpperCase()}
+                  <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
+                    KELURAHAN {profile.kelurahan}
                   </div>
-                  <div className="text-xl print:text-xl font-bold uppercase text-slate-900 leading-tight mt-1">
+                  <div className="text-[18px] font-bold uppercase text-slate-900 leading-tight mt-1">
                     RT {profile.rtNumber} RW {profile.rwNumber} NGABEAN
                   </div>
-                  <p className="text-xs print:text-xs text-slate-600 leading-relaxed mt-1">
-                    Alamat: Ngabean RT {profile.rtNumber} RW {profile.rwNumber}, Kel. {profile.kelurahan}, Kec. {profile.kecamatan}, Kota Semarang
+                  <p className="text-[10px] text-slate-800 leading-tight mt-1">
+                    Alamat: Ngabean RT {profile.rtNumber} RW {profile.rwNumber} Kelurahan {profile.kelurahan}
                   </p>
                 </div>
                 <div className="w-24 h-24 sm:w-28 sm:h-28 print:w-24 print:h-24 flex-shrink-0"></div>
