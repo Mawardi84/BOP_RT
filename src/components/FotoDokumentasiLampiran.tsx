@@ -499,11 +499,11 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
               {/* Official Header / KOP Surat Resmi */}
               <div className="pb-1 mb-3">
                 <div className="flex items-center justify-between">
-                  <div className="w-14 h-14 flex-shrink-0 flex items-center justify-center">
+                  <div className="w-20 h-20 print:w-20 print:h-20 flex-shrink-0 flex items-center justify-center">
                     <img 
                       src={profile.logoUrl || DEFAULT_SEMARANG_LOGO} 
                       alt="Logo Kota Semarang" 
-                      className="w-12 h-12 object-contain"
+                      className="w-full h-full object-contain"
                     />
                   </div>
                   <div className="text-center flex-grow px-2">
@@ -523,7 +523,7 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
                       Alamat: Ngabean RT {profile.rtNumber} RW {profile.rwNumber} Kelurahan {profile.kelurahan}
                     </p>
                   </div>
-                  <div className="w-14 h-14 flex-shrink-0"></div>
+                  <div className="w-20 h-20 print:w-20 print:h-20 flex-shrink-0"></div>
                 </div>
                 <div className="h-0.5 bg-slate-900 mt-2"></div>
                 <div className="h-px bg-slate-900 mt-0.5"></div>

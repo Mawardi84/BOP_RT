@@ -378,11 +378,11 @@ export const MonthlySpjManager: React.FC<MonthlySpjManagerProps> = ({
           <div className="lg:col-span-2 bg-white p-8 sm:p-12 rounded-2xl border border-slate-200 shadow-sm text-slate-900 space-y-8 font-arial-narrow official-doc leading-relaxed print-page-break">
             {/* Header */}
             <div className="flex items-center justify-between border-b-2 border-slate-900 pb-4">
-              <div className="w-16 h-16 flex-shrink-0 flex items-center justify-center">
+              <div className="w-24 h-24 print:w-24 print:h-24 flex-shrink-0 flex items-center justify-center">
                 <img 
                   src={profile.logoUrl || DEFAULT_SEMARANG_LOGO} 
                   alt="Logo Kota Semarang" 
-                  className="w-14 h-14 object-contain"
+                  className="w-full h-full object-contain"
                 />
               </div>
               <div className="text-center flex-grow px-4">
@@ -409,7 +409,7 @@ export const MonthlySpjManager: React.FC<MonthlySpjManagerProps> = ({
                   Bulan {selectedMonth} Tahun Anggaran {profile.year}
                 </p>
               </div>
-              <div className="w-16 h-16 flex-shrink-0 flex items-center justify-end">
+              <div className="w-24 h-24 print:w-24 print:h-24 flex-shrink-0 flex items-center justify-end">
                 <div className="text-right text-[10px] text-slate-500 font-mono hidden sm:block print:block">
                   SPJ/BOP/{selectedMonth.toUpperCase()}/{profile.year}
                 </div>

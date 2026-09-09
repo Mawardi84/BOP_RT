@@ -426,11 +426,11 @@ export const ReportGenerator: React.FC<ReportGeneratorProps> = ({
       <div className="bg-white p-8 sm:p-12 rounded-2xl border border-slate-200 shadow-sm max-w-4xl mx-auto text-slate-900 font-arial-narrow official-doc leading-relaxed">
         {/* Kop Surat Resmi */}
         <div className="flex items-center justify-between border-b-2 border-slate-900 pb-4 mb-6">
-          <div className="w-16 h-16 flex-shrink-0 flex items-center justify-center">
+          <div className="w-24 h-24 print:w-24 print:h-24 flex-shrink-0 flex items-center justify-center">
             <img
               src={profile.logoUrl || DEFAULT_SEMARANG_LOGO}
               alt="Logo Kota Semarang"
-              className="w-14 h-14 object-contain"
+              className="w-full h-full object-contain"
             />
           </div>
           <div className="text-center flex-grow px-2">
@@ -459,7 +459,7 @@ export const ReportGenerator: React.FC<ReportGeneratorProps> = ({
               Tahun Anggaran {profile.year} • Periode: {currentMonthInfo.name}
             </p>
           </div>
-          <div className="w-16 h-16 flex-shrink-0"></div>
+          <div className="w-24 h-24 print:w-24 print:h-24 flex-shrink-0"></div>
         </div>
 
         {/* Metadata Banner Box */}

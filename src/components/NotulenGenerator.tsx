@@ -91,7 +91,13 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
   const [undanganNomorCustom, setUndanganNomorCustom] = useState<string>('');
   const [undanganHalCustom, setUndanganHalCustom] = useState<string>('');
   const [undanganPenerimaCustom, setUndanganPenerimaCustom] = useState<string>('');
-  const [undanganCatatan, setUndanganCatatan] = useState<string>('Mohon hadir tepat waktu demi kelancaran bersama dan membawa buku catatan / iuran kas warga.');
+  const [undanganAcaraCustom, setUndanganAcaraCustom] = useState<string>('');
+  const [undanganSalamPembuka, setUndanganSalamPembuka] = useState<string>('Assalamualaikum Wr.Wb.');
+  const [undanganSalamPenutup, setUndanganSalamPenutup] = useState<string>('Wassalamuailikum Wr.Wb.');
+  const [undanganPengantarCustom, setUndanganPengantarCustom] = useState<string>('');
+  const [undanganPenutupCustom, setUndanganPenutupCustom] = useState<string>('');
+  const [undanganCatatan, setUndanganCatatan] = useState<string>('');
+  const [showAgendaDetailsInUndangan, setShowAgendaDetailsInUndangan] = useState<boolean>(false);
   const [undanganLayout, setUndanganLayout] = useState<'1-halaman' | '2-in-1'>('1-halaman');
   const [undanganDateCustom, setUndanganDateCustom] = useState<string>('');
 
@@ -198,18 +204,38 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
   const currentHalSurat = undanganHalCustom || defaultHalSurat;
 
   const defaultPenerima = meetingType === 'rt'
-    ? `Bapak / Ibu / Saudara Warga RT ${profile.rtNumber} RW ${profile.rwNumber}`
-    : `Ibu-Ibu Anggota PKK RT ${profile.rtNumber} RW ${profile.rwNumber}`;
+    ? `Bapak / Ibu Warga RT ${profile.rtNumber} RW ${profile.rwNumber}`
+    : `Ibu-Ibu Warga RT ${profile.rtNumber} RW ${profile.rwNumber}`;
   const currentPenerima = undanganPenerimaCustom || defaultPenerima;
 
   const currentUndanganDate = undanganDateCustom || date;
+
+  const defaultPengantar = meetingType === 'rt'
+    ? `Sehubungan dengan akan dilaksanakannya pertemuan rutin warga Ngabean RT. ${profile.rtNumber} RW. ${profile.rwNumber}   maka dengan ini kami mengundang Bapak/Ibu  untuk menghadiri acara tersebut  yang akan dilaksanakan pada :`
+    : `Sehubungan dengan akan dilaksanakannya pertemuan rutin PKK warga Ngabean RT. ${profile.rtNumber} RW. ${profile.rwNumber}   maka dengan ini kami mengundang Ibu-Ibu  untuk menghadiri acara tersebut  yang akan dilaksanakan pada :`;
+  const currentPengantar = undanganPengantarCustom || defaultPengantar;
+
+  const defaultAcara = meetingType === 'rt'
+    ? (selectedPresetId === 'notulen-tirakatan-16agustus'
+        ? 'Malam Tirakatan HUT RI Ke 81'
+        : selectedPresetId === 'notulen-resepsi-23agustus'
+        ? 'Malam Resepsi HUT RI Ke 81'
+        : `Pertemuan rutin  RT. ${profile.rtNumber}`)
+    : `Pertemuan rutin  PKK RT. ${profile.rtNumber}`;
+  const currentAcara = undanganAcaraCustom || defaultAcara;
+
+  const defaultPenutup = 'Demikian surat undangan ini kami sampaikan, atas perhatiannya dan kehadirannya di ucapkan terima kasih.';
+  const currentPenutup = undanganPenutupCustom || defaultPenutup;
+
+  const currentSalamPembuka = undanganSalamPembuka || 'Assalamualaikum Wr.Wb.';
+  const currentSalamPenutup = undanganSalamPenutup || 'Wassalamuailikum Wr.Wb.';
 
   const renderUndanganBody = (isCompact: boolean = false) => {
     const kopTitleSize = isCompact ? 'text-[11px] print:text-[10px]' : 'text-[13px] print:text-[13px]';
     const kopSubSize = isCompact ? 'text-[9.5px] print:text-[9px]' : 'text-[12px] print:text-[12px]';
     const kopRtSize = isCompact ? 'text-[13px] print:text-[12px]' : 'text-[16px] print:text-[15px]';
     const kopAddressSize = isCompact ? 'text-[8px] print:text-[7.5px]' : 'text-[9.5px] print:text-[9px]';
-    const logoSize = isCompact ? 'w-11 h-11 print:w-10 print:h-10' : 'w-16 h-16 print:w-16 print:h-16';
+    const logoSize = isCompact ? 'w-16 h-16 print:w-16 print:h-16' : 'w-24 h-24 sm:w-26 sm:h-26 print:w-24 print:h-24';
     const textSize = isCompact ? 'text-[10.5px] print:text-[9.5px]' : 'text-[13px] print:text-[12.5px]';
     const spacingClass = isCompact ? 'space-y-2' : 'space-y-3.5';
     const tablePadding = isCompact ? 'py-0.5' : 'py-1';
@@ -223,7 +249,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
             <img 
               src={meetingType === 'pkk' ? (profile.pkkLogoUrl || profile.logoUrl || DEFAULT_SEMARANG_LOGO) : (profile.logoUrl || DEFAULT_SEMARANG_LOGO)} 
               alt={meetingType === 'pkk' ? "Logo PKK" : "Logo Kota Semarang"} 
-              className="max-h-full max-w-full object-contain"
+              className="w-full h-full object-contain"
             />
           </div>
           <div className="text-center flex-grow px-2">
@@ -307,73 +333,66 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
         </div>
 
         {/* Salam & Paragraf Pengantar */}
-        <div className={`${textSize} space-y-1.5 text-justify`}>
-          <p className="font-semibold italic">Dengan hormat,</p>
-          <p className="leading-relaxed indent-8">
-            {meetingType === 'rt' ? (
-              <>
-                Puji syukur senantiasa kita panjatkan kehadirat Tuhan Yang Maha Esa atas segala limpahan rahmat, taufik, dan hidayah-Nya. Sehubungan dengan agenda rutin bulanan warga RT {profile.rtNumber} RW {profile.rwNumber} Ngabean serta koordinasi pelaksanaan Bantuan Operasional RT (BOP RT) Tahun Anggaran {profile.year}, bersama ini kami mengharap dengan hormat kehadiran Bapak/Ibu/Saudara dalam Pertemuan Rutin Warga RT {profile.rtNumber} yang akan diselenggarakan besok pada:
-              </>
-            ) : (
-              <>
-                Puji syukur senantiasa kita panjatkan kehadirat Tuhan Yang Maha Esa atas segala limpahan berkah dan karunia-Nya. Dalam rangka mempererat tali silaturahmi, pelaksanaan 10 Program Pokok PKK, serta koordinasi kegiatan bulanan ibu-ibu warga RT {profile.rtNumber} RW {profile.rwNumber} Ngabean, bersama ini kami mengundang Ibu-Ibu warga untuk hadir dalam Pertemuan Rutin PKK RT {profile.rtNumber} yang akan diselenggarakan besok pada:
-              </>
-            )}
+        <div className={`${textSize} space-y-1 text-justify`}>
+          <p className="font-semibold">{currentSalamPembuka}</p>
+          <p className="font-semibold">Dengan hormat,</p>
+          <p className="leading-relaxed">
+            {currentPengantar}
           </p>
         </div>
 
-        {/* Rincian Waktu, Tempat, dan Acara */}
-        <div className={`bg-slate-50/70 border border-slate-300 rounded-lg ${isCompact ? 'p-2' : 'p-3'} ${textSize} space-y-0.5`}>
-          <div className={`grid grid-cols-12 ${tablePadding}`}>
-            <div className="col-span-4 sm:col-span-3 font-semibold text-slate-800">Hari / Tanggal</div>
-            <div className="col-span-1 text-center font-bold">:</div>
-            <div className="col-span-7 sm:col-span-8 font-bold text-slate-900">
+        {/* Rincian Waktu, Tempat, dan Acara (Sesuai Format Template Baku Pengguna) */}
+        <div className={`my-1 pl-3 sm:pl-6 ${textSize} space-y-1`}>
+          <div className="flex items-start">
+            <span className="w-28 sm:w-32 font-semibold text-slate-800">Hari/tanggal</span>
+            <span className="w-4 font-bold text-center">:</span>
+            <span className="text-slate-900 font-semibold">
               {getIndonesianDayName(date)}, {formatDate(date)}
-            </div>
+            </span>
           </div>
-          <div className={`grid grid-cols-12 ${tablePadding}`}>
-            <div className="col-span-4 sm:col-span-3 font-semibold text-slate-800">Waktu / Pukul</div>
-            <div className="col-span-1 text-center font-bold">:</div>
-            <div className="col-span-7 sm:col-span-8 font-semibold">
-              {time} WIB s/d selesai
-            </div>
+          <div className="flex items-start">
+            <span className="w-28 sm:w-32 font-semibold text-slate-800">Waktu</span>
+            <span className="w-4 font-bold text-center">:</span>
+            <span className="text-slate-900 font-medium">{time} Wib - Selesai</span>
           </div>
-          <div className={`grid grid-cols-12 ${tablePadding}`}>
-            <div className="col-span-4 sm:col-span-3 font-semibold text-slate-800">Tempat</div>
-            <div className="col-span-1 text-center font-bold">:</div>
-            <div className="col-span-7 sm:col-span-8 font-medium">
-              {location}
-            </div>
+          <div className="flex items-start">
+            <span className="w-28 sm:w-32 font-semibold text-slate-800">Tempat</span>
+            <span className="w-4 font-bold text-center">:</span>
+            <span className="text-slate-900 font-medium">{location}</span>
           </div>
-          <div className={`grid grid-cols-12 ${tablePadding} items-start`}>
-            <div className="col-span-4 sm:col-span-3 font-semibold text-slate-800">Acara / Agenda</div>
-            <div className="col-span-1 text-center font-bold">:</div>
-            <div className="col-span-7 sm:col-span-8">
-              <ol className="list-decimal pl-4 space-y-0.5">
-                {agendaItems.map((item, idx) => (
-                  <li key={idx} className="text-slate-800">{item}</li>
+          <div className="flex items-start">
+            <span className="w-28 sm:w-32 font-semibold text-slate-800">Acara</span>
+            <span className="w-4 font-bold text-center">:</span>
+            <span className="text-slate-900 font-semibold">{currentAcara}</span>
+          </div>
+
+          {showAgendaDetailsInUndangan && agendaItems.length > 0 && (
+            <div className="flex items-start pt-1 text-xs">
+              <span className="w-28 sm:w-32 font-semibold text-slate-600">Rincian Agenda</span>
+              <span className="w-4 font-bold text-center">:</span>
+              <ol className="list-decimal pl-4 space-y-0.5 text-slate-700">
+                {agendaItems.map((ag, idx) => (
+                  <li key={idx}>{ag}</li>
                 ))}
               </ol>
             </div>
-          </div>
+          )}
         </div>
 
-        {/* Catatan / NB */}
+        {/* Catatan / NB (opsional jika diisi) */}
         {undanganCatatan && (
-          <div className={`border-l-4 border-slate-700 bg-slate-100/80 ${isCompact ? 'p-1.5 text-[9.5px]' : 'p-2 text-[11px]'} rounded-r italic text-slate-800`}>
+          <div className={`border-l-4 border-slate-600 bg-slate-50 ${isCompact ? 'p-1.5 text-[9.5px]' : 'p-2 text-[11px]'} rounded-r italic text-slate-700`}>
             <span className="font-bold not-italic">Catatan: </span>
             {undanganCatatan}
           </div>
         )}
 
-        {/* Paragraf Penutup */}
-        <div className={`${textSize} space-y-1 text-justify`}>
-          <p className="leading-relaxed indent-8">
-            Mengingat pentingnya acara ini demi kebersamaan, kemajuan, dan kelancaran kegiatan lingkungan RT kita, kami sangat mengharapkan kehadiran Bapak/Ibu tepat pada waktunya.
-          </p>
+        {/* Paragraf Penutup & Salam Penutup */}
+        <div className={`${textSize} space-y-1.5 text-justify`}>
           <p className="leading-relaxed">
-            Demikian surat undangan ini kami sampaikan. Atas perhatian, kerja sama, dan kehadirannya, kami haturkan terima kasih.
+            {currentPenutup}
           </p>
+          <p className="font-semibold">{currentSalamPenutup}</p>
         </div>
 
         {/* Blok Tanda Tangan Mengetahui */}
@@ -1224,27 +1243,167 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                 </p>
               </div>
 
-              <div>
-                <label className="block font-semibold text-slate-700 uppercase mb-1">
-                  Nomor Surat Undangan
-                </label>
-                <div className="flex space-x-2">
+              {/* Sesuaikan Teks Template Undangan */}
+              <div className="bg-slate-50/80 border border-slate-200 rounded-xl p-3.5 space-y-3">
+                <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                  <span className="text-[11px] font-bold text-slate-800 uppercase flex items-center gap-1.5">
+                    <FileText className="w-3.5 h-3.5 text-blue-600" />
+                    Teks Template Undangan
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setUndanganSalamPembuka('Assalamualaikum Wr.Wb.');
+                      setUndanganSalamPenutup('Wassalamuailikum Wr.Wb.');
+                      setUndanganPengantarCustom('');
+                      setUndanganPenutupCustom('');
+                      setUndanganAcaraCustom('');
+                      setUndanganCatatan('');
+                    }}
+                    className="text-[10px] text-slate-500 hover:text-slate-800 flex items-center gap-1 font-semibold"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    Reset Teks
+                  </button>
+                </div>
+
+                <div>
+                  <label className="block text-[10.5px] font-semibold text-slate-700 uppercase mb-1">
+                    Salam Pembuka
+                  </label>
                   <input
                     type="text"
-                    value={currentNomorSurat}
-                    onChange={(e) => setUndanganNomorCustom(e.target.value)}
-                    className="flex-1 bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-mono"
+                    value={currentSalamPembuka}
+                    onChange={(e) => setUndanganSalamPembuka(e.target.value)}
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs"
                   />
-                  {undanganNomorCustom && (
-                    <button
-                      type="button"
-                      title="Reset ke format nomor otomatis"
-                      onClick={() => setUndanganNomorCustom('')}
-                      className="px-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-600"
-                    >
-                      <RotateCcw className="w-3.5 h-3.5" />
-                    </button>
-                  )}
+                </div>
+
+                <div>
+                  <label className="block text-[10.5px] font-semibold text-slate-700 uppercase mb-1">
+                    Kalimat Pengantar Undangan
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={currentPengantar}
+                    onChange={(e) => setUndanganPengantarCustom(e.target.value)}
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs leading-relaxed"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-[10.5px] font-semibold text-slate-700 uppercase mb-1">
+                      Nama Acara pada Undangan
+                    </label>
+                    <input
+                      type="text"
+                      value={currentAcara}
+                      onChange={(e) => setUndanganAcaraCustom(e.target.value)}
+                      placeholder="Contoh: Pertemuan rutin  RT. 04"
+                      className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10.5px] font-semibold text-slate-700 uppercase mb-1">
+                      Tempat Acara
+                    </label>
+                    <input
+                      type="text"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                      placeholder="Contoh: Bapak Arif"
+                      className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[10.5px] font-semibold text-slate-700 uppercase mb-1">
+                    Kalimat Penutup
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={currentPenutup}
+                    onChange={(e) => setUndanganPenutupCustom(e.target.value)}
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs leading-relaxed"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10.5px] font-semibold text-slate-700 uppercase mb-1">
+                    Salam Penutup
+                  </label>
+                  <input
+                    type="text"
+                    value={currentSalamPenutup}
+                    onChange={(e) => setUndanganSalamPenutup(e.target.value)}
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs"
+                  />
+                </div>
+
+                <div className="pt-1">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={showAgendaDetailsInUndangan}
+                      onChange={(e) => setShowAgendaDetailsInUndangan(e.target.checked)}
+                      className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 w-4 h-4"
+                    />
+                    <span className="text-[11px] font-medium text-slate-700">
+                      Tampilkan daftar rincian agenda poin-poin di bawah acara
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 uppercase mb-1">
+                  Penerima Undangan (Kepada Yth.)
+                </label>
+                <input
+                  type="text"
+                  value={currentPenerima}
+                  onChange={(e) => setUndanganPenerimaCustom(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div>
+                  <label className="block font-semibold text-slate-700 uppercase mb-1">
+                    Nomor Surat Undangan
+                  </label>
+                  <div className="flex space-x-2">
+                    <input
+                      type="text"
+                      value={currentNomorSurat}
+                      onChange={(e) => setUndanganNomorCustom(e.target.value)}
+                      className="flex-1 bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-mono"
+                    />
+                    {undanganNomorCustom && (
+                      <button
+                        type="button"
+                        title="Reset ke nomor otomatis"
+                        onClick={() => setUndanganNomorCustom('')}
+                        className="px-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-600"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block font-semibold text-slate-700 uppercase mb-1">
+                    Tanggal Surat Dikeluarkan
+                  </label>
+                  <input
+                    type="date"
+                    value={currentUndanganDate}
+                    onChange={(e) => setUndanganDateCustom(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs"
+                  />
                 </div>
               </div>
 
@@ -1262,84 +1421,15 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
 
               <div>
                 <label className="block font-semibold text-slate-700 uppercase mb-1">
-                  Penerima Undangan (Kepada Yth.)
-                </label>
-                <input
-                  type="text"
-                  value={currentPenerima}
-                  onChange={(e) => setUndanganPenerimaCustom(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-slate-700 uppercase mb-1">
-                  Tanggal Surat Dikeluarkan
-                </label>
-                <input
-                  type="date"
-                  value={currentUndanganDate}
-                  onChange={(e) => setUndanganDateCustom(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs"
-                />
-                <p className="text-[10px] text-slate-500 mt-1">
-                  Default otomatis mengikuti tanggal pertemuan atau dapat disesuaikan (misal 2 hari sebelumnya).
-                </p>
-              </div>
-
-              <div>
-                <label className="block font-semibold text-slate-700 uppercase mb-1">
-                  Catatan Tambahan (NB)
+                  Catatan Tambahan (NB) - Opsional
                 </label>
                 <textarea
                   rows={2}
                   value={undanganCatatan}
                   onChange={(e) => setUndanganCatatan(e.target.value)}
-                  placeholder="Contoh: Mohon hadir tepat waktu dan membawa buku catatan / iuran kas warga..."
+                  placeholder="Kosongkan jika tidak ada catatan tambahan..."
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs"
                 />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-slate-700 uppercase mb-1">
-                  Susunan Acara / Agenda pada Undangan
-                </label>
-                <div className="flex space-x-2 mb-2">
-                  <input
-                    type="text"
-                    placeholder="Tambah agenda undangan..."
-                    value={newAgenda}
-                    onChange={(e) => setNewAgenda(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        handleAddAgenda();
-                      }
-                    }}
-                    className="flex-1 bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleAddAgenda}
-                    className="bg-slate-900 hover:bg-slate-800 text-white px-3 py-2 rounded-xl font-semibold shrink-0"
-                  >
-                    Tambah
-                  </button>
-                </div>
-                <ul className="space-y-1 max-h-48 overflow-y-auto">
-                  {agendaItems.map((ag, i) => (
-                    <li key={i} className="flex justify-between items-center bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs">
-                      <span>{i + 1}. {ag}</span>
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveAgenda(i)}
-                        className="text-red-500 hover:text-red-700 font-bold px-1"
-                      >
-                        ×
-                      </button>
-                    </li>
-                  ))}
-                </ul>
               </div>
             </div>
           )}
@@ -1357,11 +1447,11 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
               <div className="space-y-2 print-one-page text-slate-900 leading-tight">
                 {/* KOP Surat Resmi */}
                 <div className="flex items-center justify-between border-b-2 border-slate-900 pb-2 mb-2">
-                  <div className="w-16 h-16 flex-shrink-0 flex items-center justify-center">
+                  <div className="w-20 h-20 sm:w-22 sm:h-22 print:w-20 print:h-20 flex-shrink-0 flex items-center justify-center">
                     <img 
                       src={meetingType === 'pkk' ? (profile.pkkLogoUrl || profile.logoUrl || DEFAULT_SEMARANG_LOGO) : (profile.logoUrl || DEFAULT_SEMARANG_LOGO)} 
                       alt={meetingType === 'pkk' ? "Logo PKK" : "Logo Kota Semarang"} 
-                      className="w-14 h-14 object-contain"
+                      className="w-full h-full object-contain"
                     />
                   </div>
                   <div className="text-center flex-grow px-2">
@@ -1381,7 +1471,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                       Alamat: Ngabean RT {profile.rtNumber} RW {profile.rwNumber}, Kel. {profile.kelurahan}, Kec. {profile.kecamatan}, Kota Semarang
                     </p>
                   </div>
-                  <div className="w-16 h-16 flex-shrink-0"></div>
+                  <div className="w-20 h-20 sm:w-22 sm:h-22 print:w-20 print:h-20 flex-shrink-0"></div>
                 </div>
 
                 {/* DAFTAR HADIR (posisi center) */}
@@ -1543,11 +1633,11 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
               <div className="space-y-2 print-one-page text-slate-900 leading-tight">
                 {/* KOP Surat Resmi */}
                 <div className="flex items-center justify-between border-b-2 border-slate-900 pb-2 mb-2">
-                  <div className="w-16 h-16 flex-shrink-0 flex items-center justify-center">
+                  <div className="w-20 h-20 sm:w-22 sm:h-22 print:w-20 print:h-20 flex-shrink-0 flex items-center justify-center">
                     <img 
                       src={meetingType === 'pkk' ? (profile.pkkLogoUrl || profile.logoUrl || DEFAULT_SEMARANG_LOGO) : (profile.logoUrl || DEFAULT_SEMARANG_LOGO)} 
                       alt={meetingType === 'pkk' ? "Logo PKK" : "Logo Kota Semarang"} 
-                      className="w-14 h-14 object-contain"
+                      className="w-full h-full object-contain"
                     />
                   </div>
                   <div className="text-center flex-grow px-2">
@@ -1567,7 +1657,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                       Alamat: Ngabean RT {profile.rtNumber} RW {profile.rwNumber}, Kel. {profile.kelurahan}, Kec. {profile.kecamatan}, Kota Semarang
                     </p>
                   </div>
-                  <div className="w-16 h-16 flex-shrink-0"></div>
+                  <div className="w-20 h-20 sm:w-22 sm:h-22 print:w-20 print:h-20 flex-shrink-0"></div>
                 </div>
 
                 {/* DAFTAR HADIR (posisi center) */}
@@ -1706,11 +1796,11 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
             <div className="space-y-4 print-one-page text-slate-900 leading-relaxed">
               {/* KOP Surat Resmi */}
               <div className="flex items-center justify-between border-b-4 border-double border-slate-900 pb-3 mb-4">
-                <div className="w-20 h-20 flex-shrink-0 flex items-center justify-center">
+                <div className="w-24 h-24 sm:w-28 sm:h-28 print:w-24 print:h-24 flex-shrink-0 flex items-center justify-center">
                   <img 
                     src={meetingType === 'pkk' ? (profile.pkkLogoUrl || profile.logoUrl || DEFAULT_SEMARANG_LOGO) : (profile.logoUrl || DEFAULT_SEMARANG_LOGO)} 
                     alt={meetingType === 'pkk' ? "Logo PKK" : "Logo Kota Semarang"} 
-                    className="w-16 h-16 object-contain"
+                    className="w-full h-full object-contain"
                   />
                 </div>
                 <div className="text-center flex-grow px-4">
@@ -1730,7 +1820,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                     Alamat: Ngabean RT {profile.rtNumber} RW {profile.rwNumber}, Kel. {profile.kelurahan}, Kec. {profile.kecamatan}, Kota Semarang
                   </p>
                 </div>
-                <div className="w-20 h-20 flex-shrink-0"></div>
+                <div className="w-24 h-24 sm:w-28 sm:h-28 print:w-24 print:h-24 flex-shrink-0"></div>
               </div>
 
               {/* Judul Notulen */}

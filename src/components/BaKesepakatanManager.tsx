@@ -128,11 +128,11 @@ export const BaKesepakatanManager: React.FC<BaKesepakatanManagerProps> = ({
       <div className="bg-white p-10 sm:p-16 rounded-2xl border border-slate-200 shadow-sm max-w-3xl mx-auto text-slate-900 leading-relaxed font-arial-narrow official-doc">
         {/* Header */}
         <div className="flex items-center justify-between border-b-2 border-slate-900 pb-4 mb-8">
-          <div className="w-16 h-16 flex-shrink-0 flex items-center justify-center">
+          <div className="w-24 h-24 print:w-24 print:h-24 flex-shrink-0 flex items-center justify-center">
             <img
               src={profile.logoUrl || DEFAULT_SEMARANG_LOGO}
               alt="Logo Kota Semarang"
-              className="w-14 h-14 object-contain"
+              className="w-full h-full object-contain"
             />
           </div>
           <div className="text-center flex-grow px-2">
@@ -163,7 +163,7 @@ export const BaKesepakatanManager: React.FC<BaKesepakatanManagerProps> = ({
             </p>
             <div className="text-xs font-semibold mt-1 text-slate-700">Nomor: {nomorBA}</div>
           </div>
-          <div className="w-16 h-16 flex-shrink-0" />
+          <div className="w-24 h-24 print:w-24 print:h-24 flex-shrink-0" />
         </div>
 
         {/* Body Content */}
