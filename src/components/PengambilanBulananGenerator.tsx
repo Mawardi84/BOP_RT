@@ -564,11 +564,29 @@ export const PengambilanBulananGenerator: React.FC<PengambilanBulananGeneratorPr
                         </div>
                       </td>
                       <td className="py-2 px-4 align-top text-[12px] leading-tight">
-                        {/* Keterangan omitted or placeholder if we don't have it in DB, let's just leave it empty or put note */}
-                        {item.month === 'Agustus' && item.description.toLowerCase().includes('hut ri') ? 
-                          'Lomba,hadiah,konsumsi,umbul-umbul,bendera,soundsystem,Lampu hias. spanduk dll.' : 
-                          item.description.toLowerCase().includes('pertemuan') ? 'Konsumsi Makan' : 
-                          item.description.toLowerCase().includes('administrasi') ? 'ATK,Rak Penyimpanan Arsip,Buku, Kertas,MAP,Materai dll.' : ''}
+                        {(() => {
+                          const d = item.description.toLowerCase();
+                          const c = item.category;
+                          if (d.includes('pertemuan rutin warga') || d.includes('konsumsi makan')) return 'Konsumsi rapat rutin warga & musyawarah bulanan RT 04';
+                          if (d.includes('pertemuan') || d.includes('pkk')) return 'Konsumsi dan perlengkapan pertemuan rutin PKK RT 04';
+                          if (d.includes('bendera')) return 'Pembelian bendera merah putih untuk pemasangan di lingkungan warga RT 04';
+                          if (d.includes('menghias') || d.includes('cat') || d.includes('kuas') || d.includes('tiner')) return 'Pembelian cat tembok, cat kayu, kuas, dan tiner untuk pengecatan gapura, pos ronda, dan tembok lingkungan';
+                          if (d.includes('lampu hias') || d.includes('led')) return 'Pengadaan lampu hias LED strip untuk penerangan dan dekorasi semarak kemerataan HUT RI';
+                          if (d.includes('tiang')) return 'Pengadaan tiang bendera dan umbul-umbul jalan lingkungan';
+                          if (d.includes('tumpeng')) return 'Nasi tumpeng tradisional untuk syukuran Malam Tirakatan HUT RI ke-81';
+                          if (d.includes('malam tirakatan') && d.includes('dos')) return 'Konsumsi makan dos untuk warga yang hadir pada Malam Tirakatan';
+                          if (d.includes('snack')) return 'Pengadaan snack box / kudapan untuk acara kemasyarakatan & rapat warga';
+                          if (d.includes('resepsi') || d.includes('malam puncak')) return 'Konsumsi makan & minum serta pendukung acara malam puncak resepsi HUT RI';
+                          if (d.includes('kirab') || d.includes('karnaval')) return 'Belanja atribut, properti, kostum, dan konsumsi peserta karnaval / kirab budaya';
+                          if (d.includes('taman toga') || d.includes('pemupukan')) return 'Pembelian bibit tanaman obat keluarga (TOGA), pupuk kompos, dan media tanam';
+                          if (d.includes('biopori')) return 'Pembuatan lubang resapan biopori untuk konservasi air hujan di lingkungan RT';
+                          if (d.includes('atk') || d.includes('kertas') || d.includes('materai') || d.includes('map') || d.includes('buku')) return 'Pengadaan alat tulis kantor (ATK), kertas, map arsip, buku agenda, materai, dan penjilidan laporan';
+                          if (c === 'kebersihan') return 'Pengadaan sarana kebersihan, alat kerja bakti, dan perawatan fasilitas lingkungan';
+                          if (c === 'sosial') return 'Santunan sosial, kegiatan kemasyarakatan, dan perayaan hari besar nasional';
+                          if (c === 'pemberdayaan') return 'Dukungan kegiatan pemberdayaan warga, PKK, dan dasawisma';
+                          if (c === 'ketahanan_pangan') return 'Program penghijauan, urban farming, dan ketahanan pangan warga';
+                          return 'Pengadaan barang/jasa operasional kegiatan RT 04 sesuai RAP tahun anggaran';
+                        })()}
                       </td>
                     </tr>
                   ))
