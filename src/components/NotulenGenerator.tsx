@@ -408,7 +408,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
           <div className="flex">
             <span className="w-20 sm:w-24 font-semibold">Perihal</span>
             <span className="w-4">:</span>
-            <span className="font-bold underline uppercase">{currentAcara}</span>
+            <span className="font-bold underline">{currentHalSurat}</span>
           </div>
         </div>
 
@@ -417,7 +417,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
           <p>Kepada Yth.</p>
           <p className="font-bold">{currentPenerima}</p>
           <p>di -</p>
-          <p className="pl-4 font-semibold">TEMPAT</p>
+          <p className="pl-4 font-semibold">Tempat</p>
         </div>
 
         {/* Isi Surat */}
@@ -440,12 +440,12 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
               <tr>
                 <td className="py-1 align-top">Tempat</td>
                 <td className="py-1 align-top">:</td>
-                <td className="py-1 leading-normal uppercase">{location}</td>
+                <td className="py-1 leading-normal font-bold">{location}</td>
               </tr>
               <tr>
-                <td className="py-1 align-top">Acara</td>
+                <td className="py-1 align-top">Agenda</td>
                 <td className="py-1 align-top">:</td>
-                <td className="py-1 leading-normal uppercase">{currentAcara}</td>
+                <td className="py-1 leading-normal font-bold">{currentAcara}</td>
               </tr>
               {showAgendaDetailsInUndangan && (
                 <tr>
@@ -475,8 +475,15 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
         </div>
 
         {/* Tanda Tangan */}
-        <div className="mt-4 pt-2 flex justify-end text-center">
-          <div className="w-48">
+        <div className="mt-6 pt-2 flex justify-between text-center gap-4">
+          <div className="w-48 text-center">
+            <p className="font-bold uppercase text-[12px] print:text-[11px]">
+              {meetingType === 'rt' ? `Sekretaris RT ${profile.rtNumber}` : `Sekretaris PKK RT ${profile.rtNumber}`}
+            </p>
+            <div className={ttdHeight}></div>
+            <p className="font-extrabold underline uppercase text-[12px] print:text-[11px]">{secretary}</p>
+          </div>
+          <div className="w-48 text-center">
             <p className="font-bold uppercase text-[12px] print:text-[11px]">
               {meetingType === 'rt' ? `Ketua RT ${profile.rtNumber}` : `Ketua PKK RT ${profile.rtNumber}`}
             </p>
@@ -487,6 +494,50 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
       </div>
     );
   };
+
+  // Computed values and configurations for printable documents (Daftar Hadir & Notulen)
+  const attendees = meetingType === 'rt' ? rtAttendees : pkkAttendees;
+  const displayAttendees = attendees.slice(0, participantCount);
+  const isDualColumn = tableLayoutMode === '2-kolom' || tableLayoutMode === '2-kolom-100';
+  const col1Attendees = displayAttendees.slice(0, Math.ceil(displayAttendees.length / 2));
+  const col2Attendees = displayAttendees.slice(Math.ceil(displayAttendees.length / 2));
+  const dualTableFont = 'text-[9.5px] print:text-[8px]';
+  const dualHeaderFont = 'text-[10px] print:text-[8px] h-6';
+  const dualRowHeight = 'h-7 print:h-6';
+  
+  const singleColWidths = {
+    no: 'w-10 sm:w-12',
+    name: 'w-auto',
+    gender: 'w-12',
+    addr: includeAddressColumn ? 'w-24 sm:w-28' : '',
+    ttd: 'w-24 sm:w-28',
+    ttdTotal: 'w-48 sm:w-56'
+  };
+
+  const singleStyle = (() => {
+    if (participantCount > 35) {
+      return {
+        fontSize: 'text-[10px] print:text-[8.5px]',
+        rowHeight: 'h-6 print:h-5.5',
+        thHeight: 'h-7 print:h-6',
+        py: 'py-0.5',
+      };
+    } else if (participantCount > 25) {
+      return {
+        fontSize: 'text-[11px] print:text-[9.5px]',
+        rowHeight: 'h-8 print:h-7',
+        thHeight: 'h-9 print:h-8',
+        py: 'py-1',
+      };
+    } else {
+      return {
+        fontSize: 'text-[12px] print:text-[11px]',
+        rowHeight: 'h-10 print:h-9.5',
+        thHeight: 'h-11 print:h-10',
+        py: 'py-1.5',
+      };
+    }
+  })();
 
   return (
     <div className="space-y-6 print:space-y-0 print:m-0 print:p-0">
