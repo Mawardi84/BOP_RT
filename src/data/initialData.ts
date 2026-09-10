@@ -70,7 +70,7 @@ export const initialMusyawarah: MusyawarahRecord[] = [
     title: 'Musyawarah Warga Penyusunan RAP BOP RT Tahun 2026',
     participantCount: 40,
     agenda: 'Penyusunan Rencana Anggaran Penggunaan (RAP) Dana BOP RT sebesar Rp 25.000.000 untuk kegiatan warga, kebersihan, ketahanan pangan, dan sosial.',
-    decisions: 'Warga sepakat mengalokasikan anggaran untuk pertemuan rutin warga, PKK, kebersihan kemerdekaan 17 Agustus, dan pemeliharaan lingkungan tanpa ada alokasi untuk honor pengurus.',
+    decisions: '',
     leader: 'M. Wakhid Nurjanah (Ketua RT)',
     secretary: 'Muhammad Ervan (Bendahara)',
   },
@@ -164,8 +164,8 @@ export const rtNotulenPresets: NotulenPreset[] = [
       'Sosialisasi Awal Tahun dan Ketertiban Lingkungan RT 04',
       'Penutup dan Doa'
     ],
-    discussionNotes: 'Pertemuan rutin bulanan warga RT 04 / RW 04 bertempat di kediaman Bp. Mawardi dengan agenda utama Musyawarah Persiapan Pelaksanaan Haul Kyai Pati Joyokusumo. Pimpinan rapat bersama para sesepuh dan warga membahas teknis persiapan, jadwal kerja bakti pembersihan lokasi makam/tempat acara, pembentukan kepanitiaan warga, serta koordinasi penyediaan konsumsi, sound system, dan kenyamanan jamaah yang akan hadir.',
-    decisions: '1. Rapat menyepakati persiapan menyeluruh pelaksanaan Haul Kyai Pati Joyokusumo dengan melibatkan gotong royong seluruh warga RT 04.\n2. Disepakati jadwal kerja bakti pembersihan lokasi makam dan area acara pada hari Minggu menjelang hari H.\n3. Dibentuk panitia pelaksana warga untuk mengatur penerimaan tamu, ketertiban parkir, dan konsumsi jamaah.\n4. Pertemuan rutin RT bulan Pebruari disepakati bertempat di kediaman Bp. Subkhan.'
+    discussionNotes: '',
+    decisions: ''
   },
   {
     id: 'notulen-pebruari',
@@ -183,8 +183,8 @@ export const rtNotulenPresets: NotulenPreset[] = [
       'Musyawarah Pembukaan Periode Tabungan Baru',
       'Penutup'
     ],
-    discussionNotes: 'Pertemuan rutin bulanan warga RT 04 bertempat di kediaman Bp. Subkhan membahas pembagian tabungan warga yang telah dihimpun selama periode sebelumnya. Pengurus RT bersama Bendahara (Bpk. MUHAMMAD ERVAN) memaparkan rekapitulasi simpanan warga secara transparan dan tertib sebelum dilakukan penyerahan.',
-    decisions: '1. Pembagian tabungan warga telah terealisasi dan diserahkan kepada seluruh warga yang berhak dengan tertib, aman, dan lancar.\n2. Warga menyepakati dibukanya kembali periode tabungan sukarela baru untuk kebutuhan bersama warga RT 04.\n3. Pertemuan bulan Maret disepakati diadakan pada tanggal 05 Maret 2026 bertempat di kediaman Bp. Asim.'
+    discussionNotes: '',
+    decisions: ''
   },
   {
     id: 'notulen-maret',
@@ -202,8 +202,8 @@ export const rtNotulenPresets: NotulenPreset[] = [
       'Kerja Bakti Resik-resik Tempat Ibadah / Mushola',
       'Penutup dan Ramah Tamah'
     ],
-    discussionNotes: 'Rapat rutin warga RT 04 diselenggarakan dalam suasana kekeluargaan diawali Buka Bersama warga di kediaman Bp. Asim. Ketua RT mengajak seluruh warga untuk saling menjaga toleransi, kekhusyukan ibadah puasa, dan ketertiban lingkungan tempat tinggal. Diingatkan pula untuk saling peduli dan waspada saat rumah ditinggal beribadah tarawih.',
-    decisions: '1. Acara buka bersama warga terlaksana dengan guyub rukun dihadiri 40 warga RT 04.\n2. Warga sepakat menjaga ketenangan malam, menghimbau anak-anak tidak membunyikan petasan di jalan gang, serta memastikan kompor dan steker listrik padam sebelum tarawih.\n3. Pertemuan berikutnya dijadwalkan pada tanggal 13 April 2026 (Halal Bi Halal) di kediaman Bp. Roib.'
+    discussionNotes: '',
+    decisions: ''
   },
   {
     id: 'notulen-april',
@@ -221,8 +221,8 @@ export const rtNotulenPresets: NotulenPreset[] = [
       'Pembaruan Sistem Jimpitan: Pengalihan Menjadi Uang Tunai Rp 10.000 / Bulan',
       'Penutup'
     ],
-    discussionNotes: 'Pertemuan rutin dan Halal Bi Halal Idul Fitri bertempat di kediaman Bp. Roib. Warga saling bersalaman dan memaafkan. Dibahas rencana pembuatan pos ronda sebagai sarana berkumpul warga, pos koordinasi, dan pusat informasi lingkungan. Selanjutnya dilakukan musyawarah mendalam mengenai evaluasi penarikan jimpitan keliling harian yang sering terkendala wadah kosong atau keterbatasan waktu pengambil.',
-    decisions: '1. Halal Bi Halal warga berlangsung khidmat dan mempererat persaudaraan antarwarga RT 04.\n2. Disepakati pembuatan pos ronda secara gotong royong sebagai tempat kumpul dan pusat kegiatan warga RT 04.\n3. Sistem jimpitan keliling harian RESMI DIHENTIKAN. Digantikan dengan sistem jimpitan uang tunai sebesar Rp 10.000,- (sepuluh ribu rupiah) per bulan per KK yang dibayarkan tertib setiap pertemuan rutin bulanan dan dikelola untuk kas sosial warga.'
+    discussionNotes: '',
+    decisions: ''
   },
   {
     id: 'notulen-mei',
@@ -240,8 +240,8 @@ export const rtNotulenPresets: NotulenPreset[] = [
       'Sinergi Warga RT 04 dan Kelompok PKK',
       'Penutup'
     ],
-    discussionNotes: 'Pertemuan bulanan warga di kediaman Bp. Soim membahas partisipasi warga RT 04 dalam mendukung kelompok PKK untuk persiapan Lomba Hatinya PKK tingkat Kelurahan Gunungpati. Fokus pembahasan adalah pemeliharaan taman tanaman obat keluarga (TOGA), penataan polybag, pembersihan gulma, dan penambahan jenis tanaman obat.',
-    decisions: '1. Warga RT 04 menyepakati dukungan penuh berupa tenaga dan partisipasi gotong royong merawat taman TOGA bersama ibu-ibu PKK.\n2. Kerja bakti pembenahan taman TOGA dijadwalkan hari Minggu pagi di area pekarangan percontohan RT 04.\n3. Pertemuan rutin berikutnya disepakati tanggal 1 Juni 2026 di kediaman Mbah Slamet.'
+    discussionNotes: '',
+    decisions: ''
   },
   {
     id: 'notulen-juni',
@@ -259,8 +259,8 @@ export const rtNotulenPresets: NotulenPreset[] = [
       'Rencana Anggaran dan Skema Pendaftaran Peserta Zarkasi',
       'Penutup'
     ],
-    discussionNotes: 'Pertemuan bulanan bertempat di kediaman Mbah Slamet memusyawarahkan rencana kegiatan Ziarah dan Rekreasi (Zarkasi) keluarga besar warga RT 04 ke destinasi religi dan wisata di wilayah Magelang dan Yogyakarta dalam rangka rekreasi bersama dan mempererat kerukunan warga.',
-    decisions: '1. Disepakati pelaksanaan Zarkasi ke rute Magelang - Jogjakarta dengan armada bus pariwisata.\n2. Dibentuk panitia kecil untuk mengurus perizinan armada, rute ziarah, konsumsi perjalanan, dan pendataan jumlah anggota keluarga yang ikut serta.\n3. Pertemuan berikutnya disepakati tanggal 6 Juli 2026 di kediaman Bp. Sunarno.'
+    discussionNotes: '',
+    decisions: ''
   },
   {
     id: 'notulen-juli',
@@ -278,8 +278,8 @@ export const rtNotulenPresets: NotulenPreset[] = [
       'Jadwal Gotong Royong Kerja Bakti Pengecatan dan Pemasangan Umbul-umbul',
       'Penutup'
     ],
-    discussionNotes: 'Rapat rutin bertempat di kediaman Bp. Sunarno menyampaikan sosialisasi resmi pencairan dana BOP RT APBD Kota Semarang Tahun 2026 sebesar Rp 25.000.000,-. Ketua RT bersama Bendahara memaparkan rencana belanja operasional kebersihan dan perlengkapan menghias kampung menyambut HUT RI ke-81 sesuai RAP yang telah disepakati.',
-    decisions: '1. Warga menyetujui realisasi belanja perlengkapan menghias kampung meliputi Cat Tembok, Cat Kayu, Kuas, Tiner, Lampu LED Strip 100m, serta 40 Tiang Bendera dan Umbul-umbul.\n2. Gotong royong pengecatan jalan dan pemasangan lampu hias dimulai serentak minggu kedua Juli 2026.\n3. Pertemuan rutin berikutnya dijadwalkan tanggal 4 Agustus 2026 di kediaman Ibu Jumiyati.'
+    discussionNotes: '',
+    decisions: ''
   },
   {
     id: 'notulen-agustus',
@@ -297,8 +297,8 @@ export const rtNotulenPresets: NotulenPreset[] = [
       'Koordinasi Pembagian Tugas Panitia Kemerdekaan RT 04',
       'Penutup'
     ],
-    discussionNotes: 'Pertemuan di rumah Ibu Jumiyati membahas persiapan final peringatan HUT RI Ke-81. Ketua RT memaparkan kesiapan konsumsi Malam Tirakatan 16 Agustus (tumpeng, dos makan, dan snack) serta konsumsi Malam Puncak Resepsi yang didanai melalui pos belanja sosial BOP RT. Selanjutnya dibahas teknis partisipasi warga dalam Karnaval HUT RI Ke-81 pada 30 Agustus 2026.',
-    decisions: '1. Konsumsi Malam Tirakatan (Nasi Tumpeng + Makan/Snack) dan Resepsi HUT RI Ke-81 disetujui didanai dari pos sosial BOP RT sesuai RAP.\n2. Warga RT 04 bersepakat tampil kompak dalam Karnaval HUT RI Ke-81 tanggal 30 Agustus 2026 dengan mengusung barisan kostum budaya dan kreasi warga.\n3. Panitia memastikan seluruh rangkaian perayaan HUT RI berlangsung tertib, aman, meriah, dan guyub rukun.'
+    discussionNotes: '',
+    decisions: ''
   },
   {
     id: 'notulen-tirakatan-16agustus',
@@ -321,8 +321,8 @@ export const rtNotulenPresets: NotulenPreset[] = [
       'Lomba remaja',
       'Penutup'
     ],
-    discussionNotes: 'Malam Tirakatan Peringatan HUT RI Ke-81 RT 04 RW 04 Ngabean berlangsung khidmat, tertib, dan meriah dihadiri 100 warga RT 04. Acara diawali pembukaan dan menyanyikan lagu kebangsaan Indonesia Raya secara serentak dan khidmat. Selanjutnya sambutan dari Ketua RW 04 (Bpk. Karto), pembacaan doa bersama untuk para pahlawan dan keselamatan warga, dilanjutkan prosesi pemotongan tumpeng kemerdekaan serta ramah tamah warga. Acara kian semarak dengan pelaksanaan perlombaan bapak-bapak dan ibu-ibu serta perlombaan remaja yang disambut antusias oleh seluruh warga, kemudian ditutup dengan penuh suka cita dan kebersamaan.',
-    decisions: '1. Rangkaian acara Malam Tirakatan terlaksana dengan aman, tertib, lancar, dan guyub rukun.\n2. Pemotongan tumpeng dan konsumsi ramah tamah warga terealisasi tertib sesuai RAP BOP RT 04 APBD Kota Semarang.\n3. Perlombaan bapak-bapak, ibu-ibu, dan remaja berjalan meriah serta mempererat persaudaraan antarwarga RT 04.\n4. Panitia dan seluruh warga bersepakat menyukseskan acara Malam Resepsi pada 23 Agustus 2026.'
+    discussionNotes: '',
+    decisions: ''
   },
   {
     id: 'notulen-resepsi-23agustus',
@@ -344,8 +344,8 @@ export const rtNotulenPresets: NotulenPreset[] = [
       'Hiburan solo Organ',
       'Penutup'
     ],
-    discussionNotes: 'Malam Puncak Resepsi Peringatan HUT RI Ke-81 tanggal 23 Agustus 2026 tingkat RT 04 RW 04 Ngabean diselenggarakan meriah dengan panggung kebersamaan warga. Acara diawali pembukaan dan doa bersama, dilanjutkan sambutan Ketua RW 04 (Bpk. Karto) serta laporan dan sambutan dari Ketua Panitia HUT RI. Acara dilanjutkan dengan penampilan Pentas Seni anak-anak warga RT 04 yang menampilkan berbagai kreasi tari dan bakat, dukungan stan UMKM warga setempat untuk menggerakkan perekonomian lingkungan, serta hiburan musik solo organ yang menghibur warga dari berbagai generasi hingga acara ditutup dengan tertib dan penuh kehangatan.',
-    decisions: '1. Seluruh rangkaian Malam Resepsi HUT RI Ke-81 tanggal 23 Agustus 2026 sukses terlaksana dengan aman, tertib, dan meriah.\n2. Penampilan pentas seni anak-anak warga dan keterlibatan stan UMKM warga RT 04 mendapat apresiasi tinggi dari seluruh warga dan pengurus RW.\n3. Hiburan musik solo organ dan konsumsi malam resepsi terfasilitasi dengan baik melalui dukungan dana BOP RT 04 APBD Kota Semarang.\n4. Warga RT 04 siap melanjutkan kekompakan dan partisipasi dalam agenda karnaval kelurahan.'
+    discussionNotes: '',
+    decisions: ''
   }
 ];
 
@@ -806,14 +806,14 @@ export const pkkNotulenPresets: NotulenPreset[] = [
       'Jika ada kegiatan RT diharap ikut berpatisipasi',
       'Akan ada haul mbh kyai pati joyokusumo tanggal 13,14,15 januari untuk ikut berpartisipasi'
     ],
-    discussionNotes: 'Pertemuan rutin PKK RT 04 bulan Januari diawali dengan pembukaan, menyanyikan Mars PKK, dan pembacaan program pokok PKK. Dalam sambutannya, Ketua PKK memaparkan rancangan program kerja awal tahun dan laporan keuangan kas. Ditekankan pula tenggat waktu pelunasan simpan pinjam Bank Sampah agar segera diselesaikan. Seluruh kader dan anggota PKK dihimbau untuk terus menjaga kekompakan, berpartisipasi aktif dalam setiap kegiatan lingkungan RT, serta turut menyemarakkan acara Haul Mbah Kyai Pati Joyokusumo yang akan diselenggarakan pada tanggal 13, 14, dan 15 Januari mendatang.',
-    decisions: '1. Pelunasan simpan pinjam Bank Sampah disepakati untuk diselesaikan paling lambat pada pertemuan bulan depan.\n2. Seluruh anggota PKK berkomitmen untuk selalu guyub rukun dan berpartisipasi aktif dalam kegiatan gotong royong maupun agenda RT lainnya.\n3. Warga dan kader PKK sepakat untuk mendukung serta turut berpartisipasi dalam rangkaian acara Haul Mbah Kyai Pati Joyokusumo pada 13-15 Januari.'
+    discussionNotes: '',
+    decisions: ''
   },
   {
     id: 'pkk-notulen-pebruari',
     month: 'Pebruari',
     date: '2026-02-08',
-    time: '16:00 WIB',
+    time: '16.00 WIB',
     location: 'Bu Tisnani',
     participantCount: 36,
     invitedCount: 42,
@@ -821,18 +821,14 @@ export const pkkNotulenPresets: NotulenPreset[] = [
     leader: 'TISNANI S.',
     secretary: 'INDRIANAH',
     agendaItems: [
-      'Rapat dibuka dengan bacaan basmallah, ucapan salam dan terima kasih atas kehadiran ibu-ibu',
-      'Menyanyikan lagu Mars PKK dan membaca 10 program pokok PKK',
-      'Laporan keuangan bulanan PKK',
-      'Lain-lain: pengundian arisan Uang dan Gula + Telur',
-      'Undangan penyuluhan kesehatan di Balai RW (bersamaan dengan piket RW 04)',
-      'Persiapan Khaul Mbah Kyai Pati: penyediaan 40 snack per RT dibantu kas Bapak-bapak',
-      'Pembagian tabungan pribadi dan tabungan Bank Sampah',
-      'Himbauan iuran paguyuban kematian untuk tetap disetorkan',
-      'Penutup dengan bacaan hamdallah, ucapan salam dan terima kasih'
+      'Rapat dibuka dengan bacaan basmallah, ucapan salam dan terima kasih atas kehadiran ibu - ibu.',
+      'Menyanyikan Mars PKK dan membaca 10 program pokok PKK',
+      'Laporan keuangan',
+      'Lain - lain :\n      - Ada undangan penyuluhan kesehatan di balai RW pas piket RW 04\n      - Untuk khaul Mbah kyai Pati dapat jatah 40 snack per RT @ 10.000 dibantu kas Bapak2 200.000\n      - Pembagian tabungan pribadi dan tabungan Bank Sampah\n      - Paguyuban untuk kematian diminta walau sudah takziah kecuali yang tertimpa musibah.',
+      'PKK ditutup pukul 17.15 WIB dengan bacaan hamdallah, ucapan salam dan terimakasih.'
     ],
-    discussionNotes: 'Pertemuan rutin bulanan Kelompok PKK RT 04/04 Kelurahan Gunungpati dilaksanakan pada hari Minggu, 8 Februari 2026 bertempat di kediaman Ibu Tisnani. Rapat sekaligus agenda pembagian tabungan dihadiri oleh 36 orang dari 42 undangan (6 orang absen). Acara dimulai dengan pembukaan, menyanyikan Mars PKK, pembacaan 10 program pokok PKK, serta penyampaian laporan keuangan. Pada sesi lain-lain, dilakukan penarikan arisan di mana arisan uang diperoleh Bu Kaspini dan Bu Siti Sakdiyah, sementara arisan gula + telur didapatkan Bu Dwi K. dan Bu Zukanah. Dalam pembahasan inti, diinformasikan adanya undangan penyuluhan kesehatan di Balai RW yang bertepatan dengan jadwal piket RW 04. Selanjutnya dibahas perihal Khaul Mbah Kyai Pati di mana RT diminta menyediakan jatah 40 snack, yang akan dibantu dari kas Bapak-bapak sebesar Rp 200.000. Rapat juga mengagendakan pembagian tabungan pribadi dan tabungan Bank Sampah warga. Terakhir, diingatkan bahwa iuran paguyuban kematian diminta tetap disetorkan meskipun warga sudah melakukan takziah secara pribadi, kecuali bagi warga yang sedang tertimpa musibah.',
-    decisions: '1. Menetapkan penerima arisan bulan ini: Arisan Uang (Bu Kaspini & Bu Siti Sakdiyah) dan Arisan Gula + Telur (Bu Dwi K. & Bu Zukanah).\n2. Memenuhi undangan penyuluhan kesehatan di Balai RW 04 sesuai dengan penugasan piket.\n3. Berpartisipasi pada acara Khaul Mbah Kyai Pati dengan menyediakan 40 snack per RT dengan alokasi bantuan subsidi dari kas RT (Bapak-bapak) sebesar Rp 200.000.\n4. Membagikan pencairan tabungan pribadi dan hasil tabungan Bank Sampah warga.\n5. Menegaskan kembali aturan kewajiban iuran paguyuban kematian yang tetap harus dibayarkan meskipun warga sudah takziah sendiri, kecuali bagi yang sedang tertimpa musibah.',
+    discussionNotes: '',
+    decisions: '',
     arisanUang: 'Bu Kaspini dan Bu Siti Sakdiyah',
     arisanBarang: 'Bu Dwi K. dan Bu Zukanah'
   },
@@ -851,8 +847,8 @@ export const pkkNotulenPresets: NotulenPreset[] = [
       'Laporan Keuangan',
       'Lain-lain'
     ],
-    discussionNotes: 'Pertemuan rutin PKK RT 04 bulan Maret berjalan dengan lancar. Kegiatan diawali dengan menyanyikan lagu Mars PKK dan dilanjutkan dengan pembacaan program pokok PKK. Laporan keuangan bulanan dilaporkan dan disetujui bersama oleh anggota.',
-    decisions: '1. Laporan keuangan bulanan diterima oleh seluruh anggota PKK.\n2. Anggota PKK sepakat untuk terus meningkatkan partisipasi kegiatan.'
+    discussionNotes: '',
+    decisions: ''
   },
   {
     id: 'pkk-notulen-april',
@@ -876,8 +872,8 @@ export const pkkNotulenPresets: NotulenPreset[] = [
       'Rencana kegiatan jalan-jalan ke Benteng Pendem dan Sumurup pada 1 Mei 2026',
       'Penutup dengan bacaan hamdallah, ucapan salam dan terima kasih'
     ],
-    discussionNotes: 'Pertemuan rutin bulanan Kelompok PKK RT 04/04 Kelurahan Gunungpati dilaksanakan pada hari Minggu, 12 April 2026 bertempat di kediaman Ibu Tisnani. Rapat dihadiri oleh 32 orang dari total 42 undangan (10 orang absen). Rapat diawali dengan menyanyikan lagu Mars PKK dan pembacaan 10 Program Pokok PKK, diikuti penyampaian laporan keuangan. Pada sesi lain-lain, dilakukan pengundian arisan dengan pemenang arisan uang yaitu Bu Zukanah dan Bu Fitri, serta arisan gula + telur didapatkan oleh Bu Darmi dan Bu Sri Wahtini. Karena masih berada dalam suasana bulan Syawal, rapat rutin kali ini sekaligus dirangkai dengan acara Halal Bihalal antar anggota PKK. Dalam sesi pembahasan program kerja, diinformasikan rencana keikutsertaan dalam Lomba Hatinya PKK di tingkat RW 04 serta Lomba Grengreng tingkat RT 04 yang akan diselenggarakan pada bulan Agustus mendatang. Terakhir, dibahas dan disepakati rencana kegiatan wisata jalan-jalan ke Benteng Pendem dan Sumurup yang dijadwalkan pada tanggal 1 Mei 2026.',
-    decisions: '1. Pemenang arisan: Arisan Uang (Bu Zukanah & Bu Fitri) dan Arisan Gula + Telur (Bu Darmi & Bu Sri Wahtini).\n2. Mengadakan acara Halal Bihalal di sela-sela rapat rutin bulan April.\n3. Berkomitmen untuk bersiap dan berpartisipasi dalam Lomba Hatinya PKK tingkat RW 04 serta Lomba Grengreng tingkat RT 04 (Agustus).\n4. Merencanakan dan menyepakati pelaksanaan kegiatan wisata (jalan-jalan) PKK ke Benteng Pendem dan Sumurup pada tanggal 1 Mei 2026.',
+    discussionNotes: '',
+    decisions: '',
     arisanUang: 'Bu Zukanah dan Bu Fitri',
     arisanBarang: 'Bu Darmi dan Bu Sri Wahtini'
   },
@@ -902,8 +898,8 @@ export const pkkNotulenPresets: NotulenPreset[] = [
       'Pemberantasan Jentik Nyamuk (PJN)',
       'Penutup dengan bacaan hamdallah, ucapan salam dan terima kasih'
     ],
-    discussionNotes: 'Pertemuan rutin bulanan Kelompok PKK RT 04/04 Kelurahan Gunungpati dilaksanakan pada tanggal 10 Mei 2026 bertempat di kediaman Ibu Tisnani. Rapat dihadiri oleh 37 orang dari 42 undangan. Setelah dibuka dengan doa dan menyanyikan Mars PKK, acara dilanjutkan dengan laporan keuangan dan pengundian arisan. Arisan uang didapatkan oleh Bu Sri Wahtini & Bu Miranti, sedangkan arisan gula + telur didapatkan oleh Bu Sofiyatun & Bu Jeki. Pada sesi pembahasan program kerja, difokuskan pada perumusan dan pembahasan Rencana Bantuan Operasional RT (BOP) tahun 2026. Selain itu, diinformasikan kepada seluruh warga bahwa akan ada lomba administrasi Dasawisma (Dawis) dan Hatinya PKK. Walaupun tanggal dan bulan pelaksanaannya belum dipastikan, warga diminta untuk mempersiapkan diri sejak awal. Diingatkan juga bahwa kegiatan rutin Pemberantasan Jentik Nyamuk (PJN) harus tetap dilaksanakan secara konsisten demi menjaga kesehatan lingkungan.',
-    decisions: '1. Pemenang arisan: Arisan Uang (Bu Sri Wahtini & Bu Miranti) dan Arisan Gula + Telur (Bu Sofiyatun & Bu Jeki).\n2. Membahas dan menyepakati rancangan Rencana Anggaran BOP RT tahun 2026.\n3. Mempersiapkan kelengkapan administrasi Dawis dan kesiapan Hatinya PKK lebih awal untuk mengantisipasi jadwal lomba.\n4. Memastikan kegiatan Pemberantasan Jentik Nyamuk (PJN) di lingkungan RT 04 tetap berjalan secara berkesinambungan.',
+    discussionNotes: '',
+    decisions: '',
     arisanUang: 'Bu Sri Wahtini & Bu Miranti',
     arisanBarang: 'Bu Sofiyatun & Bu Jeki'
   },
@@ -928,8 +924,8 @@ export const pkkNotulenPresets: NotulenPreset[] = [
       'Menampilkan inovasi lingkungan (jika ada)',
       'Penutup dengan bacaan hamdallah, ucapan salam dan terima kasih'
     ],
-    discussionNotes: 'Pertemuan rutin bulanan Kelompok PKK RT 04/04 Kelurahan Gunungpati diselenggarakan pada tanggal 7 Juni 2026 di kediaman Ibu Tisnani. Rapat dihadiri oleh 36 orang dari 42 undangan (6 orang absen). Acara dimulai dengan pembukaan, menyanyikan Mars PKK, serta pembacaan 10 Program Pokok PKK yang dipimpin oleh Bu Cahya. Agenda dilanjutkan dengan penyampaian laporan keuangan dan pengundian arisan bulanan. Pemenang arisan uang adalah Bu Tisnani & Bu Chairun, sementara arisan gula + telur diraih oleh Bu Dea & Bu Jumiyati. Memasuki sesi pembahasan utama, rapat difokuskan pada persiapan akhir menghadapi lomba Bank Sampah dan Taman Toga yang dijadwalkan pada tanggal 12 Juni 2026. Berkaitan dengan hal tersebut, seluruh warga diminta untuk berpartisipasi aktif melakukan kerja bakti bersih-bersih lingkungan. Selain itu, dihimbau agar jemuran pakaian warga dikondisikan supaya terlihat rapi selama masa penilaian lomba. Jika ada warga yang memiliki inovasi atau kreasi di bidang lingkungan, dipersilakan untuk menampilkannya sebagai nilai tambah dalam perlombaan.',
-    decisions: '1. Pemenang arisan: Arisan Uang (Bu Tisnani & Bu Chairun) dan Arisan Gula + Telur (Bu Dea & Bu Jumiyati).\n2. Mematangkan persiapan lomba Bank Sampah dan Taman Toga yang akan diselenggarakan pada 12 Juni 2026.\n3. Warga sepakat untuk mengondisikan jemuran pakaian dan mengadakan bersih-bersih lingkungan secara menyeluruh.\n4. Mendorong warga untuk menampilkan inovasi kreatif terkait lingkungan (Bank Sampah/TOGA) pada saat penilaian lomba berlangsung.',
+    discussionNotes: '',
+    decisions: '',
     arisanUang: 'Bu Tisnani & Bu Chairun',
     arisanBarang: 'Bu Dea & Bu Jumiyati'
   },
@@ -955,8 +951,8 @@ export const pkkNotulenPresets: NotulenPreset[] = [
       'Pembahasan alokasi dana BOP RT tahun anggaran 2026 yang nilainya sama seperti tahun kemarin',
       'Penutup dengan bacaan hamdallah, ucapan salam dan terima kasih'
     ],
-    discussionNotes: 'Pertemuan rutin bulanan Kelompok PKK RT 04/04 Kelurahan Gunungpati dilaksanakan pada hari Minggu, 5 Juli 2026 di kediaman Ibu Tisrani. Acara dihadiri oleh 11 orang dari total 42 orang yang diundang (31 orang tidak hadir). Rapat diawali dengan menyanyikan lagu Mars PKK dan pembacaan 10 Program Pokok PKK dipimpin oleh Ibu Dea. Dilanjutkan dengan laporan keuangan bulanan. Pada sesi lain-lain, dibahas iuran Uang (Dea dan Rita) serta Gula (Bu Sumilah dan Bu Kartun). Ketua PKK mengucapkan terima kasih kepada ibu-ibu yang sudah berpartisipasi dalam lomba Bank Sampah dan Hatinya PKK sehingga berhasil meraih Juara 1 tingkat RW, di mana hadiah lomba akan dibagi rata untuk 4 RT. Selain itu, dihimbau kepada seluruh warga yang belum bergabung dengan Bank Sampah agar segera ikut berpartisipasi. Terkait perawatan lingkungan, bagi kader yang jadwal piket taman TOGA-nya tidak sesuai, diperkenankan piket pada hari lain yang bisa asalkan taman TOGA tetap terawat dengan baik. Terakhir, dibahas anggaran dana BOP RT tahun anggaran 2026 yang disepakati sama seperti tahun kemarin.',
-    decisions: '1. Keberhasilan meraih Juara 1 Lomba Bank Sampah dan Hatinya PKK tingkat RW, hadiah lomba disepakati untuk dibagi rata untuk 4 RT.\n2. Warga yang belum bergabung dengan Bank Sampah dimohon dan dihimbau untuk ikut aktif dalam program Bank Sampah.\n3. Jadwal piket taman TOGA bersifat fleksibel: anggota yang tidak sesuai jadwal dipersilakan piket di hari lain sesuai kesediaan, yang terpenting taman TOGA tetap terawat.\n4. Penggunaan dana BOP RT tahun anggaran 2026 disepakati mengikuti formula dan jumlah yang sama dengan tahun kemarin.',
+    discussionNotes: '',
+    decisions: '',
     arisanUang: 'Dea dan Rita',
     arisanBarang: 'Bu Sumilah dan Bu Kartun'
   },
@@ -983,8 +979,8 @@ export const pkkNotulenPresets: NotulenPreset[] = [
       'Rencana Jalan Sehat pada tanggal 23 Agustus 2026 bertempat di depan rumah Ibu Dea RT 04',
       'Penutup dengan bacaan hamdallah, ucapan salam dan terima kasih'
     ],
-    discussionNotes: 'Pertemuan rutin bulanan Kelompok PKK RT 04/04 Kelurahan Gunungpati dilaksanakan pada hari Minggu, 2 Agustus 2026 bertempat di kediaman Ibu Tisrani. Pertemuan dihadiri oleh 31 orang dari total 42 orang diundang (11 orang berhalangan hadir). Acara dimulai dengan pembukaan dengan membaca basmallah dilanjutkan menyanyikan lagu Mars PKK serta pembacaan 1 program pokok PKK dipimpin oleh Ibu Eka H. Setelah laporan keuangan bulanan, sesi lain-lain membahas pengundian pemenang arisan di mana pemenang arisan Uang adalah Bu Indrianah dan Bu Tinah, sedangkan arisan Gula + Telur didapatkan oleh Bu Lukita Sari dan Hanavia. Terkait program Dasawisma (Dawis) 2026, diinformasikan bahwa perlombaan hanya diikuti oleh 4 RW saja sementara RW lainnya cukup menyetorkan data pendukung. Selanjutnya dilakukan koordinasi intensif menyambut HUT RI ke-81: pelaksanaan Malam Tirakatan diputuskan bertempat di perempatan lingkungan seperti tahun lalu dengan penyiapan hidangan snack sebanyak ±150 porsi. Pada kesempatan ini pula disampaikan rincian penggunaan anggaran BOP RT sebesar Rp 25 juta. Agenda perayaan kemerdekaan lainnya seperti menu konsumsi Malam Tirakatan, kegiatan Karnaval (30 Agustus 2026), Malam Resepsi (23 Agustus 2026) beserta penentuan kostum karnaval dibahas secara musyawarah. Terakhir, disepakati penyelenggaraan Jalan Sehat pada Minggu pagi, 23 Agustus 2026 dengan titik kumpul di depan kediaman Ibu Dea RT 04.',
-    decisions: '1. Pemenang arisan bulanan: Arisan Uang (Bu Indrianah & Bu Tinah) dan Arisan Gula + Telur (Bu Lukita Sari & Hanavia).\n2. Untuk lomba Dasawisma (Dawis) 2026, disepakati hanya diikuti oleh 4 RW saja sementara RW lainnya fokus menyetorkan data administrasi.\n3. Malam Tirakatan HUT RI ke-81 akan diselenggarakan di perempatan jalan lingkungan dengan menyiapkan konsumsi snack sebanyak 150 porsi.\n4. Rangkaian perayaan kemerdekaan: Jalan Sehat disepakati pada tanggal 23 Agustus 2026 bertempat di depan kediaman Ibu Dea RT 04, Malam Resepsi pada 23 Agustus 2026, dan Karnaval dengan kostum kustom pada tanggal 30 Agustus 2026.',
+    discussionNotes: '',
+    decisions: '',
     arisanUang: 'Bu Indrianah dan Bu Tinah',
     arisanBarang: 'Bu Lukita Sari dan Hanavia'
   }

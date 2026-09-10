@@ -2046,18 +2046,26 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
               {/* I. Susunan Acara Rapat (Kompak 2 Kolom) */}
               <div className="mb-4">
                 <div className="text-sm print:text-sm font-bold uppercase bg-slate-100 py-1.5 px-2.5 border-l-4 border-slate-900 text-slate-900 mb-2">
-                  {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus'
-                    ? 'I. Susunan Acara Pelaksanaan Kegiatan'
-                    : 'I. Susunan Agenda / Acara Rapat'}
+                  {!discussionNotes?.trim() && !decisions?.trim() 
+                    ? 'Uraian Jalannya Acara'
+                    : selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus'
+                      ? 'I. Susunan Acara Pelaksanaan Kegiatan'
+                      : 'I. Susunan Agenda / Acara Rapat'}
                 </div>
                 <div className={`grid ${meetingType === 'pkk' ? 'grid-cols-1' : 'grid-cols-2'} gap-x-4 gap-y-1.5 text-[13px] print:text-[13px] pl-3 leading-relaxed text-slate-800`}>
                   {agendaItems.map((ag, i) => (
                     <div key={i} className="flex space-x-2">
                       <span className="font-bold text-slate-900">{i + 1}.</span>
                       <span className="whitespace-pre-line">
-                        {ag}
-                        {meetingType === 'pkk' && ag.toLowerCase().includes('lain-lain') && (arisanUang || arisanBarang) && (
-                          <>{`\n      Uang : ${arisanUang || '-'}\n      Gula dan Telur : ${arisanBarang || '-'}`}</>
+                        {meetingType === 'pkk' && ag.toLowerCase().includes('lain-lain') && (arisanUang || arisanBarang) ? (
+                          <>
+                            {ag.includes('\n') ? ag.split('\n')[0] : ag}
+                            {arisanUang ? `\n      - Uang : ${arisanUang}` : ''}
+                            {arisanBarang ? `\n      - Gula + telur : ${arisanBarang}` : ''}
+                            {ag.includes('\n') ? '\n' + ag.substring(ag.indexOf('\n') + 1) : ''}
+                          </>
+                        ) : (
+                          ag
                         )}
                       </span>
                     </div>
@@ -2066,28 +2074,32 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
               </div>
 
               {/* II. Uraian Pembahasan / Jalannya Acara */}
-              <div className="mb-4">
-                <div className="text-sm print:text-sm font-bold uppercase bg-slate-100 py-1.5 px-2.5 border-l-4 border-slate-900 text-slate-900 mb-2">
-                  {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus'
-                    ? 'II. Uraian Jalannya Acara & Pelaksanaan Kegiatan'
-                    : 'II. Uraian Pembahasan & Diskusi Rapat'}
+              {discussionNotes?.trim() && (
+                <div className="mb-4">
+                  <div className="text-sm print:text-sm font-bold uppercase bg-slate-100 py-1.5 px-2.5 border-l-4 border-slate-900 text-slate-900 mb-2">
+                    {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus'
+                      ? 'II. Uraian Jalannya Acara & Pelaksanaan Kegiatan'
+                      : 'II. Uraian Pembahasan & Diskusi Rapat'}
+                  </div>
+                  <div className="text-[13px] print:text-[13px] text-justify leading-relaxed whitespace-pre-line text-slate-900 border border-slate-300 rounded p-3 bg-slate-50/40 print:bg-transparent print:p-0 print:border-none">
+                    {discussionNotes}
+                  </div>
                 </div>
-                <div className="text-[13px] print:text-[13px] text-justify leading-relaxed whitespace-pre-line text-slate-900 border border-slate-300 rounded p-3 bg-slate-50/40 print:bg-transparent print:p-0 print:border-none">
-                  {discussionNotes}
-                </div>
-              </div>
+              )}
 
               {/* III. Hasil Keputusan / Kesepakatan Warga */}
-              <div className="mb-6">
-                <div className="text-sm print:text-sm font-bold uppercase bg-slate-100 py-1.5 px-2.5 border-l-4 border-slate-900 text-slate-900 mb-2">
-                  {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus'
-                    ? 'III. Hasil Pelaksanaan Kegiatan & Kesimpulan'
-                    : 'III. Hasil Keputusan & Kesepakatan Warga'}
+              {decisions?.trim() && (
+                <div className="mb-6">
+                  <div className="text-sm print:text-sm font-bold uppercase bg-slate-100 py-1.5 px-2.5 border-l-4 border-slate-900 text-slate-900 mb-2">
+                    {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus'
+                      ? 'III. Hasil Pelaksanaan Kegiatan & Kesimpulan'
+                      : 'III. Hasil Keputusan & Kesepakatan Warga'}
+                  </div>
+                  <div className="text-[13px] print:text-[13px] text-justify leading-relaxed whitespace-pre-line text-slate-900 font-medium border border-slate-300 rounded p-3 bg-slate-50/40 print:bg-transparent print:p-0 print:border-none">
+                    {decisions}
+                  </div>
                 </div>
-                <div className="text-[13px] print:text-[13px] text-justify leading-relaxed whitespace-pre-line text-slate-900 font-medium border border-slate-300 rounded p-3 bg-slate-50/40 print:bg-transparent print:p-0 print:border-none">
-                  {decisions}
-                </div>
-              </div>
+              )}
 
               {closingSentence && (
                 <div className="text-[13px] print:text-[13px] text-slate-900 mb-6 text-justify">
