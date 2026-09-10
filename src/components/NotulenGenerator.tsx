@@ -1,7 +1,7 @@
 import { DEFAULT_SEMARANG_LOGO } from '../data/initialData';
 import React, { useState, useEffect } from 'react';
 import { RtProfile, AttendeeItem, NotulenPreset } from '../types';
-import { formatDate } from '../utils/formatters';
+import { formatDate, formatDateWithDay } from '../utils/formatters';
 import { rtNotulenPresets, pkkNotulenPresets, defaultRtAttendees, defaultPkkAttendees } from '../data/initialData';
 import { 
   FileText, 
@@ -484,7 +484,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
               <tr>
                 <td className="w-32 py-1">Hari, Tanggal</td>
                 <td className="w-4 py-1">:</td>
-                <td className="py-1">{formatDate(date)}</td>
+                <td className="py-1">{formatDateWithDay(date)}</td>
               </tr>
               <tr>
                 <td className="py-1">Waktu</td>
@@ -1133,7 +1133,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                     <tr>
                       <td className="py-0.5 font-bold w-32">Hari / Tanggal</td>
                       <td className="py-0.5 w-4 font-bold">:</td>
-                      <td className="py-0.5">{formatDate(date)}</td>
+                      <td className="py-0.5">{formatDateWithDay(date)}</td>
                     </tr>
                     <tr>
                       <td className="py-0.5 font-bold w-32">Waktu / Pukul</td>
@@ -1640,7 +1640,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                     <div className="flex">
                       <span className="w-20 font-bold shrink-0">Hari / tanggal</span>
                       <span className="w-2 font-bold">:</span>
-                      <span className="font-semibold text-slate-900">{formatDate(date)}</span>
+                      <span className="font-semibold text-slate-900">{formatDateWithDay(date)}</span>
                     </div>
                     <div className="flex">
                       <span className="w-16 font-bold shrink-0">Tempat</span>
@@ -1830,7 +1830,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                     <div className="flex">
                       <span className="w-20 font-bold shrink-0">Hari / tanggal</span>
                       <span className="w-2 font-bold">:</span>
-                      <span className="font-semibold text-slate-900">{formatDate(date)}</span>
+                      <span className="font-semibold text-slate-900">{formatDateWithDay(date)}</span>
                     </div>
                     <div className="flex">
                       <span className="w-16 font-bold shrink-0">Tempat</span>
@@ -1994,7 +1994,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                 <tbody>
                   <tr>
                     <td className="border border-slate-900 py-1.5 px-2.5 font-bold bg-slate-100 w-32">Hari / Tanggal</td>
-                    <td className="border border-slate-900 py-1.5 px-2.5 font-semibold text-slate-900 w-[30%]">{formatDate(date)}</td>
+                    <td className="border border-slate-900 py-1.5 px-2.5 font-semibold text-slate-900 w-[30%]">{formatDateWithDay(date)}</td>
                     <td className="border border-slate-900 py-1.5 px-2.5 font-bold bg-slate-100 w-40">Pimpinan Rapat</td>
                     <td className="border border-slate-900 py-1.5 px-2.5 font-semibold text-slate-900">{leader}</td>
                   </tr>
