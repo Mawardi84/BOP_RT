@@ -929,19 +929,29 @@ export const pkkNotulenPresets: NotulenPreset[] = [
   {
     id: 'pkk-notulen-agustus',
     month: 'Agustus',
-    date: '2026-08-04',
-    time: '15:30 - selesai',
-    location: 'Kediaman Ibu Tistani Subandiyah',
-    participantCount: 40,
-    leader: 'TISTANI SUBANDIYAH',
+    date: '2026-08-02',
+    time: '16:00 - 17:15 WIB',
+    location: 'Ibu Tisrani',
+    participantCount: 31,
+    invitedCount: 42,
+    absentNames: 'Rita, Astariyah, Cahya, Jeki, Fitri, Sri Jamu, Kartun, Dwi K., Hanavia, Jumainah, Sumarni',
+    leader: 'TISRANI S.',
     secretary: 'INDRIANAH',
     agendaItems: [
-      'Rapat dibuka dengan bacaan basmallah, ucapan salam dan ucapan terima kasih atas kehadiran ibu ibu PKK',
-      'Menyanyikan Mars PKK dan pembacaan 1 program pokok PKK',
-      'Laporan Keuangan',
-      'Lain-lain'
+      'Rapat dibuka dengan bacaan basmallah, ucapan salam dan terima kasih atas kehadiran ibu-ibu',
+      'Menyanyikan lagu Mars PKK dan membaca 10 program pokok PKK (Ibu Eka H.)',
+      'Laporan pertanggungjawaban keuangan PKK bulanan',
+      'Lain-lain: pengundian arisan Uang (Bu Indrianah & Bu Tinah) dan Gula + Telur (Bu Lukita Sari & Hanavia)',
+      'Pembahasan Dawis 2026: perlombaan hanya diikuti oleh 4 RW saja, sedangkan RW lain menyetorkan data',
+      'Persiapan Malam Tirakatan: pelaksanaan di perempatan jalan (seperti tahun lalu) dengan membuat snack sekitar 150 porsi',
+      'Penyampaian rincian pengelolaan dana BOP RT Pemkot Semarang sebesar Rp 25.000.000',
+      'Rapat koordinasi menu makanan Malam Tirakatan, penyelenggaraan Karnaval (30 Agustus 2026), Malam Resepsi (23 Agustus 2026), serta persiapan kostum karnaval',
+      'Rencana Jalan Sehat pada tanggal 23 Agustus 2026 bertempat di depan rumah Ibu Dea RT 04',
+      'Penutup dengan bacaan hamdallah, ucapan salam dan terima kasih'
     ],
-    discussionNotes: 'Pertemuan rutin PKK RT 04 bulan Agustus berjalan dengan lancar. Kegiatan diawali dengan menyanyikan lagu Mars PKK dan dilanjutkan dengan pembacaan program pokok PKK. Laporan keuangan bulanan dilaporkan dan disetujui bersama oleh anggota.',
-    decisions: '1. Laporan keuangan bulanan diterima oleh seluruh anggota PKK.\n2. Anggota PKK sepakat untuk terus meningkatkan partisipasi kegiatan.'
+    discussionNotes: 'Pertemuan rutin bulanan Kelompok PKK RT 04/04 Kelurahan Gunungpati dilaksanakan pada hari Minggu, 2 Agustus 2026 bertempat di kediaman Ibu Tisrani. Pertemuan dihadiri oleh 31 orang dari total 42 orang diundang (11 orang berhalangan hadir). Acara dimulai dengan pembukaan dengan membaca basmallah dilanjutkan menyanyikan lagu Mars PKK serta pembacaan 1 program pokok PKK dipimpin oleh Ibu Eka H. Setelah laporan keuangan bulanan, sesi lain-lain membahas pengundian pemenang arisan di mana pemenang arisan Uang adalah Bu Indrianah dan Bu Tinah, sedangkan arisan Gula + Telur didapatkan oleh Bu Lukita Sari dan Hanavia. Terkait program Dasawisma (Dawis) 2026, diinformasikan bahwa perlombaan hanya diikuti oleh 4 RW saja sementara RW lainnya cukup menyetorkan data pendukung. Selanjutnya dilakukan koordinasi intensif menyambut HUT RI ke-81: pelaksanaan Malam Tirakatan diputuskan bertempat di perempatan lingkungan seperti tahun lalu dengan penyiapan hidangan snack sebanyak ±150 porsi. Pada kesempatan ini pula disampaikan rincian penggunaan anggaran BOP RT sebesar Rp 25 juta. Agenda perayaan kemerdekaan lainnya seperti menu konsumsi Malam Tirakatan, kegiatan Karnaval (30 Agustus 2026), Malam Resepsi (23 Agustus 2026) beserta penentuan kostum karnaval dibahas secara musyawarah. Terakhir, disepakati penyelenggaraan Jalan Sehat pada Minggu pagi, 23 Agustus 2026 dengan titik kumpul di depan kediaman Ibu Dea RT 04.',
+    decisions: '1. Pemenang arisan bulanan: Arisan Uang (Bu Indrianah & Bu Tinah) dan Arisan Gula + Telur (Bu Lukita Sari & Hanavia).\n2. Untuk lomba Dasawisma (Dawis) 2026, disepakati hanya diikuti oleh 4 RW saja sementara RW lainnya fokus menyetorkan data administrasi.\n3. Malam Tirakatan HUT RI ke-81 akan diselenggarakan di perempatan jalan lingkungan dengan menyiapkan konsumsi snack sebanyak 150 porsi.\n4. Rangkaian perayaan kemerdekaan: Jalan Sehat disepakati pada tanggal 23 Agustus 2026 bertempat di depan kediaman Ibu Dea RT 04, Malam Resepsi pada 23 Agustus 2026, dan Karnaval dengan kostum kustom pada tanggal 30 Agustus 2026.',
+    arisanUang: 'Bu Indrianah dan Bu Tinah',
+    arisanBarang: 'Bu Lukita Sari dan Hanavia'
   }
 ];
