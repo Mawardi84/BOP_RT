@@ -610,7 +610,7 @@ export const PengambilanBulananGenerator: React.FC<PengambilanBulananGeneratorPr
         {/* Signatures */}
         <div className="mt-8 text-[13px] page-break-inside-avoid">
           <div className="text-center mb-4">
-            <p className="mb-2">Semarang, &nbsp;&nbsp;&nbsp;&nbsp; {periodeLabel} {profile.year}</p>
+            <p className="mb-2">Semarang, &nbsp;&nbsp;&nbsp;&nbsp; {periodeLabel}</p>
             <p className="mb-6">Yang Mengambil</p>
           </div>
           
