@@ -749,6 +749,25 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
             </span>
           </div>
 
+          {docViewMode !== 'notulen' && (
+            <div className="p-3 bg-indigo-50 border border-indigo-100 rounded-xl text-indigo-800">
+              <div className="font-semibold flex items-center gap-1.5 mb-1 text-indigo-900">
+                <Bot className="w-3.5 h-3.5" />
+                <span>Ingin Edit & Generate Notulen?</span>
+              </div>
+              <p className="text-[10px] leading-normal mb-2">
+                Tombol <strong>Generate AI</strong> dan pengaturan detail pembahasan rapat berada di tab <strong>Notulen Rapat</strong>.
+              </p>
+              <button
+                type="button"
+                onClick={() => setDocViewMode('notulen')}
+                className="w-full text-center py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-[10px] transition-all"
+              >
+                Buka Tab Notulen Rapat & Generate AI
+              </button>
+            </div>
+          )}
+
           {/* Layout Mode Selector for Daftar Hadir */}
           {docViewMode === 'daftar-hadir' && (
             <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
