@@ -78,6 +78,48 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
 
   const [newAgenda, setNewAgenda] = useState('');
 
+  // Auto-save changes to the currently selected preset in memory
+  useEffect(() => {
+    if (!selectedPresetId) return;
+    const updatedPreset: NotulenPreset = {
+      id: selectedPresetId,
+      month,
+      date,
+      time,
+      location,
+      participantCount,
+      leader,
+      secretary,
+      agendaItems,
+      discussionNotes,
+      decisions,
+      invitedCount,
+      absentNames,
+      arisanUang,
+      arisanBarang
+    };
+    
+    if (meetingType === 'rt') {
+      setRtPresets(prev => {
+        const idx = prev.findIndex(p => p.id === selectedPresetId);
+        if (idx === -1) return prev;
+        if (JSON.stringify(prev[idx]) === JSON.stringify(updatedPreset)) return prev;
+        const copy = [...prev];
+        copy[idx] = updatedPreset;
+        return copy;
+      });
+    } else {
+      setPkkPresets(prev => {
+        const idx = prev.findIndex(p => p.id === selectedPresetId);
+        if (idx === -1) return prev;
+        if (JSON.stringify(prev[idx]) === JSON.stringify(updatedPreset)) return prev;
+        const copy = [...prev];
+        copy[idx] = updatedPreset;
+        return copy;
+      });
+    }
+  }, [selectedPresetId, month, date, time, location, participantCount, leader, secretary, agendaItems, discussionNotes, decisions, invitedCount, absentNames, arisanUang, arisanBarang, meetingType]);
+
   // Roman numeral and month index helpers for official documents
   const getRomanMonth = (m: string) => {
     const map: Record<string, string> = {
@@ -136,6 +178,10 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
       setSecretary(preset.secretary || profile.sekretaris);
     }
     setParticipantCount(preset.participantCount);
+    setInvitedCount(preset.invitedCount !== undefined ? preset.invitedCount : 45);
+    setAbsentNames(preset.absentNames !== undefined ? preset.absentNames : '');
+    setArisanUang(preset.arisanUang !== undefined ? preset.arisanUang : '');
+    setArisanBarang(preset.arisanBarang !== undefined ? preset.arisanBarang : '');
     setAgendaItems([...preset.agendaItems]);
     setDiscussionNotes(preset.discussionNotes);
     setDecisions(preset.decisions);
@@ -587,6 +633,19 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
               <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
                 {meetingType === 'rt' ? 'Pertemuan Rutin Warga RT 04 (2026)' : 'Pertemuan Rutin PKK RT 04 (2026)'}
               </span>
+              <button
+                type="button"
+                onClick={() => {
+                  if (confirm('Apakah Anda yakin ingin mengatur ulang semua preset jadwal & notulen ke data bawaan? Semua perubahan kustom Anda akan dikembalikan.')) {
+                    localStorage.removeItem('rtNotulenPresets');
+                    localStorage.removeItem('pkkNotulenPresets');
+                    window.location.reload();
+                  }
+                }}
+                className="text-[10px] text-rose-600 hover:text-rose-700 font-bold hover:underline transition-colors ml-3"
+              >
+                (Reset ke Default)
+              </button>
             </div>
           </div>
           

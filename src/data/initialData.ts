@@ -902,20 +902,29 @@ export const pkkNotulenPresets: NotulenPreset[] = [
   {
     id: 'pkk-notulen-juli',
     month: 'Juli',
-    date: '2026-07-06',
-    time: '15:30 - selesai',
-    location: 'Kediaman Ibu Tistani Subandiyah',
-    participantCount: 40,
-    leader: 'TISTANI SUBANDIYAH',
+    date: '2026-07-05',
+    time: '16:00 - 17:15 WIB',
+    location: 'Ibu Tisrani',
+    participantCount: 11,
+    invitedCount: 42,
+    absentNames: 'Dwi, Sumarni, Apri, Siti Saiduyah, Sotiyaun, Hanavia, Ngatinah, Jeki, Astariyah, Riroh, Sri Wahtini',
+    leader: 'TISRANI S.',
     secretary: 'INDRIANAH',
     agendaItems: [
-      'Rapat dibuka dengan bacaan basmallah, ucapan salam dan ucapan terima kasih atas kehadiran ibu ibu PKK',
-      'Menyanyikan Mars PKK dan pembacaan 1 program pokok PKK',
-      'Laporan Keuangan',
-      'Lain-lain'
+      'Rapat dibuka dengan bacaan basmallah, ucapan salam dan terima kasih atas kehadiran ibu-ibu',
+      'Menyanyikan lagu Mars PKK dan membaca 10 program pokok PKK (Ibu Dea)',
+      'Laporan keuangan bulanan PKK',
+      'Lain-lain: pembahasan iuran Uang (Dea dan Rita) dan Gula (Bu Sumilah dan Bu Kartun)',
+      'Apresiasi partisipasi warga lomba Bank Sampah dan Hatinya PKK hingga meraih Juara 1 tingkat RW (hadiah dibagi 4 RT)',
+      'Dimohon seluruh warga untuk ikut Bank Sampah bagi yang belum bergabung',
+      'Piket taman TOGA PKK: penyesuaian jadwal bagi yang tidak sesuai agar taman TOGA tetap terawat',
+      'Pembahasan alokasi dana BOP RT tahun anggaran 2026 yang nilainya sama seperti tahun kemarin',
+      'Penutup dengan bacaan hamdallah, ucapan salam dan terima kasih'
     ],
-    discussionNotes: 'Pertemuan rutin PKK RT 04 bulan Juli berjalan dengan lancar. Kegiatan diawali dengan menyanyikan lagu Mars PKK dan dilanjutkan dengan pembacaan program pokok PKK. Laporan keuangan bulanan dilaporkan dan disetujui bersama oleh anggota.',
-    decisions: '1. Laporan keuangan bulanan diterima oleh seluruh anggota PKK.\n2. Anggota PKK sepakat untuk terus meningkatkan partisipasi kegiatan.'
+    discussionNotes: 'Pertemuan rutin bulanan Kelompok PKK RT 04/04 Kelurahan Gunungpati dilaksanakan pada hari Minggu, 5 Juli 2026 di kediaman Ibu Tisrani. Acara dihadiri oleh 11 orang dari total 42 orang yang diundang (31 orang tidak hadir). Rapat diawali dengan menyanyikan lagu Mars PKK dan pembacaan 10 Program Pokok PKK dipimpin oleh Ibu Dea. Dilanjutkan dengan laporan keuangan bulanan. Pada sesi lain-lain, dibahas iuran Uang (Dea dan Rita) serta Gula (Bu Sumilah dan Bu Kartun). Ketua PKK mengucapkan terima kasih kepada ibu-ibu yang sudah berpartisipasi dalam lomba Bank Sampah dan Hatinya PKK sehingga berhasil meraih Juara 1 tingkat RW, di mana hadiah lomba akan dibagi rata untuk 4 RT. Selain itu, dihimbau kepada seluruh warga yang belum bergabung dengan Bank Sampah agar segera ikut berpartisipasi. Terkait perawatan lingkungan, bagi kader yang jadwal piket taman TOGA-nya tidak sesuai, diperkenankan piket pada hari lain yang bisa asalkan taman TOGA tetap terawat dengan baik. Terakhir, dibahas anggaran dana BOP RT tahun anggaran 2026 yang disepakati sama seperti tahun kemarin.',
+    decisions: '1. Keberhasilan meraih Juara 1 Lomba Bank Sampah dan Hatinya PKK tingkat RW, hadiah lomba disepakati untuk dibagi rata untuk 4 RT.\n2. Warga yang belum bergabung dengan Bank Sampah dimohon dan dihimbau untuk ikut aktif dalam program Bank Sampah.\n3. Jadwal piket taman TOGA bersifat fleksibel: anggota yang tidak sesuai jadwal dipersilakan piket di hari lain sesuai kesediaan, yang terpenting taman TOGA tetap terawat.\n4. Penggunaan dana BOP RT tahun anggaran 2026 disepakati mengikuti formula dan jumlah yang sama dengan tahun kemarin.',
+    arisanUang: 'Dea dan Rita',
+    arisanBarang: 'Bu Sumilah dan Bu Kartun'
   },
   {
     id: 'pkk-notulen-agustus',

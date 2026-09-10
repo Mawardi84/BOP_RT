@@ -113,6 +113,10 @@ export interface NotulenPreset {
   agendaItems: string[];
   discussionNotes: string;
   decisions: string;
+  invitedCount?: number;
+  absentNames?: string;
+  arisanUang?: string;
+  arisanBarang?: string;
 }
 
 export interface AttendeeItem {
