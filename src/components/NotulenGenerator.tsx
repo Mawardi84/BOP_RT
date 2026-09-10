@@ -226,11 +226,19 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
           month
         })
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to generate content');
+
+      const responseText = await response.text();
+      let data: any = {};
+      try {
+        data = responseText ? JSON.parse(responseText) : {};
+      } catch (parseErr) {
+        throw new Error(responseText || 'Server returned invalid response');
       }
-      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to generate content');
+      }
+
       if (data.discussionNotes) setDiscussionNotes(data.discussionNotes);
       if (data.decisions) setDecisions(data.decisions);
     } catch (err: any) {
