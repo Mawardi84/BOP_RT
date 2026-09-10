@@ -161,6 +161,8 @@ export const MonthlySpjManager: React.FC<MonthlySpjManagerProps> = ({
   const portraitCount = photosList.filter(p => p.orientation === 'portrait').length;
   const landscapeCount = photosList.filter(p => p.orientation !== 'portrait').length;
 
+  const [docMeetingType, setDocMeetingType] = useState<'rt' | 'pkk'>('rt');
+
   return (
     <div className="space-y-6">
       {/* Navigation & Controls Bar */}
@@ -240,8 +242,31 @@ export const MonthlySpjManager: React.FC<MonthlySpjManagerProps> = ({
           </div>
         </div>
 
-        {/* View Mode Tabs Bar */}
         <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <div className="flex bg-slate-100 p-1 rounded-xl gap-1 text-xs">
+            <button
+              type="button"
+              onClick={() => setDocMeetingType('rt')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                docMeetingType === 'rt'
+                  ? 'bg-white text-blue-700 shadow-xs ring-1 ring-slate-200'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              👥 Kegiatan Warga (RT)
+            </button>
+            <button
+              type="button"
+              onClick={() => setDocMeetingType('pkk')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                docMeetingType === 'pkk'
+                  ? 'bg-white text-rose-700 shadow-xs ring-1 ring-slate-200'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              🌸 Kegiatan PKK
+            </button>
+          </div>
           <div className="flex bg-slate-100 p-1 rounded-xl gap-1 text-xs">
             <button
               type="button"
@@ -313,6 +338,7 @@ export const MonthlySpjManager: React.FC<MonthlySpjManagerProps> = ({
             standalone={true}
             photosPerPage={photosPerPage}
             onPhotosPerPageChange={handlePhotosPerPageChange}
+            meetingType={docMeetingType}
           />
         </div>
       )}
@@ -712,6 +738,7 @@ export const MonthlySpjManager: React.FC<MonthlySpjManagerProps> = ({
             standalone={false}
             photosPerPage={photosPerPage}
             onPhotosPerPageChange={handlePhotosPerPageChange}
+            meetingType={docMeetingType}
           />
         </div>
       )}

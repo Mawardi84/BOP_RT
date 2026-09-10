@@ -31,6 +31,7 @@ interface FotoDokumentasiLampiranProps {
   standalone?: boolean;
   photosPerPage?: 2 | 4;
   onPhotosPerPageChange?: (count: 2 | 4) => void;
+  meetingType?: 'rt' | 'pkk';
 }
 
 export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = ({
@@ -42,6 +43,7 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
   standalone = false,
   photosPerPage: controlledPhotosPerPage,
   onPhotosPerPageChange,
+  meetingType = 'rt',
 }) => {
   const [internalPhotosPerPage, setInternalPhotosPerPage] = useState<2 | 4>(() => {
     const saved = localStorage.getItem('si_bop_photos_per_page');
@@ -585,8 +587,8 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
                 <div className="flex items-center justify-between">
                   <div className="w-20 h-20 print:w-20 print:h-20 flex-shrink-0 flex items-center justify-center">
                     <img 
-                      src={profile.logoUrl || DEFAULT_SEMARANG_LOGO} 
-                      alt="Logo Kota Semarang" 
+                      src={meetingType === 'pkk' ? (profile.pkkLogoUrl || profile.logoUrl || DEFAULT_SEMARANG_LOGO) : (profile.logoUrl || DEFAULT_SEMARANG_LOGO)} 
+                      alt={meetingType === 'pkk' ? "Logo PKK" : "Logo Kota Semarang"} 
                       className="w-full h-full object-contain"
                     />
                   </div>
