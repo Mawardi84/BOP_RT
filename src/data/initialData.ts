@@ -799,7 +799,7 @@ export const pkkNotulenPresets: NotulenPreset[] = [
     secretary: 'INDRIANAH',
     agendaItems: [
       'Rapat dibuka dengan bacaan basmallah, ucapan salam dan ucapan terima kasih atas kehadiran ibu ibu PKK',
-      'Menyanyikan Mars PKK dan pembacaan 1 program pokok PKK',
+      'Menyanyikan Mars PKK dan membaca 10 program pokok PKK',
       'Laporan Keuangan',
       'Lain-lain',
       'Mengingatkan untuk pelunasan simpan pinjam Bank sampah',
@@ -843,7 +843,7 @@ export const pkkNotulenPresets: NotulenPreset[] = [
     secretary: 'INDRIANAH',
     agendaItems: [
       'Rapat dibuka dengan bacaan basmallah, ucapan salam dan ucapan terima kasih atas kehadiran ibu ibu PKK',
-      'Menyanyikan Mars PKK dan pembacaan 1 program pokok PKK',
+      'Menyanyikan Mars PKK dan membaca 10 program pokok PKK',
       'Laporan Keuangan',
       'Lain-lain'
     ],
