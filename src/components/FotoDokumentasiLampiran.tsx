@@ -598,13 +598,13 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
                         <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight">
                           PEMBERDAYAAN KESEJAHTERAAN KELUARGA<br/>(PKK)
                         </div>
-                        <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight mt-1">
+                        <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight mt-1">
                           RUKUN TETANGGA {profile.rtNumber} RUKUN WARGA {profile.rwNumber}
                         </div>
-                        <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
+                        <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight">
                           KELURAHAN {profile.kelurahan} KECAMATAN {profile.kecamatan}
                         </div>
-                        <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
+                        <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight">
                           KOTA SEMARANG
                         </div>
                       </>

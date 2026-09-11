@@ -417,18 +417,15 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
             ) : (
               <>
                 <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
-                  PEMBERDAYAAN DAN KESEJAHTERAAN KELUARGA (PKK)
+                  PEMBERDAYAAN KESEJAHTERAAN KELUARGA<br/>(PKK)
                 </div>
-                <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
-                  TIM PENGGERAK PKK RT {profile.rtNumber} RW {profile.rwNumber} NGABEAN
+                <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight mt-1">
+                  RUKUN TETANGGA {profile.rtNumber} RUKUN WARGA {profile.rwNumber}
                 </div>
-                <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
-                  KECAMATAN {profile.kecamatan}
+                <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight">
+                  KELURAHAN {profile.kelurahan} KECAMATAN {profile.kecamatan}
                 </div>
-                <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
-                  KELURAHAN {profile.kelurahan}
-                </div>
-                <div className="text-[18px] font-bold uppercase text-slate-900 leading-tight mt-1">
+                <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight">
                   KOTA SEMARANG
                 </div>
               </>
@@ -1098,13 +1095,13 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                       <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight">
                         PEMBERDAYAAN KESEJAHTERAAN KELUARGA<br/>(PKK)
                       </div>
-                      <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight mt-1">
+                      <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight mt-1">
                         RUKUN TETANGGA {profile.rtNumber} RUKUN WARGA {profile.rwNumber}
                       </div>
-                      <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
+                      <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight">
                         KELURAHAN {profile.kelurahan} KECAMATAN {profile.kecamatan}
                       </div>
-                      <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
+                      <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight">
                         KOTA SEMARANG
                       </div>
                     </>
@@ -1629,13 +1626,13 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                       <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight">
                         PEMBERDAYAAN KESEJAHTERAAN KELUARGA<br/>(PKK)
                       </div>
-                      <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight mt-1">
+                      <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight mt-1">
                         RUKUN TETANGGA {profile.rtNumber} RUKUN WARGA {profile.rwNumber}
                       </div>
-                      <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
+                      <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight">
                         KELURAHAN {profile.kelurahan} KECAMATAN {profile.kecamatan}
                       </div>
-                      <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
+                      <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight">
                         KOTA SEMARANG
                       </div>
                     </>
@@ -1834,13 +1831,13 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                       <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight">
                         PEMBERDAYAAN KESEJAHTERAAN KELUARGA<br/>(PKK)
                       </div>
-                      <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight mt-1">
+                      <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight mt-1">
                         RUKUN TETANGGA {profile.rtNumber} RUKUN WARGA {profile.rwNumber}
                       </div>
-                      <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
+                      <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight">
                         KELURAHAN {profile.kelurahan} KECAMATAN {profile.kecamatan}
                       </div>
-                      <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
+                      <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight">
                         KOTA SEMARANG
                       </div>
                     </>
@@ -2016,13 +2013,13 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                       <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight">
                         PEMBERDAYAAN KESEJAHTERAAN KELUARGA<br/>(PKK)
                       </div>
-                      <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight mt-1">
+                      <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight mt-1">
                         RUKUN TETANGGA {profile.rtNumber} RUKUN WARGA {profile.rwNumber}
                       </div>
-                      <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
+                      <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight">
                         KELURAHAN {profile.kelurahan} KECAMATAN {profile.kecamatan}
                       </div>
-                      <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
+                      <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight">
                         KOTA SEMARANG
                       </div>
                     </>
