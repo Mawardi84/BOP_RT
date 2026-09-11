@@ -604,11 +604,11 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
                     </div>
                     {meetingType === 'pkk' ? (
                       <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight mt-1">
-                        TIM PENGGERAK PKK RT {profile.rtNumber} RW {profile.rwNumber}
+                        TIM PENGGERAK PKK RT {profile.rtNumber} RW {profile.rwNumber} NGABEAN
                       </div>
                     ) : (
                       <div className="text-[18px] font-bold uppercase text-slate-900 leading-tight mt-1">
-                        RT {profile.rtNumber} RW {profile.rwNumber}
+                        RT {profile.rtNumber} RW {profile.rwNumber} NGABEAN
                       </div>
                     )}
                     <p className="text-[10px] text-slate-600 leading-tight mt-0.5">

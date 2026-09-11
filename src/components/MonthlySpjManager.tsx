@@ -161,7 +161,15 @@ export const MonthlySpjManager: React.FC<MonthlySpjManagerProps> = ({
   const portraitCount = photosList.filter(p => p.orientation === 'portrait').length;
   const landscapeCount = photosList.filter(p => p.orientation !== 'portrait').length;
 
-  const [docMeetingType, setDocMeetingType] = useState<'rt' | 'pkk'>('rt');
+  const [docMeetingType, setDocMeetingType] = useState<'rt' | 'pkk'>(() => {
+    const saved = localStorage.getItem('si_bop_spj_meeting_type');
+    return (saved === 'rt' || saved === 'pkk') ? saved : 'rt';
+  });
+
+  const handleSetDocMeetingType = (type: 'rt' | 'pkk') => {
+    setDocMeetingType(type);
+    localStorage.setItem('si_bop_spj_meeting_type', type);
+  };
 
   return (
     <div className="space-y-6">
@@ -246,7 +254,7 @@ export const MonthlySpjManager: React.FC<MonthlySpjManagerProps> = ({
           <div className="flex bg-slate-100 p-1 rounded-xl gap-1 text-xs">
             <button
               type="button"
-              onClick={() => setDocMeetingType('rt')}
+              onClick={() => handleSetDocMeetingType('rt')}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                 docMeetingType === 'rt'
                   ? 'bg-white text-blue-700 shadow-xs ring-1 ring-slate-200'
@@ -257,7 +265,7 @@ export const MonthlySpjManager: React.FC<MonthlySpjManagerProps> = ({
             </button>
             <button
               type="button"
-              onClick={() => setDocMeetingType('pkk')}
+              onClick={() => handleSetDocMeetingType('pkk')}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                 docMeetingType === 'pkk'
                   ? 'bg-white text-rose-700 shadow-xs ring-1 ring-slate-200'

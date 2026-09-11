@@ -70,8 +70,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       return;
     }
 
-    // If SVG or small file (< 2MB), load directly as DataURL
-    if (file.type === 'image/svg+xml' || file.size <= 1.5 * 1024 * 1024) {
+    // If SVG, load directly as DataURL without compression
+    if (file.type === 'image/svg+xml') {
       const reader = new FileReader();
       reader.onload = (e) => {
         if (typeof e.target?.result === 'string') {
@@ -85,13 +85,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       return;
     }
 
-    // For larger raster images, resize on canvas to maintain high quality while keeping local storage light
+    // For ALL raster images, aggressively resize and compress to maintain high quality while keeping payload well under Firestore 1MB limits
     const reader = new FileReader();
     reader.onload = (e) => {
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        const maxDimension = 600;
+        const maxDimension = 300; // Small is fine for letterhead logo
         let width = img.width;
         let height = img.height;
 
@@ -110,7 +110,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         const ctx = canvas.getContext('2d');
         if (ctx) {
           ctx.drawImage(img, 0, 0, width, height);
-          const compressedDataUrl = canvas.toDataURL('image/png', 0.92);
+          // Force WebP at 85% quality to ensure very small payload (usually <50KB)
+          const compressedDataUrl = canvas.toDataURL('image/webp', 0.85);
           setLogoUrl(compressedDataUrl);
         } else {
           setLogoUrl(e.target?.result as string);
@@ -171,7 +172,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       setPkkUploadError('File harus berupa berkas gambar (PNG, JPG, JPEG, SVG, WebP).');
       return;
     }
-    if (file.type === 'image/svg+xml' || file.size <= 1.5 * 1024 * 1024) {
+    // If SVG, load directly as DataURL without compression
+    if (file.type === 'image/svg+xml') {
       const reader = new FileReader();
       reader.onload = (e) => {
         if (typeof e.target?.result === 'string') {
@@ -184,12 +186,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       reader.readAsDataURL(file);
       return;
     }
+    
+    // For ALL raster images, aggressively resize and compress to maintain high quality while keeping payload well under Firestore 1MB limits
     const reader = new FileReader();
     reader.onload = (e) => {
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        const maxDimension = 600;
+        const maxDimension = 300; // Small is fine for letterhead logo
         let width = img.width;
         let height = img.height;
         if (width > maxDimension || height > maxDimension) {
@@ -206,7 +210,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         const ctx = canvas.getContext('2d');
         if (ctx) {
           ctx.drawImage(img, 0, 0, width, height);
-          const compressedDataUrl = canvas.toDataURL('image/png', 0.92);
+          // Force WebP at 85% quality to ensure very small payload (usually <50KB)
+          const compressedDataUrl = canvas.toDataURL('image/webp', 0.85);
           setPkkLogoUrl(compressedDataUrl);
         } else {
           setPkkLogoUrl(e.target?.result as string);
