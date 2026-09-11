@@ -1102,9 +1102,15 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                   <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
                     KELURAHAN {profile.kelurahan}
                   </div>
-                  <div className="text-[18px] font-bold uppercase text-slate-900 leading-tight mt-1">
-                    RT {profile.rtNumber} RW {profile.rwNumber} NGABEAN
-                  </div>
+                  {meetingType === 'pkk' ? (
+                    <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight mt-1">
+                      TIM PENGGERAK PKK RT {profile.rtNumber} RW {profile.rwNumber} NGABEAN
+                    </div>
+                  ) : (
+                    <div className="text-[18px] font-bold uppercase text-slate-900 leading-tight mt-1">
+                      RT {profile.rtNumber} RW {profile.rwNumber} NGABEAN
+                    </div>
+                  )}
                   <p className="text-[10px] text-slate-800 leading-tight mt-1">
                     Alamat: Ngabean RT {profile.rtNumber} RW {profile.rwNumber} Kelurahan {profile.kelurahan}
                   </p>
@@ -1606,17 +1612,23 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                   </div>
                   <div className="text-center flex-grow px-2">
                     <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
-              PEMERINTAH KOTA SEMARANG
-            </div>
+                      PEMERINTAH KOTA SEMARANG
+                    </div>
                     <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
-              KECAMATAN {profile.kecamatan}
-            </div>
+                      KECAMATAN {profile.kecamatan}
+                    </div>
                     <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
-              KELURAHAN {profile.kelurahan}
-            </div>
-                    <div className="text-[18px] font-bold uppercase text-slate-900 leading-tight mt-1">
-              RT {profile.rtNumber} RW {profile.rwNumber}
-            </div>
+                      KELURAHAN {profile.kelurahan}
+                    </div>
+                    {meetingType === 'pkk' ? (
+                      <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight mt-1">
+                        TIM PENGGERAK PKK RT {profile.rtNumber} RW {profile.rwNumber}
+                      </div>
+                    ) : (
+                      <div className="text-[18px] font-bold uppercase text-slate-900 leading-tight mt-1">
+                        RT {profile.rtNumber} RW {profile.rwNumber}
+                      </div>
+                    )}
                     <p className="text-[8px] print:text-[7.5px] text-slate-600 leading-none mt-0.5">
                       Alamat: Ngabean RT {profile.rtNumber} RW {profile.rwNumber}, Kel. {profile.kelurahan}, Kec. {profile.kecamatan}, Kota Semarang
                     </p>
@@ -1792,17 +1804,23 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                   </div>
                   <div className="text-center flex-grow px-2">
                     <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
-              PEMERINTAH KOTA SEMARANG
-            </div>
+                      PEMERINTAH KOTA SEMARANG
+                    </div>
                     <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
-              KECAMATAN {profile.kecamatan}
-            </div>
+                      KECAMATAN {profile.kecamatan}
+                    </div>
                     <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
-              KELURAHAN {profile.kelurahan}
-            </div>
-                    <div className="text-[18px] font-bold uppercase text-slate-900 leading-tight mt-1">
-              RT {profile.rtNumber} RW {profile.rwNumber}
-            </div>
+                      KELURAHAN {profile.kelurahan}
+                    </div>
+                    {meetingType === 'pkk' ? (
+                      <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight mt-1">
+                        TIM PENGGERAK PKK RT {profile.rtNumber} RW {profile.rwNumber}
+                      </div>
+                    ) : (
+                      <div className="text-[18px] font-bold uppercase text-slate-900 leading-tight mt-1">
+                        RT {profile.rtNumber} RW {profile.rwNumber}
+                      </div>
+                    )}
                     <p className="text-[8px] print:text-[7.5px] text-slate-600 leading-none mt-0.5">
                       Alamat: Ngabean RT {profile.rtNumber} RW {profile.rwNumber}, Kel. {profile.kelurahan}, Kec. {profile.kecamatan}, Kota Semarang
                     </p>
@@ -1963,9 +1981,15 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                   <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
                     KELURAHAN {profile.kelurahan}
                   </div>
-                  <div className="text-[18px] font-bold uppercase text-slate-900 leading-tight mt-1">
-                    RT {profile.rtNumber} RW {profile.rwNumber} NGABEAN
-                  </div>
+                  {meetingType === 'pkk' ? (
+                    <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight mt-1">
+                      TIM PENGGERAK PKK RT {profile.rtNumber} RW {profile.rwNumber} NGABEAN
+                    </div>
+                  ) : (
+                    <div className="text-[18px] font-bold uppercase text-slate-900 leading-tight mt-1">
+                      RT {profile.rtNumber} RW {profile.rwNumber} NGABEAN
+                    </div>
+                  )}
                   <p className="text-[10px] text-slate-800 leading-tight mt-1">
                     Alamat: Ngabean RT {profile.rtNumber} RW {profile.rwNumber} Kelurahan {profile.kelurahan}
                   </p>
