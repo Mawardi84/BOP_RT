@@ -176,6 +176,9 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
   const [undanganLayout, setUndanganLayout] = useState<'1-halaman' | '2-in-1'>('1-halaman');
   const [undanganDateCustom, setUndanganDateCustom] = useState<string>('');
 
+  // Notulen specific states: daftar peserta hadir tidak dicantumkan di lembar notulen (default: false)
+  const [includePesertaInNotulen, setIncludePesertaInNotulen] = useState<boolean>(false);
+
   const handleSelectPreset = (presetId: string, type: 'rt' | 'pkk' = meetingType) => {
     const list = type === 'pkk' ? pkkPresets : rtPresets;
     const preset = list.find((p) => p.id === presetId);
@@ -856,6 +859,35 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                   </div>
                 </button>
               </div>
+            </div>
+          )}
+
+          {/* Pengaturan Peserta Hadir pada Lembar Notulen */}
+          {docViewMode === 'notulen' && (
+            <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1.5">
+              <label className="flex items-center justify-between cursor-pointer">
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    checked={includePesertaInNotulen}
+                    onChange={(e) => setIncludePesertaInNotulen(e.target.checked)}
+                    className="rounded border-slate-300 text-red-600 focus:ring-red-500 w-4 h-4"
+                  />
+                  <span className="text-xs font-bold text-slate-800">
+                    Cantumkan Peserta Hadir di Lembar Notulen
+                  </span>
+                </div>
+                <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded uppercase ${
+                  !includePesertaInNotulen ? 'bg-slate-200 text-slate-700' : 'bg-emerald-100 text-emerald-800'
+                }`}>
+                  {!includePesertaInNotulen ? 'Tidak Dicantumkan' : 'Dicantumkan'}
+                </span>
+              </label>
+              <p className="text-[10px] text-slate-500 leading-normal pl-6">
+                {!includePesertaInNotulen 
+                  ? 'Daftar / jumlah kehadiran tidak dicantumkan di lembar notulen (dikelola terpisah di lampiran lembar Daftar Hadir).'
+                  : 'Jumlah kehadiran akan dicantumkan pada tabel informasi pertemuan notulen.'}
+              </p>
             </div>
           )}
 
@@ -2116,34 +2148,40 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                   </tr>
                   <tr>
                     <td className="border border-slate-900 py-1.5 px-2.5 font-bold bg-slate-100 w-32">Tempat</td>
-                    <td className="border border-slate-900 py-1.5 px-2.5 text-slate-900 w-[30%]">{location}</td>
-                    {meetingType === 'pkk' ? (
-                      <td colSpan={2} className="border border-slate-900 p-0 align-top">
-                        <table className="w-full h-full">
-                          <tbody>
-                            <tr>
-                              <td className="py-1 px-2.5 font-bold bg-slate-100 border-b border-r border-slate-900 w-40">Jumlah Diundang</td>
-                              <td className="py-1 px-2.5 text-slate-900 border-b border-slate-900 font-bold">{invitedCount} Orang</td>
-                            </tr>
-                            <tr>
-                              <td className="py-1 px-2.5 font-bold bg-slate-100 border-b border-r border-slate-900">Peserta Hadir</td>
-                              <td className="py-1 px-2.5 text-slate-900 border-b border-slate-900 font-bold">{participantCount} Orang</td>
-                            </tr>
-                            <tr>
-                              <td className="py-1 px-2.5 font-bold bg-slate-100 border-r border-slate-900">Tidak Hadir</td>
-                              <td className="py-1 px-2.5 text-slate-900 font-bold">
-                                {Math.max(0, invitedCount - participantCount)} Orang
-                                {absentNames && <span className="font-normal block mt-0.5 text-xs">({absentNames})</span>}
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </td>
-                    ) : (
+                    {includePesertaInNotulen ? (
                       <>
-                        <td className="border border-slate-900 py-1.5 px-2.5 font-bold bg-slate-100 w-40">Peserta Hadir</td>
-                        <td className="border border-slate-900 py-1.5 px-2.5 font-bold text-slate-900">{participantCount} Orang (Daftar Hadir Terlampir)</td>
+                        <td className="border border-slate-900 py-1.5 px-2.5 text-slate-900 w-[30%]">{location}</td>
+                        {meetingType === 'pkk' ? (
+                          <td colSpan={2} className="border border-slate-900 p-0 align-top">
+                            <table className="w-full h-full">
+                              <tbody>
+                                <tr>
+                                  <td className="py-1 px-2.5 font-bold bg-slate-100 border-b border-r border-slate-900 w-40">Jumlah Diundang</td>
+                                  <td className="py-1 px-2.5 text-slate-900 border-b border-slate-900 font-bold">{invitedCount} Orang</td>
+                                </tr>
+                                <tr>
+                                  <td className="py-1 px-2.5 font-bold bg-slate-100 border-b border-r border-slate-900">Peserta Hadir</td>
+                                  <td className="py-1 px-2.5 text-slate-900 border-b border-slate-900 font-bold">{participantCount} Orang</td>
+                                </tr>
+                                <tr>
+                                  <td className="py-1 px-2.5 font-bold bg-slate-100 border-r border-slate-900">Tidak Hadir</td>
+                                  <td className="py-1 px-2.5 text-slate-900 font-bold">
+                                    {Math.max(0, invitedCount - participantCount)} Orang
+                                    {absentNames && <span className="font-normal block mt-0.5 text-xs">({absentNames})</span>}
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                        ) : (
+                          <>
+                            <td className="border border-slate-900 py-1.5 px-2.5 font-bold bg-slate-100 w-40">Peserta Hadir</td>
+                            <td className="border border-slate-900 py-1.5 px-2.5 font-bold text-slate-900">{participantCount} Orang (Daftar Hadir Terlampir)</td>
+                          </>
+                        )}
                       </>
+                    ) : (
+                      <td colSpan={3} className="border border-slate-900 py-1.5 px-2.5 text-slate-900">{location}</td>
                     )}
                   </tr>
                   <tr>
