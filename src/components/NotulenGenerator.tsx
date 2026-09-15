@@ -178,6 +178,67 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
 
   // Notulen specific states: daftar peserta hadir tidak dicantumkan di lembar notulen (default: false)
   const [includePesertaInNotulen, setIncludePesertaInNotulen] = useState<boolean>(false);
+  const [notulenDensity, setNotulenDensity] = useState<'pas-1-halaman' | 'standar'>('pas-1-halaman');
+
+  // Helper untuk mempersingkat uraian pembahasan dan hasil keputusan agar pas 1 halaman
+  const handlePersingkatUraian = () => {
+    if (selectedPresetId === 'notulen-karnaval-30agustus') {
+      const karnavalPreset = rtNotulenPresets.find((p) => p.id === 'notulen-karnaval-30agustus');
+      if (karnavalPreset) {
+        setDiscussionNotes(karnavalPreset.discussionNotes);
+        setDecisions(karnavalPreset.decisions);
+        setAgendaItems([...karnavalPreset.agendaItems]);
+        return;
+      }
+    }
+
+    if (discussionNotes) {
+      const lines = discussionNotes
+        .split('\n')
+        .map((l) => l.trim())
+        .filter((l) => l.length > 0);
+
+      const shortened = lines
+        .map((l) =>
+          l
+            .replace(/^(Adapun|Selanjutnya|Dapat kami laporkan bahwa|Perlu diketahui bahwa|Dalam kesempatan ini|Bahwa pelaksanaan)\s+/i, '')
+            .replace(/\s+/g, ' ')
+        )
+        .slice(0, 3);
+      setDiscussionNotes(shortened.join('\n'));
+    }
+
+    if (decisions) {
+      const lines = decisions
+        .split('\n')
+        .map((l) => l.trim())
+        .filter((l) => l.length > 0);
+
+      const shortenedDecisions = lines
+        .map((l) =>
+          l
+            .replace(/^(Hasil keputusan menyepakati bahwa|Disepakati bersama bahwa)\s+/i, '')
+            .replace(/\s+/g, ' ')
+        )
+        .slice(0, 4);
+      setDecisions(shortenedDecisions.join('\n'));
+    }
+  };
+
+  // Pastikan jika preset karnaval 30 agustus masih berisi teks panjang lama, otomatis diperbarui ke versi ringkas 1 halaman
+  useEffect(() => {
+    if (
+      selectedPresetId === 'notulen-karnaval-30agustus' &&
+      discussionNotes.includes('Pelaksanaan Kegiatan Karnaval Budaya HUT RI Ke-81 diselenggarakan pada hari Minggu')
+    ) {
+      const karnavalPreset = rtNotulenPresets.find((p) => p.id === 'notulen-karnaval-30agustus');
+      if (karnavalPreset) {
+        setDiscussionNotes(karnavalPreset.discussionNotes);
+        setDecisions(karnavalPreset.decisions);
+        setAgendaItems([...karnavalPreset.agendaItems]);
+      }
+    }
+  }, [selectedPresetId, discussionNotes]);
 
   const handleSelectPreset = (presetId: string, type: 'rt' | 'pkk' = meetingType) => {
     const list = type === 'pkk' ? pkkPresets : rtPresets;
@@ -862,32 +923,77 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
             </div>
           )}
 
-          {/* Pengaturan Peserta Hadir pada Lembar Notulen */}
+          {/* Pengaturan Format Notulen: Pas 1 Halaman & Kehadiran Peserta */}
           {docViewMode === 'notulen' && (
-            <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1.5">
-              <label className="flex items-center justify-between cursor-pointer">
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    checked={includePesertaInNotulen}
-                    onChange={(e) => setIncludePesertaInNotulen(e.target.checked)}
-                    className="rounded border-slate-300 text-red-600 focus:ring-red-500 w-4 h-4"
-                  />
-                  <span className="text-xs font-bold text-slate-800">
-                    Cantumkan Peserta Hadir di Lembar Notulen
+            <div className="space-y-3">
+              <div className="p-3 bg-indigo-50/70 border border-indigo-200/80 rounded-xl space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Sparkles className="w-4 h-4 text-indigo-700 shrink-0" />
+                    <span className="text-xs font-bold text-indigo-950">Format Halaman Notulen</span>
+                  </div>
+                  <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded uppercase ${
+                    notulenDensity === 'pas-1-halaman' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700'
+                  }`}>
+                    {notulenDensity === 'pas-1-halaman' ? 'Pas 1 Halaman' : 'Standar'}
                   </span>
                 </div>
-                <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded uppercase ${
-                  !includePesertaInNotulen ? 'bg-slate-200 text-slate-700' : 'bg-emerald-100 text-emerald-800'
-                }`}>
-                  {!includePesertaInNotulen ? 'Tidak Dicantumkan' : 'Dicantumkan'}
-                </span>
-              </label>
-              <p className="text-[10px] text-slate-500 leading-normal pl-6">
-                {!includePesertaInNotulen 
-                  ? 'Daftar / jumlah kehadiran tidak dicantumkan di lembar notulen (dikelola terpisah di lampiran lembar Daftar Hadir).'
-                  : 'Jumlah kehadiran akan dicantumkan pada tabel informasi pertemuan notulen.'}
-              </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setNotulenDensity('pas-1-halaman')}
+                    className={`py-1.5 px-2 rounded-lg text-xs font-bold border transition-all ${
+                      notulenDensity === 'pas-1-halaman'
+                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs'
+                        : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                    }`}
+                  >
+                    📄 Pas 1 Halaman
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setNotulenDensity('standar')}
+                    className={`py-1.5 px-2 rounded-lg text-xs font-bold border transition-all ${
+                      notulenDensity === 'standar'
+                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs'
+                        : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                    }`}
+                  >
+                    📑 Standar
+                  </button>
+                </div>
+                <p className="text-[10px] text-indigo-900/80 leading-normal">
+                  {notulenDensity === 'pas-1-halaman'
+                    ? 'Layout dioptimalkan kompak (tinggi KOP, tabel ringkas, spasi proporsional) agar pas 1 lembar cetak utuh.'
+                    : 'Format standar dengan ukuran teks dan jarak antar bagian lebih renggang.'}
+                </p>
+              </div>
+
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1.5">
+                <label className="flex items-center justify-between cursor-pointer">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={includePesertaInNotulen}
+                      onChange={(e) => setIncludePesertaInNotulen(e.target.checked)}
+                      className="rounded border-slate-300 text-red-600 focus:ring-red-500 w-4 h-4"
+                    />
+                    <span className="text-xs font-bold text-slate-800">
+                      Cantumkan Peserta Hadir di Notulen
+                    </span>
+                  </div>
+                  <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded uppercase ${
+                    !includePesertaInNotulen ? 'bg-slate-200 text-slate-700' : 'bg-emerald-100 text-emerald-800'
+                  }`}>
+                    {!includePesertaInNotulen ? 'Tidak' : 'Ya'}
+                  </span>
+                </label>
+                <p className="text-[10px] text-slate-500 leading-normal pl-6">
+                  {!includePesertaInNotulen 
+                    ? 'Daftar kehadiran tidak dicantumkan di lembar notulen (dikelola terpisah di lembar Daftar Hadir).'
+                    : 'Jumlah kehadiran akan dicantumkan pada tabel meta notulen.'}
+                </p>
+              </div>
             </div>
           )}
 
@@ -1351,18 +1457,31 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                       ? 'Uraian Jalannya Acara & Pelaksanaan'
                       : 'Uraian Pembahasan Rapat'}
                   </label>
-                  <button
-                    onClick={handleGenerateAI}
-                    disabled={isGeneratingAI || agendaItems.length === 0}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300 rounded-lg text-xs font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isGeneratingAI ? (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    ) : (
-                      <Bot className="w-3.5 h-3.5" />
+                  <div className="flex items-center space-x-1.5">
+                    {(discussionNotes || decisions) && (
+                      <button
+                        type="button"
+                        onClick={handlePersingkatUraian}
+                        title="Persingkat uraian & hasil keputusan agar pas 1 lembar halaman"
+                        className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100 rounded-lg text-xs font-bold transition-colors"
+                      >
+                        <Scissors className="w-3.5 h-3.5" />
+                        Persingkat (1 Page)
+                      </button>
                     )}
-                    Generate AI
-                  </button>
+                    <button
+                      onClick={handleGenerateAI}
+                      disabled={isGeneratingAI || agendaItems.length === 0}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300 rounded-lg text-xs font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isGeneratingAI ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <Bot className="w-3.5 h-3.5" />
+                      )}
+                      Generate AI
+                    </button>
+                  </div>
                 </div>
                 {aiError && (
                   <div className="text-red-500 text-[10px] mb-2">{aiError}</div>
@@ -2063,218 +2182,257 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
           )}
 
           {/* ================== VIEW 2: NOTULEN RAPAT (PAS 1 HALAMAN) ================== */}
-          {docViewMode === 'notulen' && (
-            <div className="space-y-4 print-one-page text-slate-900 leading-relaxed">
-              {/* KOP Surat Resmi */}
-              <div className="flex items-center justify-between border-b-4 border-double border-slate-900 pb-3 mb-4">
-                <div className="w-24 h-24 sm:w-28 sm:h-28 print:w-24 print:h-24 flex-shrink-0 flex items-center justify-center">
-                  <img 
-                    src={meetingType === 'pkk' ? (profile.pkkLogoUrl || profile.logoUrl || DEFAULT_SEMARANG_LOGO) : (profile.logoUrl || DEFAULT_SEMARANG_LOGO)} 
-                    alt={meetingType === 'pkk' ? "Logo PKK" : "Logo Kota Semarang"} 
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-                <div className="text-center flex-grow px-4">
-                  {meetingType === 'pkk' ? (
-                    <>
-                      <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight">
-                        PEMBERDAYAAN KESEJAHTERAAN KELUARGA<br/>(PKK)
-                      </div>
-                      <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight mt-1">
-                        RUKUN TETANGGA {profile.rtNumber} RUKUN WARGA {profile.rwNumber}
-                      </div>
-                      <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight">
-                        KELURAHAN {profile.kelurahan} KECAMATAN {profile.kecamatan}
-                      </div>
-                      <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight">
-                        KOTA SEMARANG
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
-                        PEMERINTAH KOTA SEMARANG
-                      </div>
-                      <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
-                        KECAMATAN {profile.kecamatan}
-                      </div>
-                      <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
-                        KELURAHAN {profile.kelurahan}
-                      </div>
-                    <div className="text-[18px] font-bold uppercase text-slate-900 leading-tight mt-1">
-                        RT {profile.rtNumber} RW {profile.rwNumber} NGABEAN
-                      </div>
-                    </>
-                  )}
-                  <p className="text-[10px] text-slate-800 leading-tight mt-1">
-                    Alamat: Ngabean RT {profile.rtNumber} RW {profile.rwNumber} Kelurahan {profile.kelurahan}
-                  </p>
-                </div>
-                <div className="w-24 h-24 sm:w-28 sm:h-28 print:w-24 print:h-24 flex-shrink-0"></div>
-              </div>
-
-              {/* Judul Notulen */}
-              <div className="text-center my-4">
-                <h1 className="text-base print:text-base font-black tracking-wider uppercase underline underline-offset-4 text-slate-900 leading-tight">
-                  {selectedPresetId === 'notulen-tirakatan-16agustus'
-                    ? 'BERITA ACARA & NOTULEN PELAKSANAAN MALAM TIRAKATAN HUT RI KE 81 TAHUN 2026'
-                    : selectedPresetId === 'notulen-resepsi-23agustus'
-                    ? 'BERITA ACARA & NOTULEN PELAKSANAAN MALAM RESEPSI HUT RI KE 81 TAHUN 2026'
-                    : selectedPresetId === 'notulen-karnaval-30agustus'
-                    ? 'BERITA ACARA & NOTULEN PELAKSANAAN KARNAVAL BUDAYA HUT RI KE 81 TAHUN 2026'
-                    : meetingType === 'rt' 
-                    ? `NOTULEN RAPAT RUTIN WARGA RT ${profile.rtNumber} RW ${profile.rwNumber}` 
-                    : `NOTULEN PERTEMUAN RUTIN PKK RT ${profile.rtNumber} RW ${profile.rwNumber}`}
-                </h1>
-                <p className="text-xs print:text-xs font-bold uppercase text-slate-700 mt-2">
-                  Bulan {month} Tahun {profile.year}
-                </p>
-              </div>
-
-              {/* Tabel Meta Pertemuan (Grid 2 Kolom Ringkas) */}
-              <table className="w-full border-collapse border border-slate-900 text-[13px] print:text-[13px] mb-4 leading-relaxed">
-                <tbody>
-                  <tr>
-                    <td className="border border-slate-900 py-1.5 px-2.5 font-bold bg-slate-100 w-32">Hari / Tanggal</td>
-                    <td className="border border-slate-900 py-1.5 px-2.5 font-semibold text-slate-900 w-[30%]">{formatDateWithDay(date)}</td>
-                    <td className="border border-slate-900 py-1.5 px-2.5 font-bold bg-slate-100 w-40">Pimpinan Rapat</td>
-                    <td className="border border-slate-900 py-1.5 px-2.5 font-semibold text-slate-900">{leader}</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-slate-900 py-1.5 px-2.5 font-bold bg-slate-100">Waktu / Pukul</td>
-                    <td className="border border-slate-900 py-1.5 px-2.5 text-slate-900">{time}</td>
-                    <td className="border border-slate-900 py-1.5 px-2.5 font-bold bg-slate-100">Notulis / Sekretaris</td>
-                    <td className="border border-slate-900 py-1.5 px-2.5 font-semibold text-slate-900">{secretary}</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-slate-900 py-1.5 px-2.5 font-bold bg-slate-100 w-32">Tempat</td>
-                    {includePesertaInNotulen ? (
+          {docViewMode === 'notulen' && (() => {
+            const isCompact = notulenDensity === 'pas-1-halaman';
+            return (
+              <div className={`print-one-page text-slate-900 ${
+                isCompact ? 'space-y-2 print:space-y-1 leading-snug' : 'space-y-4 leading-relaxed'
+              }`}>
+                {/* KOP Surat Resmi */}
+                <div className={`flex items-center justify-between border-slate-900 ${
+                  isCompact 
+                    ? 'border-b-2 pb-1.5 mb-2 print:pb-1 print:mb-1.5' 
+                    : 'border-b-4 border-double pb-3 mb-4'
+                }`}>
+                  <div className={`${
+                    isCompact 
+                      ? 'w-16 h-16 sm:w-18 sm:h-18 print:w-16 print:h-16' 
+                      : 'w-24 h-24 sm:w-28 sm:h-28 print:w-24 print:h-24'
+                  } flex-shrink-0 flex items-center justify-center`}>
+                    <img 
+                      src={meetingType === 'pkk' ? (profile.pkkLogoUrl || profile.logoUrl || DEFAULT_SEMARANG_LOGO) : (profile.logoUrl || DEFAULT_SEMARANG_LOGO)} 
+                      alt={meetingType === 'pkk' ? "Logo PKK" : "Logo Kota Semarang"} 
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                  <div className="text-center flex-grow px-2">
+                    {meetingType === 'pkk' ? (
                       <>
-                        <td className="border border-slate-900 py-1.5 px-2.5 text-slate-900 w-[30%]">{location}</td>
-                        {meetingType === 'pkk' ? (
-                          <td colSpan={2} className="border border-slate-900 p-0 align-top">
-                            <table className="w-full h-full">
-                              <tbody>
-                                <tr>
-                                  <td className="py-1 px-2.5 font-bold bg-slate-100 border-b border-r border-slate-900 w-40">Jumlah Diundang</td>
-                                  <td className="py-1 px-2.5 text-slate-900 border-b border-slate-900 font-bold">{invitedCount} Orang</td>
-                                </tr>
-                                <tr>
-                                  <td className="py-1 px-2.5 font-bold bg-slate-100 border-b border-r border-slate-900">Peserta Hadir</td>
-                                  <td className="py-1 px-2.5 text-slate-900 border-b border-slate-900 font-bold">{participantCount} Orang</td>
-                                </tr>
-                                <tr>
-                                  <td className="py-1 px-2.5 font-bold bg-slate-100 border-r border-slate-900">Tidak Hadir</td>
-                                  <td className="py-1 px-2.5 text-slate-900 font-bold">
-                                    {Math.max(0, invitedCount - participantCount)} Orang
-                                    {absentNames && <span className="font-normal block mt-0.5 text-xs">({absentNames})</span>}
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </td>
-                        ) : (
-                          <>
-                            <td className="border border-slate-900 py-1.5 px-2.5 font-bold bg-slate-100 w-40">Peserta Hadir</td>
-                            <td className="border border-slate-900 py-1.5 px-2.5 font-bold text-slate-900">{participantCount} Orang (Daftar Hadir Terlampir)</td>
-                          </>
-                        )}
+                        <div className={`${isCompact ? 'text-[12px] print:text-[11px]' : 'text-[16px]'} font-bold uppercase text-slate-900 leading-tight`}>
+                          PEMBERDAYAAN KESEJAHTERAAN KELUARGA<br/>(PKK)
+                        </div>
+                        <div className={`${isCompact ? 'text-[12px] print:text-[11px] mt-0.5' : 'text-[16px] mt-1'} font-bold uppercase text-slate-900 leading-tight`}>
+                          RUKUN TETANGGA {profile.rtNumber} RUKUN WARGA {profile.rwNumber}
+                        </div>
+                        <div className={`${isCompact ? 'text-[12px] print:text-[11px]' : 'text-[16px]'} font-bold uppercase text-slate-900 leading-tight`}>
+                          KELURAHAN {profile.kelurahan} KECAMATAN {profile.kecamatan}
+                        </div>
+                        <div className={`${isCompact ? 'text-[12px] print:text-[11px]' : 'text-[16px]'} font-bold uppercase text-slate-900 leading-tight`}>
+                          KOTA SEMARANG
+                        </div>
                       </>
                     ) : (
-                      <td colSpan={3} className="border border-slate-900 py-1.5 px-2.5 text-slate-900">{location}</td>
+                      <>
+                        <div className={`${isCompact ? 'text-[12px] print:text-[11px]' : 'text-[14px]'} font-bold uppercase text-slate-900 leading-tight`}>
+                          PEMERINTAH KOTA SEMARANG
+                        </div>
+                        <div className={`${isCompact ? 'text-[12px] print:text-[11px]' : 'text-[14px]'} font-bold uppercase text-slate-900 leading-tight`}>
+                          KECAMATAN {profile.kecamatan}
+                        </div>
+                        <div className={`${isCompact ? 'text-[12px] print:text-[11px]' : 'text-[14px]'} font-bold uppercase text-slate-900 leading-tight`}>
+                          KELURAHAN {profile.kelurahan}
+                        </div>
+                        <div className={`${isCompact ? 'text-[15px] print:text-[13px] mt-0.5' : 'text-[18px] mt-1'} font-bold uppercase text-slate-900 leading-tight`}>
+                          RT {profile.rtNumber} RW {profile.rwNumber} NGABEAN
+                        </div>
+                      </>
                     )}
-                  </tr>
-                  <tr>
-                    <td className="border border-slate-900 py-1.5 px-2.5 font-bold bg-slate-100">Agenda Rapat</td>
-                    <td colSpan={3} className="border border-slate-900 py-1.5 px-2.5 font-bold text-slate-900">{agendaSummary}</td>
-                  </tr>
-                </tbody>
-              </table>
-
-              {/* I. Susunan Acara Rapat (Kompak 2 Kolom) */}
-              <div className="mb-4">
-                <div className="text-sm print:text-sm font-bold uppercase bg-slate-100 py-1.5 px-2.5 border-l-4 border-slate-900 text-slate-900 mb-2">
-                  {!discussionNotes?.trim() && !decisions?.trim() 
-                    ? 'Uraian Jalannya Acara'
-                    : selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus' || selectedPresetId === 'notulen-karnaval-30agustus'
-                      ? 'I. Susunan Acara Pelaksanaan Kegiatan'
-                      : 'I. Susunan Agenda / Acara Rapat'}
+                    <p className={`${isCompact ? 'text-[8.5px] print:text-[8px] mt-0.5' : 'text-[10px] mt-1'} text-slate-800 leading-tight`}>
+                      Alamat: Ngabean RT {profile.rtNumber} RW {profile.rwNumber} Kelurahan {profile.kelurahan}
+                    </p>
+                  </div>
+                  <div className={`${
+                    isCompact 
+                      ? 'w-16 h-16 sm:w-18 sm:h-18 print:w-16 print:h-16' 
+                      : 'w-24 h-24 sm:w-28 sm:h-28 print:w-24 print:h-24'
+                  } flex-shrink-0`}></div>
                 </div>
-                <div className={`grid ${meetingType === 'pkk' ? 'grid-cols-1' : 'grid-cols-2'} gap-x-4 gap-y-1.5 text-[13px] print:text-[13px] pl-3 leading-relaxed text-slate-800`}>
-                  {agendaItems.map((ag, i) => (
-                    <div key={i} className="flex space-x-2">
-                      <span className="font-bold text-slate-900">{i + 1}.</span>
-                      <span className="whitespace-pre-line">
-                        {meetingType === 'pkk' && ag.toLowerCase().includes('lain-lain') && (arisanUang || arisanBarang) ? (
-                          <>
-                            {ag.includes('\n') ? ag.split('\n')[0] : ag}
-                            {arisanUang ? `\n      - Uang : ${arisanUang}` : ''}
-                            {arisanBarang ? `\n      - Gula + telur : ${arisanBarang}` : ''}
-                            {ag.includes('\n') ? '\n' + ag.substring(ag.indexOf('\n') + 1) : ''}
-                          </>
-                        ) : (
-                          ag
-                        )}
-                      </span>
+
+                {/* Judul Notulen */}
+                <div className={`text-center ${isCompact ? 'my-2 print:my-1' : 'my-4'}`}>
+                  <h1 className={`${
+                    isCompact ? 'text-[13px] print:text-[11.5px]' : 'text-base print:text-base'
+                  } font-black tracking-wide uppercase underline underline-offset-2 text-slate-900 leading-tight`}>
+                    {selectedPresetId === 'notulen-tirakatan-16agustus'
+                      ? 'BERITA ACARA & NOTULEN PELAKSANAAN MALAM TIRAKATAN HUT RI KE 81 TAHUN 2026'
+                      : selectedPresetId === 'notulen-resepsi-23agustus'
+                      ? 'BERITA ACARA & NOTULEN PELAKSANAAN MALAM RESEPSI HUT RI KE 81 TAHUN 2026'
+                      : selectedPresetId === 'notulen-karnaval-30agustus'
+                      ? 'BERITA ACARA & NOTULEN PELAKSANAAN KARNAVAL BUDAYA HUT RI KE 81 TAHUN 2026'
+                      : meetingType === 'rt' 
+                      ? `NOTULEN RAPAT RUTIN WARGA RT ${profile.rtNumber} RW ${profile.rwNumber}` 
+                      : `NOTULEN PERTEMUAN RUTIN PKK RT ${profile.rtNumber} RW ${profile.rwNumber}`}
+                  </h1>
+                  <p className={`${isCompact ? 'text-[10px] print:text-[9px] mt-0.5' : 'text-xs print:text-xs mt-2'} font-bold uppercase text-slate-700`}>
+                    Bulan {month} Tahun {profile.year}
+                  </p>
+                </div>
+
+                {/* Tabel Meta Pertemuan (Grid 2 Kolom Ringkas) */}
+                <table className={`w-full border-collapse border border-slate-900 leading-tight ${
+                  isCompact ? 'text-[10.5px] print:text-[9.5px] mb-2 print:mb-1' : 'text-[13px] print:text-[13px] mb-4 leading-relaxed'
+                }`}>
+                  <tbody>
+                    <tr>
+                      <td className={`border border-slate-900 font-bold bg-slate-100 ${isCompact ? 'py-0.5 px-2 w-28' : 'py-1.5 px-2.5 w-32'}`}>Hari / Tanggal</td>
+                      <td className={`border border-slate-900 font-semibold text-slate-900 ${isCompact ? 'py-0.5 px-2 w-[30%]' : 'py-1.5 px-2.5 w-[30%]'}`}>{formatDateWithDay(date)}</td>
+                      <td className={`border border-slate-900 font-bold bg-slate-100 ${isCompact ? 'py-0.5 px-2 w-36' : 'py-1.5 px-2.5 w-40'}`}>Pimpinan Rapat</td>
+                      <td className={`border border-slate-900 font-semibold text-slate-900 ${isCompact ? 'py-0.5 px-2' : 'py-1.5 px-2.5'}`}>{leader}</td>
+                    </tr>
+                    <tr>
+                      <td className={`border border-slate-900 font-bold bg-slate-100 ${isCompact ? 'py-0.5 px-2' : 'py-1.5 px-2.5'}`}>Waktu / Pukul</td>
+                      <td className={`border border-slate-900 text-slate-900 ${isCompact ? 'py-0.5 px-2' : 'py-1.5 px-2.5'}`}>{time}</td>
+                      <td className={`border border-slate-900 font-bold bg-slate-100 ${isCompact ? 'py-0.5 px-2' : 'py-1.5 px-2.5'}`}>Notulis / Sekretaris</td>
+                      <td className={`border border-slate-900 font-semibold text-slate-900 ${isCompact ? 'py-0.5 px-2' : 'py-1.5 px-2.5'}`}>{secretary}</td>
+                    </tr>
+                    <tr>
+                      <td className={`border border-slate-900 font-bold bg-slate-100 ${isCompact ? 'py-0.5 px-2 w-28' : 'py-1.5 px-2.5 w-32'}`}>Tempat</td>
+                      {includePesertaInNotulen ? (
+                        <>
+                          <td className={`border border-slate-900 text-slate-900 ${isCompact ? 'py-0.5 px-2 w-[30%]' : 'py-1.5 px-2.5 w-[30%]'}`}>{location}</td>
+                          {meetingType === 'pkk' ? (
+                            <td colSpan={2} className="border border-slate-900 p-0 align-top">
+                              <table className="w-full h-full">
+                                <tbody>
+                                  <tr>
+                                    <td className={`font-bold bg-slate-100 border-b border-r border-slate-900 ${isCompact ? 'py-0.5 px-2 w-36' : 'py-1 px-2.5 w-40'}`}>Jumlah Diundang</td>
+                                    <td className={`text-slate-900 border-b border-slate-900 font-bold ${isCompact ? 'py-0.5 px-2' : 'py-1 px-2.5'}`}>{invitedCount} Orang</td>
+                                  </tr>
+                                  <tr>
+                                    <td className={`font-bold bg-slate-100 border-b border-r border-slate-900 ${isCompact ? 'py-0.5 px-2' : 'py-1 px-2.5'}`}>Peserta Hadir</td>
+                                    <td className={`text-slate-900 border-b border-slate-900 font-bold ${isCompact ? 'py-0.5 px-2' : 'py-1 px-2.5'}`}>{participantCount} Orang</td>
+                                  </tr>
+                                  <tr>
+                                    <td className={`font-bold bg-slate-100 border-r border-slate-900 ${isCompact ? 'py-0.5 px-2' : 'py-1 px-2.5'}`}>Tidak Hadir</td>
+                                    <td className={`text-slate-900 font-bold ${isCompact ? 'py-0.5 px-2' : 'py-1 px-2.5'}`}>
+                                      {Math.max(0, invitedCount - participantCount)} Orang
+                                      {absentNames && <span className="font-normal block mt-0.5 text-xs">({absentNames})</span>}
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </td>
+                          ) : (
+                            <>
+                              <td className={`border border-slate-900 font-bold bg-slate-100 ${isCompact ? 'py-0.5 px-2 w-36' : 'py-1.5 px-2.5 w-40'}`}>Peserta Hadir</td>
+                              <td className={`border border-slate-900 font-bold text-slate-900 ${isCompact ? 'py-0.5 px-2' : 'py-1.5 px-2.5'}`}>{participantCount} Orang (Daftar Hadir Terlampir)</td>
+                            </>
+                          )}
+                        </>
+                      ) : (
+                        <td colSpan={3} className={`border border-slate-900 text-slate-900 ${isCompact ? 'py-0.5 px-2' : 'py-1.5 px-2.5'}`}>{location}</td>
+                      )}
+                    </tr>
+                    <tr>
+                      <td className={`border border-slate-900 font-bold bg-slate-100 ${isCompact ? 'py-0.5 px-2' : 'py-1.5 px-2.5'}`}>Agenda Rapat</td>
+                      <td colSpan={3} className={`border border-slate-900 font-bold text-slate-900 ${isCompact ? 'py-0.5 px-2' : 'py-1.5 px-2.5'}`}>{agendaSummary}</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                {/* I. Susunan Acara Rapat (Kompak 2 Kolom) */}
+                <div className={isCompact ? 'mb-2 print:mb-1' : 'mb-4'}>
+                  <div className={`font-bold uppercase bg-slate-100 border-slate-900 text-slate-900 ${
+                    isCompact ? 'text-[11px] print:text-[10px] py-0.5 px-2 border-l-2 mb-1' : 'text-sm print:text-sm py-1.5 px-2.5 border-l-4 mb-2'
+                  }`}>
+                    {!discussionNotes?.trim() && !decisions?.trim() 
+                      ? 'Uraian Jalannya Acara'
+                      : selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus' || selectedPresetId === 'notulen-karnaval-30agustus'
+                        ? 'I. Susunan Acara Pelaksanaan Kegiatan'
+                        : 'I. Susunan Agenda / Acara Rapat'}
+                  </div>
+                  <div className={`grid ${meetingType === 'pkk' && agendaItems.length <= 4 ? 'grid-cols-1' : 'grid-cols-2'} gap-x-4 ${
+                    isCompact ? 'gap-y-0.5 text-[10px] print:text-[9px] pl-2 leading-tight' : 'gap-y-1.5 text-[13px] print:text-[13px] pl-3 leading-relaxed'
+                  } text-slate-800`}>
+                    {agendaItems.map((ag, i) => (
+                      <div key={i} className="flex space-x-1.5">
+                        <span className="font-bold text-slate-900">{i + 1}.</span>
+                        <span className="whitespace-pre-line">
+                          {meetingType === 'pkk' && ag.toLowerCase().includes('lain-lain') && (arisanUang || arisanBarang) ? (
+                            <>
+                              {ag.includes('\n') ? ag.split('\n')[0] : ag}
+                              {arisanUang ? `\n      - Uang : ${arisanUang}` : ''}
+                              {arisanBarang ? `\n      - Gula + telur : ${arisanBarang}` : ''}
+                              {ag.includes('\n') ? '\n' + ag.substring(ag.indexOf('\n') + 1) : ''}
+                            </>
+                          ) : (
+                            ag
+                          )}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* II. Uraian Pembahasan / Jalannya Acara */}
+                {discussionNotes?.trim() && (
+                  <div className={isCompact ? 'mb-2 print:mb-1' : 'mb-4'}>
+                    <div className={`font-bold uppercase bg-slate-100 border-slate-900 text-slate-900 ${
+                      isCompact ? 'text-[11px] print:text-[10px] py-0.5 px-2 border-l-2 mb-1' : 'text-sm print:text-sm py-1.5 px-2.5 border-l-4 mb-2'
+                    }`}>
+                      {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus' || selectedPresetId === 'notulen-karnaval-30agustus'
+                        ? 'II. Uraian Jalannya Acara & Pelaksanaan Kegiatan'
+                        : 'II. Uraian Pembahasan & Diskusi Rapat'}
                     </div>
-                  ))}
+                    <div className={`${
+                      isCompact ? 'text-[10.5px] print:text-[9.5px] p-2 leading-snug' : 'text-[13px] print:text-[13px] p-3 leading-relaxed'
+                    } text-justify whitespace-pre-line text-slate-900 border border-slate-300 rounded bg-slate-50/40 print:bg-transparent print:p-0 print:border-none`}>
+                      {discussionNotes}
+                    </div>
+                  </div>
+                )}
+
+                {/* III. Hasil Keputusan / Kesepakatan Warga */}
+                {decisions?.trim() && (
+                  <div className={isCompact ? 'mb-2 print:mb-1' : 'mb-6'}>
+                    <div className={`font-bold uppercase bg-slate-100 border-slate-900 text-slate-900 ${
+                      isCompact ? 'text-[11px] print:text-[10px] py-0.5 px-2 border-l-2 mb-1' : 'text-sm print:text-sm py-1.5 px-2.5 border-l-4 mb-2'
+                    }`}>
+                      {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus' || selectedPresetId === 'notulen-karnaval-30agustus'
+                        ? 'III. Hasil Pelaksanaan Kegiatan & Kesimpulan'
+                        : 'III. Hasil Keputusan & Kesepakatan Warga'}
+                    </div>
+                    <div className={`${
+                      isCompact ? 'text-[10.5px] print:text-[9.5px] p-2 leading-snug' : 'text-[13px] print:text-[13px] p-3 leading-relaxed'
+                    } text-justify whitespace-pre-line text-slate-900 font-medium border border-slate-300 rounded bg-slate-50/40 print:bg-transparent print:p-0 print:border-none`}>
+                      {decisions}
+                    </div>
+                  </div>
+                )}
+
+                {closingSentence && (
+                  <div className={`${
+                    isCompact ? 'text-[10px] print:text-[9px] mb-2 print:mb-1' : 'text-[13px] print:text-[13px] mb-6'
+                  } text-slate-800 text-justify italic`}>
+                    {closingSentence}
+                  </div>
+                )}
+
+                {/* Tanda Tangan Mengetahui */}
+                <div className={`${
+                  isCompact 
+                    ? 'mt-3 pt-1.5 print:mt-1.5 print:pt-1 text-[11px] print:text-[10px] gap-8' 
+                    : 'mt-8 pt-4 text-[13px] print:text-[13px] gap-12'
+                } grid grid-cols-2 text-center print-avoid-break`}>
+                  <div>
+                    <p className="font-bold uppercase">
+                      {meetingType === 'rt' ? `Notulis / Sekretaris RT ${profile.rtNumber}` : `Sekretaris PKK RT ${profile.rtNumber}`}
+                    </p>
+                    <div className={isCompact ? 'h-14 print:h-11' : 'h-20 print:h-20'}></div>
+                    <p className="font-extrabold underline uppercase">{secretary}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-600 mb-0.5">Semarang, {formatDate(date)}</p>
+                    <p className="font-bold uppercase">
+                      {meetingType === 'rt' ? `Ketua RT ${profile.rtNumber}` : `Ketua PKK RT ${profile.rtNumber}`}
+                    </p>
+                    <div className={isCompact ? 'h-14 print:h-11' : 'h-20 print:h-20'}></div>
+                    <p className="font-extrabold underline uppercase">{leader}</p>
+                  </div>
                 </div>
               </div>
-
-              {/* II. Uraian Pembahasan / Jalannya Acara */}
-              {discussionNotes?.trim() && (
-                <div className="mb-4">
-                  <div className="text-sm print:text-sm font-bold uppercase bg-slate-100 py-1.5 px-2.5 border-l-4 border-slate-900 text-slate-900 mb-2">
-                    {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus' || selectedPresetId === 'notulen-karnaval-30agustus'
-                      ? 'II. Uraian Jalannya Acara & Pelaksanaan Kegiatan'
-                      : 'II. Uraian Pembahasan & Diskusi Rapat'}
-                  </div>
-                  <div className="text-[13px] print:text-[13px] text-justify leading-relaxed whitespace-pre-line text-slate-900 border border-slate-300 rounded p-3 bg-slate-50/40 print:bg-transparent print:p-0 print:border-none">
-                    {discussionNotes}
-                  </div>
-                </div>
-              )}
-
-              {/* III. Hasil Keputusan / Kesepakatan Warga */}
-              {decisions?.trim() && (
-                <div className="mb-6">
-                  <div className="text-sm print:text-sm font-bold uppercase bg-slate-100 py-1.5 px-2.5 border-l-4 border-slate-900 text-slate-900 mb-2">
-                    {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus' || selectedPresetId === 'notulen-karnaval-30agustus'
-                      ? 'III. Hasil Pelaksanaan Kegiatan & Kesimpulan'
-                      : 'III. Hasil Keputusan & Kesepakatan Warga'}
-                  </div>
-                  <div className="text-[13px] print:text-[13px] text-justify leading-relaxed whitespace-pre-line text-slate-900 font-medium border border-slate-300 rounded p-3 bg-slate-50/40 print:bg-transparent print:p-0 print:border-none">
-                    {decisions}
-                  </div>
-                </div>
-              )}
-
-              {closingSentence && (
-                <div className="text-[13px] print:text-[13px] text-slate-900 mb-6 text-justify">
-                  {closingSentence}
-                </div>
-              )}
-
-              {/* Tanda Tangan Mengetahui */}
-              <div className="mt-8 pt-4 grid grid-cols-2 gap-12 text-[13px] print:text-[13px] text-center print-avoid-break">
-                <div>
-                  <p className="font-bold uppercase">
-                    {meetingType === 'rt' ? `Notulis / Sekretaris RT ${profile.rtNumber}` : `Sekretaris PKK RT ${profile.rtNumber}`}
-                  </p>
-                  <div className="h-20 print:h-20"></div>
-                  <p className="font-extrabold underline uppercase">{secretary}</p>
-                </div>
-                <div>
-                  <p className="text-slate-600 mb-1">Semarang, {formatDate(date)}</p>
-                  <p className="font-bold uppercase">
-                    {meetingType === 'rt' ? `Ketua RT ${profile.rtNumber}` : `Ketua PKK RT ${profile.rtNumber}`}
-                  </p>
-                  <div className="h-20 print:h-20"></div>
-                  <p className="font-extrabold underline uppercase">{leader}</p>
-                </div>
-              </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* ================== VIEW 3: SURAT UNDANGAN PERTEMUAN RUTIN (RT & PKK) ================== */}
           {docViewMode === 'undangan' && (

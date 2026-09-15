@@ -358,39 +358,18 @@ export const rtNotulenPresets: NotulenPreset[] = [
     secretary: 'MUH ZAENUN',
     agendaTitle: 'Karnaval Budaya HUT RI Ke 81 Tahun 2026',
     agendaItems: [
-      'Pemberangkatan & Registrasi Kontingen RW 04 (Kp. Ngabean) di Lapangan Morokono',
-      'Doa Pelepasan Pawai Kirab Budaya oleh Tokoh Masyarakat',
-      'Pawai & Kirab Budaya (Rute: Start Lapangan Morokono s/d Finish Jalan Baru Gunungpati)',
-      'Penampilan Yel-Yel Kebudayaan, Kreasi Busana Adat Nusantara & Musik Tradisional Kontingen',
-      'Penilaian Lapangan oleh Dewan Juri Tingkat Wali Kota Semarang & Juri Tingkat Kelurahan',
-      'Pengumuman Pemenang Kejuaraan Karnaval (Kategori Wali Kota Semarang & Kelurahan)',
-      'Penyerahan Trofi Kejuaraan & Hadiah Uang Pembinaan dari Ibu Wali Kota Semarang',
+      'Pelepasan Kontingen di Lapangan Morokono (Start)',
+      'Pawai Kirab Budaya s/d Jalan Baru Gunungpati (Finish)',
+      'Atraksi Yel-Yel, Kreasi Busana Adat Nusantara & Seni Budaya',
+      'Penilaian Lapangan oleh Dewan Juri Kota & Kelurahan',
+      'Pengumuman Juara & Penyerahan Trofi serta Uang Pembinaan',
       'Ramah Tamah, Doa Syukur & Penutup'
     ],
-    discussionNotes: `Pelaksanaan Kegiatan Karnaval Budaya HUT RI Ke-81 diselenggarakan pada hari Minggu, 30 Agustus 2026 mulai pukul 13.00 WIB sampai dengan selesai, dengan rute pawai Start di Lapangan Morokono dan Finish di Jalan Baru Gunungpati.
-
-Kegiatan karnaval akbar ini diikuti oleh seluruh perwakilan kontingen wilayah se-Kelurahan Gunungpati. Kontingen RW 04 (Kp. Ngabean) tampil penuh semangat dengan formasi barisan kebudayaan nusantara, kesenian tradisional, pakaian adat daerah, serta yel-yel kebangsaan yang sangat kompak dan memukau masyarakat di sepanjang jalur rute Lapangan Morokono hingga Jalan Baru Gunungpati.
-
-Meskipun karnaval ini mewakili tingkat RW 04 (Kp. Ngabean), seluruh pembiayaan operasional pendukung kontingen warga RT 04 (meliputi konsumsi makan-minum warga kontingen, perlengkapan kostum pawai, sound portable kirab, atribut bendera/umbul-umbul, serta akomodasi pendukung) secara sah dialokasikan dan didukung menggunakan anggaran Bantuan Operasional RT (BOP RT 04) Tahun Anggaran 2026.
-
-Ibu Wali Kota Semarang yang berkenan hadir secara langsung mengapresiasi tingginya antusiasme, kreativitas, dan kerukunan warga. Sebagai bentuk dukungan apresiasi dan pemacu semangat, Ibu Wali Kota Semarang juga memberikan tambahan Hadiah Uang Pembinaan kepada seluruh kontingen peserta karnaval agar seluruh warga semakin bersemangat dalam melestarikan seni budaya dan mempererat gotong royong.`,
-    decisions: `Hasil Penilaian Dewan Juri dan Daftar Pemenang Kejuaraan Karnaval Budaya HUT RI Ke-81 Tahun 2026:
-
-A. JUARA KARNAVAL DARI WALI KOTA SEMARANG:
-   1. JUARA 1 : RW 04 (Kp. Ngabean) — Berhasil meraih Trofi Utama Juara 1 Wali Kota Semarang
-   2. JUARA 2 : RW 03 (Kp. Kliwonan)
-   3. JUARA 3 : RW 09 (Kp. Nglarang)
-   * Catatan Istimewa: Ibu Wali Kota Semarang secara khusus memberikan tambahan Hadiah Uang Pembinaan kepada SELURUH KONTINGEN peserta karnaval agar semakin bersemangat dan bergairah.
-
-B. JUARA KARNAVAL TINGKAT KELURAHAN GUNUNGPATI:
-   1. JUARA 1 : RW 09 (Kp. Nglarang)
-   2. JUARA 2 : RW 04 (Kp. Ngabean) — Berhasil meraih Trofi Juara 2 Kelurahan Gunungpati
-   3. JUARA 3 : RW 10 (Kp. Siroto)
-   4. JUARA HARAPAN : RW 03 (Kp. Kliwonan)
-
-C. KETENTUAN ANGGARAN & ADMINISTRASI:
-   1. Seluruh belanja operasional kontingen RT 04 (konsumsi, atribut kirab, dan sound keliling) didukung dari alokasi BOP RT 04 Tahun 2026 dan dipertanggungjawabkan dalam Buku Kas Umum / SPJ Bulan Agustus 2026.
-   2. Seluruh rangkaian pawai dari Start Lapangan Morokono sampai Finish Jalan Baru Gunungpati berlangsung tertib, lancar, aman, dan penuh kegembiraan.`
+    discussionNotes: `Karnaval Budaya HUT RI Ke-81 diselenggarakan Minggu, 30 Agustus 2026 (13.00 WIB s/d selesai) dengan rute Lapangan Morokono s/d Jalan Baru Gunungpati. Kontingen RW 04 (Kp. Ngabean) tampil penuh semangat dengan busana adat nusantara dan yel-yel kebangsaan yang memukau penonton.
+Seluruh operasional kontingen RT 04 didukung anggaran BOP RT 04 TA 2026. Ibu Wali Kota Semarang berkenan hadir langsung memberikan apresiasi serta menyerahkan tambahan Hadiah Uang Pembinaan kepada seluruh kontingen peserta karnaval.`,
+    decisions: `1. Kejuaraan dari Wali Kota Semarang: JUARA 1 diraih RW 04 (Kp. Ngabean) dan meraih Trofi Utama; Juara 2 RW 03; Juara 3 RW 09. Seluruh kontingen menerima hadiah uang pembinaan dari Ibu Wali Kota Semarang.
+2. Kejuaraan Kelurahan Gunungpati: Juara 1 RW 09; JUARA 2 diraih RW 04 (Kp. Ngabean); Juara 3 RW 10; Harapan RW 03.
+3. Belanja operasional kontingen RT 04 (konsumsi, sound kirab, dan atribut) dipertanggungjawabkan dalam SPJ BOP RT Bulan Agustus 2026. Acara berlangsung tertib, aman, dan meriah.`
   }
 ];
 

@@ -39,8 +39,8 @@ async function startServer() {
       });
 
       const prompt = `
-        You are a professional administrative secretary for an RT (Rukun Tetangga) or PKK in Indonesia.
-        Please generate a formal, easy-to-read meeting summary (Notulen) for a ${meetingType.toUpperCase()} meeting in the month of ${month}.
+        You are a professional administrative secretary for an RT (Rukun Tetangga) or PKK in Gunungpati, Kota Semarang.
+        Please generate a formal, concise, and easy-to-read meeting summary (Notulen) for a ${meetingType.toUpperCase()} meeting in the month of ${month}.
 
         Context:
         Location: ${location}
@@ -48,12 +48,11 @@ async function startServer() {
         Agenda:
         ${agendaItems.map((a: string, i: number) => `${i + 1}. ${a}`).join('\n')}
 
-        Task: 
-        Generate the "discussionNotes" (resume of what was discussed, around 1 paragraph) 
-        and "decisions" (list of action items or agreements).
-        Make sure the language is in standard, formal Indonesian (Bahasa Indonesia baku) suitable for official RT/PKK reports.
-        Avoid making up highly specific names that are not provided, but make the notes flow logically based on the agenda topics.
-        Ensure it sounds respectful, professional, and well-structured ("enak dibaca").
+        CRITICAL REQUIREMENT (1-PAGE FIT):
+        - The entire notulen document MUST fit within a SINGLE printed page (1 page).
+        - Keep "discussionNotes" brief, concise, and to the point (1 short paragraph, around 2-3 sentences max). Avoid wordy or redundant bureaucratic filler.
+        - Keep "decisions" as 2-4 concise, high-impact numbered action items (1. ..., 2. ...).
+        - Language must be standard, formal Indonesian (Bahasa Indonesia baku) suitable for official RT/PKK governance & SPJ reporting.
       `;
 
       const response = await ai.models.generateContent({
@@ -66,11 +65,11 @@ async function startServer() {
             properties: {
               discussionNotes: {
                 type: Type.STRING,
-                description: "A formal paragraph summarizing the discussion of the agenda items."
+                description: "A concise, 1-page suitable paragraph (2-3 sentences max) summarizing the discussion directly."
               },
               decisions: {
                 type: Type.STRING,
-                description: "A numbered list (1. ..., 2. ...) summarizing the final decisions or outcomes."
+                description: "A concise numbered list (maximum 3-4 items) of key decisions/agreements suitable for 1-page layout."
               }
             },
             required: ["discussionNotes", "decisions"]
