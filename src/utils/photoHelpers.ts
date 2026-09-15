@@ -90,6 +90,51 @@ export const getResepsiPhotos = (existingRecord?: Partial<MonthlySpjRecord>): Do
   ];
 };
 
+export const getKarnavalPhotos = (existingRecord?: Partial<MonthlySpjRecord>): DocumentationPhoto[] => {
+  return [
+    {
+      id: `photo-karnaval-1`,
+      title: 'Pelepasan Kontingen di Lapangan Morokono (Start)',
+      description: 'Pemberangkatan kontingen RW 04 (Kp. Ngabean) berbusana adat nusantara & kreasi budaya dari titik Start Lapangan Morokono menuju Finish Jalan Baru Gunungpati.',
+      date: '30 Agustus 2026',
+      location: 'Lapangan Morokono Gunungpati',
+      imageUrl: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=800&q=80',
+      orientation: 'landscape',
+      fitMode: 'cover',
+    },
+    {
+      id: `photo-karnaval-2`,
+      title: 'Kirab Budaya di Garis Finish Jalan Baru Gunungpati',
+      description: 'Aksi atraktif kontingen RW 04 (Kp. Ngabean) saat tiba di panggung kehormatan garis Finish Jalan Baru Gunungpati menampilkan seni budaya dan yel-yel kebangsaan.',
+      date: '30 Agustus 2026',
+      location: 'Jalan Baru Gunungpati (Garis Finish)',
+      imageUrl: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=800&q=80',
+      orientation: 'landscape',
+      fitMode: 'cover',
+    },
+    {
+      id: `photo-karnaval-3`,
+      title: 'Juara 1 Wali Kota & Hadiah Uang Pembinaan Ibu Wali Kota',
+      description: 'Penyerahan Trofi Juara 1 Tingkat Wali Kota Semarang kepada RW 04 (Kp. Ngabean) serta penerimaan Hadiah Uang Pembinaan dari Ibu Wali Kota Semarang untuk seluruh kontingen.',
+      date: '30 Agustus 2026',
+      location: 'Panggung Utama Jalan Baru Gunungpati',
+      imageUrl: 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=800&q=80',
+      orientation: 'landscape',
+      fitMode: 'cover',
+    },
+    {
+      id: `photo-karnaval-4`,
+      title: 'Trofi Juara 2 Kelurahan & Dukungan Operasional BOP RT',
+      description: 'Penerimaan Trofi Juara 2 Tingkat Kelurahan Gunungpati oleh kontingen RW 04 (Kp. Ngabean) dan pertanggungjawaban belanja operasional kontingen RT 04 yang didanai BOP RT.',
+      date: '30 Agustus 2026',
+      location: 'Wilayah RT 04 Ngabean',
+      imageUrl: existingRecord?.itemPhotoUrl || 'https://images.unsplash.com/photo-1543353071-873f17a7a088?auto=format&fit=crop&w=800&q=80',
+      orientation: 'landscape',
+      fitMode: 'cover',
+    },
+  ];
+};
+
 export const getDefaultPhotosForMonth = (
   month: string,
   year: number = 2026,

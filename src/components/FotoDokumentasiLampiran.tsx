@@ -20,7 +20,7 @@ import {
   LayoutGrid
 } from 'lucide-react';
 import { executePrint } from '../utils/printHelper';
-import { getDefaultPhotosForMonth, getTirakatanPhotos, getResepsiPhotos } from '../utils/photoHelpers';
+import { getDefaultPhotosForMonth, getTirakatanPhotos, getResepsiPhotos, getKarnavalPhotos } from '../utils/photoHelpers';
 
 interface FotoDokumentasiLampiranProps {
   profile: RtProfile;
@@ -188,6 +188,12 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
     setActivePhotoIndex(0);
   };
 
+  const handleLoadKarnavalPreset = () => {
+    const defaults = getKarnavalPhotos();
+    onUpdatePhotos(defaults);
+    setActivePhotoIndex(0);
+  };
+
   const handleLoadCurrentMonthDefaults = () => {
     const defaults = getDefaultPhotosForMonth(month, profile.year);
     onUpdatePhotos(defaults);
@@ -316,6 +322,15 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
             >
               <Sparkles className="w-3.5 h-3.5 text-amber-600" />
               <span>🇮🇩 Malam Resepsi</span>
+            </button>
+            <button
+              type="button"
+              onClick={handleLoadKarnavalPreset}
+              className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 px-2.5 py-1 rounded-lg font-medium flex items-center space-x-1.5 transition-colors shadow-xs"
+              title="Preset Dokumentasi Karnaval Budaya Minggu, 30 Agustus 2026 Lapangan Morokono"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+              <span>🇮🇩 Karnaval Budaya (30 Ags)</span>
             </button>
             <button
               type="button"

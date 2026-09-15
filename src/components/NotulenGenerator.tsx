@@ -29,10 +29,25 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
   const [selectedPresetId, setSelectedPresetId] = useState<string>('notulen-januari');
   const [tableLayoutMode, setTableLayoutMode] = useState<'auto' | '1-kolom' | '2-kolom-100' | '2-kolom'>('1-kolom');
   
-  // Initialize with the 1st preset (Januari 2026 - Persiapan Haul)
+  // Initialize with presets (merge with new default presets if not present)
   const [rtPresets, setRtPresets] = useState<NotulenPreset[]>(() => {
     const saved = localStorage.getItem('rtNotulenPresets');
-    return saved ? JSON.parse(saved) : rtNotulenPresets;
+    if (!saved) return rtNotulenPresets;
+    try {
+      const parsed: NotulenPreset[] = JSON.parse(saved);
+      rtNotulenPresets.forEach(dp => {
+        const idx = parsed.findIndex(p => p.id === dp.id);
+        if (idx === -1) {
+          parsed.push(dp);
+        } else if (dp.id === 'notulen-karnaval-30agustus') {
+          // Always update notulen-karnaval-30agustus with the latest preset data
+          parsed[idx] = dp;
+        }
+      });
+      return parsed;
+    } catch {
+      return rtNotulenPresets;
+    }
   });
 
   const [pkkPresets, setPkkPresets] = useState<NotulenPreset[]>(() => {
@@ -192,8 +207,15 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
         ? 'Malam Tirakatan HUT RI Ke 81 Tahun 2026'
         : preset.id === 'notulen-resepsi-23agustus'
         ? 'Malam Resepsi HUT RI Ke 81 Tahun 2026'
+        : preset.id === 'notulen-karnaval-30agustus'
+        ? 'Karnaval Budaya HUT RI Ke 81 Tahun 2026'
         : preset.agendaItems[1] || preset.agendaItems[0])
     );
+    if (preset.id === 'notulen-karnaval-30agustus') {
+      setUndanganCatatan('1. Rute Karnaval: Start di Lapangan Morokono dan Finish di Jalan Baru Gunungpati (Kumpul pukul 13.00 WIB).\n2. Karnaval mewakili kontingen RW 04 (Kp. Ngabean), dengan pembiayaan operasional didukung anggaran BOP RT 04.\n3. Hasil Kejuaraan: Juara 1 Kategori Wali Kota Semarang (RW 04 Kp. Ngabean) & Juara 2 Kategori Kelurahan Gunungpati (RW 04 Kp. Ngabean).\n4. Ibu Wali Kota Semarang memberikan tambahan Hadiah Uang Pembinaan kepada seluruh kontingen peserta karnaval.\n5. Dresscode: Pakaian Adat Nusantara / Baju Kreasi Budaya / Kaos Kemerdekaan RT 04.');
+    } else {
+      setUndanganCatatan('');
+    }
     if (preset.participantCount >= 50) {
       setTableLayoutMode('2-kolom-100');
     } else {
@@ -203,7 +225,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
 
   const switchMeetingType = (type: 'rt' | 'pkk') => {
     let base = selectedPresetId.replace('pkk-', '');
-    if (base === 'notulen-tirakatan-16agustus' || base === 'notulen-resepsi-23agustus') {
+    if (base === 'notulen-tirakatan-16agustus' || base === 'notulen-resepsi-23agustus' || base === 'notulen-karnaval-30agustus') {
       base = 'notulen-agustus';
     }
     const targetId = type === 'pkk' ? `pkk-${base}` : base;
@@ -345,7 +367,13 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
   const currentNomorSurat = undanganNomorCustom || defaultNomorSurat;
 
   const defaultHalSurat = meetingType === 'rt'
-    ? `Undangan Pertemuan Rutin Warga RT ${profile.rtNumber} RW ${profile.rwNumber}`
+    ? (selectedPresetId === 'notulen-karnaval-30agustus'
+        ? `Undangan Pelaksanaan Kegiatan Karnaval Budaya HUT RI Ke-81`
+        : selectedPresetId === 'notulen-tirakatan-16agustus'
+        ? `Undangan Malam Tirakatan HUT RI Ke-81`
+        : selectedPresetId === 'notulen-resepsi-23agustus'
+        ? `Undangan Malam Resepsi HUT RI Ke-81`
+        : `Undangan Pertemuan Rutin Warga RT ${profile.rtNumber} RW ${profile.rwNumber}`)
     : `Undangan Pertemuan Rutin PKK RT ${profile.rtNumber} RW ${profile.rwNumber}`;
   const currentHalSurat = undanganHalCustom || defaultHalSurat;
 
@@ -357,7 +385,9 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
   const currentUndanganDate = undanganDateCustom || date;
 
   const defaultPengantar = meetingType === 'rt'
-    ? `Sehubungan dengan akan dilaksanakannya pertemuan rutin warga Ngabean RT. ${profile.rtNumber} RW. ${profile.rwNumber}   maka dengan ini kami mengundang Bapak/Ibu  untuk menghadiri acara tersebut  yang akan dilaksanakan pada :`
+    ? (selectedPresetId === 'notulen-karnaval-30agustus'
+        ? `Sehubungan dengan akan dilaksanakannya Pelaksanaan Kegiatan Karnaval Budaya HUT RI Ke-81 dengan rute Start di Lapangan Morokono dan Finish di Jalan Baru Gunungpati (dimana RT 04 mengirimkan kontingen resmi mewakili RW 04 Kp. Ngabean yang didukung alokasi dana BOP RT), maka dengan ini kami mengundang Bapak/Ibu Warga RT. ${profile.rtNumber} RW. ${profile.rwNumber} untuk hadir, berkumpul, dan berpartisipasi aktif dalam kegiatan karnaval budaya yang akan dilaksanakan pada :`
+        : `Sehubungan dengan akan dilaksanakannya pertemuan rutin warga Ngabean RT. ${profile.rtNumber} RW. ${profile.rwNumber}   maka dengan ini kami mengundang Bapak/Ibu  untuk menghadiri acara tersebut  yang akan dilaksanakan pada :`)
     : `Sehubungan dengan akan dilaksanakannya pertemuan rutin PKK warga Ngabean RT. ${profile.rtNumber} RW. ${profile.rwNumber}   maka dengan ini kami mengundang Ibu-Ibu  untuk menghadiri acara tersebut  yang akan dilaksanakan pada :`;
   const currentPengantar = undanganPengantarCustom || defaultPengantar;
 
@@ -366,6 +396,8 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
         ? 'Malam Tirakatan HUT RI Ke 81'
         : selectedPresetId === 'notulen-resepsi-23agustus'
         ? 'Malam Resepsi HUT RI Ke 81'
+        : selectedPresetId === 'notulen-karnaval-30agustus'
+        ? 'Pelaksanaan Kegiatan Karnaval Budaya HUT RI Ke-81 (Start Lapangan Morokono - Finish Jalan Baru Gunungpati)'
         : `Pertemuan rutin  RT. ${profile.rtNumber}`)
     : `Pertemuan rutin  PKK RT. ${profile.rtNumber}`;
   const currentAcara = undanganAcaraCustom || defaultAcara;
@@ -416,7 +448,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
               </>
             ) : (
               <>
-                <div className="text-[14px] font-bold uppercase text-slate-900 leading-tight">
+                <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight">
                   PEMBERDAYAAN KESEJAHTERAAN KELUARGA<br/>(PKK)
                 </div>
                 <div className="text-[16px] font-bold uppercase text-slate-900 leading-tight mt-1">
@@ -708,7 +740,10 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
               >
                 <div>
                   <div className={`text-[10px] font-bold uppercase ${isActive ? 'text-slate-300' : 'text-red-700'}`}>
-                    {idx + 1}. {preset.month}
+                    {preset.id === 'notulen-tirakatan-16agustus' ? '16 Ags (Tirakatan)' :
+                     preset.id === 'notulen-resepsi-23agustus' ? '23 Ags (Resepsi)' :
+                     preset.id === 'notulen-karnaval-30agustus' ? '30 Ags (Karnaval)' :
+                     `${idx + 1}. ${preset.month}`}
                   </div>
                   <div className="text-[11px] font-extrabold leading-tight mt-0.5 truncate" title={preset.agendaTitle || preset.agendaItems[0]}>
                     {preset.agendaTitle || 
@@ -745,7 +780,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                 ? 'Pengaturan Daftar Hadir' 
                 : docViewMode === 'undangan'
                 ? (meetingType === 'rt' ? 'Pengaturan Surat Undangan RT' : 'Pengaturan Surat Undangan PKK')
-                : selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus'
+                : selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus' || selectedPresetId === 'notulen-karnaval-30agustus'
                 ? 'Formulir Berita Acara Pelaksanaan'
                 : 'Formulir Notulen Rapat'}
             </span>
@@ -1131,7 +1166,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
               {/* Judul Daftar Hadir */}
               <div className="text-center my-4">
                 <h1 className="text-base print:text-base font-black tracking-wider uppercase underline underline-offset-4 text-slate-900 leading-tight">
-                  {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus' 
+                  {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus' || selectedPresetId === 'notulen-karnaval-30agustus'
                     ? agendaSummary.toUpperCase()
                     : (meetingType === 'rt' 
                       ? `DAFTAR HADIR RAPAT RUTIN WARGA RT ${profile.rtNumber} RW ${profile.rwNumber}` 
@@ -1280,7 +1315,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
               <div className="pt-2">
                 <div className="flex items-center justify-between mb-1">
                   <label className="block font-semibold text-slate-700 uppercase">
-                    {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus'
+                    {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus' || selectedPresetId === 'notulen-karnaval-30agustus'
                       ? 'Uraian Jalannya Acara & Pelaksanaan'
                       : 'Uraian Pembahasan Rapat'}
                   </label>
@@ -1326,7 +1361,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
 
               <div>
                 <label className="block font-semibold text-slate-700 uppercase mb-1">
-                  {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus'
+                  {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus' || selectedPresetId === 'notulen-karnaval-30agustus'
                     ? 'Hasil Pelaksanaan & Kesimpulan Acara'
                     : 'Hasil Keputusan Rapat'}
                 </label>
@@ -1870,7 +1905,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                     DAFTAR HADIR WARGA
                   </h1>
                   <p className="text-[9.5px] print:text-[8.5px] font-extrabold uppercase mt-0.5 text-slate-800">
-                    {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus'
+                    {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus' || selectedPresetId === 'notulen-karnaval-30agustus'
                       ? agendaSummary.toUpperCase()
                       : meetingType === 'rt' 
                       ? `PERTEMUAN RUTIN WARGA RT ${profile.rtNumber} RW ${profile.rwNumber}` 
@@ -2053,6 +2088,8 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                     ? 'BERITA ACARA & NOTULEN PELAKSANAAN MALAM TIRAKATAN HUT RI KE 81 TAHUN 2026'
                     : selectedPresetId === 'notulen-resepsi-23agustus'
                     ? 'BERITA ACARA & NOTULEN PELAKSANAAN MALAM RESEPSI HUT RI KE 81 TAHUN 2026'
+                    : selectedPresetId === 'notulen-karnaval-30agustus'
+                    ? 'BERITA ACARA & NOTULEN PELAKSANAAN KARNAVAL BUDAYA HUT RI KE 81 TAHUN 2026'
                     : meetingType === 'rt' 
                     ? `NOTULEN RAPAT RUTIN WARGA RT ${profile.rtNumber} RW ${profile.rwNumber}` 
                     : `NOTULEN PERTEMUAN RUTIN PKK RT ${profile.rtNumber} RW ${profile.rwNumber}`}
@@ -2121,7 +2158,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
                 <div className="text-sm print:text-sm font-bold uppercase bg-slate-100 py-1.5 px-2.5 border-l-4 border-slate-900 text-slate-900 mb-2">
                   {!discussionNotes?.trim() && !decisions?.trim() 
                     ? 'Uraian Jalannya Acara'
-                    : selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus'
+                    : selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus' || selectedPresetId === 'notulen-karnaval-30agustus'
                       ? 'I. Susunan Acara Pelaksanaan Kegiatan'
                       : 'I. Susunan Agenda / Acara Rapat'}
                 </div>
@@ -2150,7 +2187,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
               {discussionNotes?.trim() && (
                 <div className="mb-4">
                   <div className="text-sm print:text-sm font-bold uppercase bg-slate-100 py-1.5 px-2.5 border-l-4 border-slate-900 text-slate-900 mb-2">
-                    {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus'
+                    {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus' || selectedPresetId === 'notulen-karnaval-30agustus'
                       ? 'II. Uraian Jalannya Acara & Pelaksanaan Kegiatan'
                       : 'II. Uraian Pembahasan & Diskusi Rapat'}
                   </div>
@@ -2164,7 +2201,7 @@ export const NotulenGenerator: React.FC<NotulenGeneratorProps> = ({ profile }) =
               {decisions?.trim() && (
                 <div className="mb-6">
                   <div className="text-sm print:text-sm font-bold uppercase bg-slate-100 py-1.5 px-2.5 border-l-4 border-slate-900 text-slate-900 mb-2">
-                    {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus'
+                    {selectedPresetId === 'notulen-tirakatan-16agustus' || selectedPresetId === 'notulen-resepsi-23agustus' || selectedPresetId === 'notulen-karnaval-30agustus'
                       ? 'III. Hasil Pelaksanaan Kegiatan & Kesimpulan'
                       : 'III. Hasil Keputusan & Kesepakatan Warga'}
                   </div>
