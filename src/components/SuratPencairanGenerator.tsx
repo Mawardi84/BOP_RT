@@ -198,13 +198,13 @@ export const SuratPencairanGenerator: React.FC<SuratPencairanGeneratorProps> = (
             </div>
             <div className="flex items-center space-x-2">
               <span className="font-semibold text-slate-700">Nominal:</span>
-              <input
-                type="number"
-                value={monthlyAmount}
-                onChange={(e) => setMonthlyAmount(Number(e.target.value))}
-                className="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1 text-xs font-mono font-bold w-32"
-              />
-              <span className="text-slate-500 italic">(Otomatis sesuai RAP)</span>
+              <div className="bg-slate-100 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-mono font-bold text-slate-700 min-w-[120px]">
+                {formatRupiah(monthlyAmount)}
+              </div>
+              <span className="text-emerald-600 italic font-medium flex items-center space-x-1">
+                <Sparkles className="w-3 h-3" />
+                <span>Otomatis sesuai RAP</span>
+              </span>
             </div>
           </div>
         )}
