@@ -45,14 +45,14 @@ export const SuratPencairanGenerator: React.FC<SuratPencairanGeneratorProps> = (
           (m.alt && m.alt.toLowerCase() === item.month?.toLowerCase())
       );
       return itemMonthObj?.num === targetMonth.num;
-    }).reduce((sum, item) => sum + item.amount, 0);
+    }).reduce((sum, item) => sum + (item.total || 0), 0);
 
     setMonthlyAmount(totalForMonth);
   }, [selectedMonth, rapItems]);
   const [sifat, setSifat] = useState('Segera');
   const [lampiran, setLampiran] = useState('1 (satu) Berkas Lengkap');
   const [lurahName, setLurahName] = useState(`Lurah ${profile.kelurahan}`);
-  const [perwalNumber, setPerwalNumber] = useState('Semarang Nomor 20 Tahun 2026');
+  const [perwalNumber, setPerwalNumber] = useState('Nomor 20 Tahun 2026');
 
   // Indonesian terbilang function
   const terbilang = (num: number): string => {
@@ -84,8 +84,8 @@ export const SuratPencairanGenerator: React.FC<SuratPencairanGeneratorProps> = (
   const getNominal = () => {
     if (pencairanType === 'full') return profile.totalPagu;
     if (pencairanType === 'rapel-august') return 18800000;
-    if (pencairanType === 'monthly') return monthlyAmount;
-    return customAmount;
+    if (pencairanType === 'monthly') return monthlyAmount || 0;
+    return customAmount || 0;
   };
 
   const currentNominal = getNominal();
@@ -185,21 +185,21 @@ export const SuratPencairanGenerator: React.FC<SuratPencairanGeneratorProps> = (
         {pencairanType === 'monthly' && (
           <div className="flex flex-wrap items-center gap-4 text-xs">
             <div className="flex items-center space-x-2">
-              <span className="font-semibold text-slate-700">Bulan:</span>
-              <select
-                value={selectedMonth}
-                onChange={(e) => setSelectedMonth(e.target.value)}
-                className="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1 text-xs font-semibold"
-              >
-                {['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'].map(m => (
-                  <option key={m} value={m}>{m}</option>
-                ))}
-              </select>
+               <span className="font-semibold text-slate-700">Bulan:</span>
+               <select
+                 value={selectedMonth}
+                 onChange={(e) => setSelectedMonth(e.target.value)}
+                 className="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1 text-xs font-semibold"
+               >
+                 {['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'].map(m => (
+                   <option key={m} value={m}>{m}</option>
+                 ))}
+               </select>
             </div>
             <div className="flex items-center space-x-2">
               <span className="font-semibold text-slate-700">Nominal:</span>
               <div className="bg-slate-100 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-mono font-bold text-slate-700 min-w-[120px]">
-                {formatRupiah(monthlyAmount)}
+                {Number.isNaN(monthlyAmount) || monthlyAmount === undefined ? 'Rp 0' : formatRupiah(monthlyAmount)}
               </div>
               <span className="text-emerald-600 italic font-medium flex items-center space-x-1">
                 <Sparkles className="w-3 h-3" />
@@ -324,23 +324,23 @@ export const SuratPencairanGenerator: React.FC<SuratPencairanGeneratorProps> = (
             {pencairanType === 'rapel-august' ? (
               <span>
                 Tahap I (Akumulasi Rapel Operasional Periode <strong>Januari s/d Agustus {profile.year}</strong>) sebesar{' '}
-                <strong>{formatRupiah(currentNominal)} <em>({terbilang(currentNominal)} Rupiah)</em></strong>
+                <strong>{Number.isNaN(currentNominal) || currentNominal === undefined ? 'Rp 0' : formatRupiah(currentNominal)} <em>({Number.isNaN(currentNominal) || currentNominal === undefined ? 'Nol' : terbilang(currentNominal)} Rupiah)</em></strong>
               </span>
             ) : pencairanType === 'monthly' ? (
               <span>
                 untuk <strong>Bulan {selectedMonth} {profile.year}</strong> sebesar{' '}
-                <strong>{formatRupiah(currentNominal)} <em>({terbilang(currentNominal)} Rupiah)</em></strong>
+                <strong>{Number.isNaN(currentNominal) || currentNominal === undefined ? 'Rp 0' : formatRupiah(currentNominal)} <em>({Number.isNaN(currentNominal) || currentNominal === undefined ? 'Nol' : terbilang(currentNominal)} Rupiah)</em></strong>
               </span>
             ) : (
               <span>
-                sebesar <strong>{formatRupiah(currentNominal)} <em>({terbilang(currentNominal)} Rupiah)</em></strong>
+                sebesar <strong>{Number.isNaN(currentNominal) || currentNominal === undefined ? 'Rp 0' : formatRupiah(currentNominal)} <em>({Number.isNaN(currentNominal) || currentNominal === undefined ? 'Nol' : terbilang(currentNominal)} Rupiah)</em></strong>
               </span>
             )}{' '}
             dengan rincian sebagaimana terlampir (Lampiran Rencana Anggaran Penggunaan / RAP).
           </p>
 
           <p className="indent-8">
-            Sebagai bahan pertimbangan, bersama ini kami sampaikan persyaratan pencairan Bantuan Operasional RT {profile.rtNumber} RW {profile.rwNumber} sesuai dengan Peraturan Wali Kota {perwalNumber} Tentang Pedoman Pemberian Bantuan Operasional Rukun Tetangga dan Rukun Warga.
+            Sebagai bahan pertimbangan, bersama ini kami sampaikan persyaratan pencairan Bantuan Operasional RT {profile.rtNumber} RW {profile.rwNumber} sesuai dengan Peraturan Wali Kota {perwalNumber} tentang Pemberian Bantuan Operasional Rukun Tetangga Dan Rukun Warga Kota Semarang yang Bersumber dari Anggaran Pendapatan dan Belanja Daerah Kota Semarang.
           </p>
 
           <p className="indent-8">
