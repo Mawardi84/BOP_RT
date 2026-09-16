@@ -152,7 +152,7 @@ export const PengambilanBulananGenerator: React.FC<PengambilanBulananGeneratorPr
 
   // Indonesian terbilang function
   const terbilang = (num: number): string => {
-    if (num === 0) return 'Nol Rupiah';
+    if (num === 0) return 'Nol';
     const huruf = [
       '',
       'Satu',
@@ -173,22 +173,21 @@ export const PengambilanBulananGenerator: React.FC<PengambilanBulananGeneratorPr
     } else if (num < 20) {
       temp = terbilang(num - 10) + ' Belas';
     } else if (num < 100) {
-      temp = terbilang(Math.floor(num / 10)) + ' Puluh ' + terbilang(num % 10);
+      temp = terbilang(Math.floor(num / 10)) + ' Puluh' + (num % 10 > 0 ? ' ' + terbilang(num % 10) : '');
     } else if (num < 200) {
-      temp = 'Seratus ' + terbilang(num - 100);
+      temp = 'Seratus' + (num - 100 > 0 ? ' ' + terbilang(num - 100) : '');
     } else if (num < 1000) {
-      temp = terbilang(Math.floor(num / 100)) + ' Ratus ' + terbilang(num % 100);
+      temp = terbilang(Math.floor(num / 100)) + ' Ratus' + (num % 100 > 0 ? ' ' + terbilang(num % 100) : '');
     } else if (num < 2000) {
-      temp = 'Seribu ' + terbilang(num - 1000);
+      temp = 'Seribu' + (num - 1000 > 0 ? ' ' + terbilang(num - 1000) : '');
     } else if (num < 1000000) {
-      temp = terbilang(Math.floor(num / 1000)) + ' Ribu ' + terbilang(num % 1000);
+      temp = terbilang(Math.floor(num / 1000)) + ' Ribu' + (num % 1000 > 0 ? ' ' + terbilang(num % 1000) : '');
     } else if (num < 1000000000) {
-      temp = terbilang(Math.floor(num / 1000000)) + ' Juta ' + terbilang(num % 1000000);
+      temp = terbilang(Math.floor(num / 1000000)) + ' Juta' + (num % 1000000 > 0 ? ' ' + terbilang(num % 1000000) : '');
     } else if (num < 1000000000000) {
-      temp =
-        terbilang(Math.floor(num / 1000000000)) + ' Milyar ' + terbilang(num % 1000000000);
+      temp = terbilang(Math.floor(num / 1000000000)) + ' Milyar' + (num % 1000000000 > 0 ? ' ' + terbilang(num % 1000000000) : '');
     }
-    return temp.replace(/\s+/g, ' ').trim() + ' Rupiah';
+    return temp.trim();
   };
 
   const handlePrint = () => {
