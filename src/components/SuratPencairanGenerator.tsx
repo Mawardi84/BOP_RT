@@ -10,8 +10,10 @@ interface SuratPencairanGeneratorProps {
 }
 
 export const SuratPencairanGenerator: React.FC<SuratPencairanGeneratorProps> = ({ profile }) => {
-  const [pencairanType, setPencairanType] = useState<'rapel-august' | 'full' | 'custom'>('rapel-august');
+  const [pencairanType, setPencairanType] = useState<'rapel-august' | 'full' | 'monthly' | 'custom'>('rapel-august');
   const [customAmount, setCustomAmount] = useState<number>(18800000);
+  const [selectedMonth, setSelectedMonth] = useState<string>('September');
+  const [monthlyAmount, setMonthlyAmount] = useState<number>(1000000); // Default per bulan assumption
   const [nomorSurat, setNomorSurat] = useState(`002/${profile.rtNumber}.${profile.rwNumber}/VIII/2026`);
   const [sifat, setSifat] = useState('Segera');
   const [lampiran, setLampiran] = useState('1 (satu) Berkas Lengkap');
@@ -21,6 +23,7 @@ export const SuratPencairanGenerator: React.FC<SuratPencairanGeneratorProps> = (
   const getNominal = () => {
     if (pencairanType === 'full') return profile.totalPagu;
     if (pencairanType === 'rapel-august') return 18800000;
+    if (pencairanType === 'monthly') return monthlyAmount;
     return customAmount;
   };
 
@@ -92,6 +95,17 @@ export const SuratPencairanGenerator: React.FC<SuratPencairanGeneratorProps> = (
             >
               Nominal Kustom
             </button>
+            <button
+              type="button"
+              onClick={() => setPencairanType('monthly')}
+              className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${
+                pencairanType === 'monthly'
+                  ? 'bg-white text-slate-900 shadow-xs ring-1 ring-slate-200'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              Per Bulan
+            </button>
           </div>
         </div>
 
@@ -104,6 +118,32 @@ export const SuratPencairanGenerator: React.FC<SuratPencairanGeneratorProps> = (
               onChange={(e) => setCustomAmount(Number(e.target.value))}
               className="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1 text-xs font-mono font-bold w-48"
             />
+          </div>
+        )}
+
+        {pencairanType === 'monthly' && (
+          <div className="flex flex-wrap items-center gap-4 text-xs">
+            <div className="flex items-center space-x-2">
+              <span className="font-semibold text-slate-700">Bulan:</span>
+              <select
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                className="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1 text-xs font-semibold"
+              >
+                {['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'].map(m => (
+                  <option key={m} value={m}>{m}</option>
+                ))}
+              </select>
+            </div>
+            <div className="flex items-center space-x-2">
+              <span className="font-semibold text-slate-700">Nominal:</span>
+              <input
+                type="number"
+                value={monthlyAmount}
+                onChange={(e) => setMonthlyAmount(Number(e.target.value))}
+                className="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1 text-xs font-mono font-bold w-32"
+              />
+            </div>
           </div>
         )}
 
@@ -180,21 +220,26 @@ export const SuratPencairanGenerator: React.FC<SuratPencairanGeneratorProps> = (
           <div className="space-y-1">
             <div className="flex">
               <span className="w-24 font-semibold">Nomor</span>
-              <span>: {nomorSurat}</span>
+              <span className="mr-1">:</span>
+              <span>{nomorSurat}</span>
             </div>
             <div className="flex">
               <span className="w-24 font-semibold">Sifat</span>
-              <span>: {sifat}</span>
+              <span className="mr-1">:</span>
+              <span>{sifat}</span>
             </div>
             <div className="flex">
               <span className="w-24 font-semibold">Lampiran</span>
-              <span>: {lampiran}</span>
+              <span className="mr-1">:</span>
+              <span>{lampiran}</span>
             </div>
             <div className="flex">
-              <span className="w-24 font-semibold">Hal</span>
+              <span className="w-24 font-semibold flex-shrink-0">Hal</span>
+              <span className="mr-1">:</span>
               <span className="font-semibold">
-                : Permohonan Pencairan Bantuan Operasional RT
+                Permohonan Pencairan Bantuan Operasional RT
                 {pencairanType === 'rapel-august' ? ' (Rapel Jan - Agu 2026)' : ''}
+                {pencairanType === 'monthly' ? ` (Bulan ${selectedMonth} ${profile.year})` : ''}
               </span>
             </div>
           </div>
@@ -217,6 +262,11 @@ export const SuratPencairanGenerator: React.FC<SuratPencairanGeneratorProps> = (
             {pencairanType === 'rapel-august' ? (
               <span>
                 Tahap I (Akumulasi Rapel Operasional Periode <strong>Januari s/d Agustus {profile.year}</strong>) sebesar{' '}
+                <strong>{formatRupiah(currentNominal)}</strong>
+              </span>
+            ) : pencairanType === 'monthly' ? (
+              <span>
+                untuk <strong>Bulan {selectedMonth} {profile.year}</strong> sebesar{' '}
                 <strong>{formatRupiah(currentNominal)}</strong>
               </span>
             ) : (
