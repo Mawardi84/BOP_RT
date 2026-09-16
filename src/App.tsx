@@ -324,7 +324,7 @@ export default function App() {
         )}
 
         {activeTab === 'surat' && (
-          <SuratPencairanGenerator profile={profile} />
+          <SuratPencairanGenerator profile={profile} rapItems={rapItems} />
         )}
 
         {activeTab === 'pengambilan' && (

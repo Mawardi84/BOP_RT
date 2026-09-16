@@ -275,7 +275,7 @@ export const PengambilanBulananGenerator: React.FC<PengambilanBulananGeneratorPr
               <span>Format Pengambilan Operasional RT melalui Bank Jateng</span>
             </h2>
             <p className="text-xs text-slate-500 mt-0.5">
-              Format baku resmi penarikan operasional RT sesuai RAP (Perwal No. 32 Tahun 2025). Siap cetak PDF.
+              Format baku resmi penarikan operasional RT sesuai RAP (Perwal No. 20 Tahun 2026). Siap cetak PDF.
             </p>
           </div>
 
