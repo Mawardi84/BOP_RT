@@ -109,8 +109,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
     const realisasiTotal = transactions
       .filter((t) => {
         if (t.type !== 'expense') return false;
-        const tDate = new Date(t.date);
-        const tMonthNum = tDate.getMonth();
+        if (!t.date) return false;
+        const mStr = t.date.split('-')[1];
+        if (!mStr) return false;
+        const mIdx = parseInt(mStr, 10) - 1;
         const monthNames = [
           'januari',
           'pebruari',
@@ -125,7 +127,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
           'november',
           'desember',
         ];
-        return monthNames[tMonthNum] === m.fullName.toLowerCase();
+        const targetMonthName = m.fullName.toLowerCase();
+        return monthNames[mIdx] === targetMonthName || (mIdx === 1 && targetMonthName === 'pebruari');
       })
       .reduce((acc, curr) => acc + curr.amount, 0);
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ActiveTab, Transaction, RtProfile, MusyawarahRecord, RapItem, MonthlySpjRecord, CategoryDefinition } from './types';
 import { initialTransactions, initialRtProfile, initialMusyawarah, initialRapItems, initialMonthlySpj, defaultCategories } from './data/initialData';
+import { absorbRapToTransactions } from './utils/rapSync';
 import { subscribeBopData, saveBopDataToCloud } from './lib/syncService';
 import { testConnection } from './lib/firebase';
 import { Sidebar } from './components/Sidebar';
@@ -62,7 +63,9 @@ export default function App() {
     const saved = localStorage.getItem('bop_rt_transactions');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed: Transaction[] = JSON.parse(saved);
+        // Clean up any future unrealized September-December expenses and absorb Jan-Aug
+        return absorbRapToTransactions(initialRapItems, parsed, 8);
       } catch {
         return initialTransactions;
       }
@@ -123,13 +126,25 @@ export default function App() {
     testConnection().then((connected) => {
       setSyncStatus(connected ? 'synced' : 'offline');
     });
+
+    // Cleanup transactions on boot to remove any duplicates or future unrealized items
+    setTransactions((prev) => {
+      const cleaned = absorbRapToTransactions(initialRapItems, prev, 8);
+      if (cleaned.length !== prev.length || JSON.stringify(cleaned) !== JSON.stringify(prev)) {
+        persistToCloud({ transactions: cleaned });
+      }
+      return cleaned;
+    });
   }, []);
 
   // Real-time Firestore Sync (Listen for Cloud Changes across devices)
   useEffect(() => {
     const unsubscribe = subscribeBopData((cloudData) => {
       if (cloudData.profile) setProfile(cloudData.profile);
-      if (cloudData.transactions) setTransactions(cloudData.transactions);
+      if (cloudData.transactions && cloudData.transactions.length > 0) {
+        const cleaned = absorbRapToTransactions(initialRapItems, cloudData.transactions, 8);
+        setTransactions(cleaned);
+      }
       if (cloudData.categories) setCategories(cloudData.categories);
       if (cloudData.rapItems) setRapItems(cloudData.rapItems);
       if (cloudData.spjRecords) setSpjRecords(cloudData.spjRecords);
@@ -241,6 +256,14 @@ export default function App() {
     persistToCloud({ rapItems: items });
   };
 
+  const handleAbsorbRapToTransactions = () => {
+    if (!guardAdminAction()) return;
+    const updated = absorbRapToTransactions(rapItems, transactions, 8);
+    setTransactions(updated);
+    persistToCloud({ transactions: updated });
+    alert('⚡ Rincian Rencana Anggaran Penggunaan (RAP) periode Januari s/d Agustus (8 bulan) telah diserap otomatis ke dalam Pencatatan Transaksi Kas Keluar!\n\n(Catatan: Alokasi September - Desember belum diserap karena belum terealisasi).');
+  };
+
   const handleUpdateProfile = (newProfile: RtProfile) => {
     if (!guardAdminAction()) return;
     setProfile(newProfile);
@@ -316,7 +339,12 @@ export default function App() {
         )}
 
         {activeTab === 'rap' && (
-          <RapManager rapItems={rapItems} onUpdateRap={handleUpdateRap} profile={profile} />
+          <RapManager
+            rapItems={rapItems}
+            onUpdateRap={handleUpdateRap}
+            profile={profile}
+            onAbsorbRapToTransactions={handleAbsorbRapToTransactions}
+          />
         )}
 
         {activeTab === 'sptjm' && (
@@ -348,6 +376,7 @@ export default function App() {
             categories={categories}
             onAddCategory={handleAddCategory}
             onDeleteCategory={handleDeleteCategory}
+            onAbsorbRapToTransactions={handleAbsorbRapToTransactions}
           />
         )}
 
@@ -356,6 +385,7 @@ export default function App() {
             transactions={transactions}
             profile={profile}
             categories={categories}
+            onAbsorbRapToTransactions={handleAbsorbRapToTransactions}
           />
         )}
 
@@ -364,8 +394,10 @@ export default function App() {
             profile={profile}
             rapItems={rapItems}
             spjRecords={spjRecords}
+            transactions={transactions}
             onSaveSpj={handleUpdateSpj}
             onNavigateToNotulen={() => setActiveTab('notulen')}
+            onAbsorbRapToTransactions={handleAbsorbRapToTransactions}
           />
         )}
 

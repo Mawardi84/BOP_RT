@@ -20,6 +20,7 @@ import {
   X,
   PlusCircle,
   FolderPlus,
+  Zap,
 } from 'lucide-react';
 
 interface TransactionListProps {
@@ -30,6 +31,7 @@ interface TransactionListProps {
   categories?: CategoryDefinition[];
   onAddCategory?: (cat: CategoryDefinition) => void;
   onDeleteCategory?: (id: string) => void;
+  onAbsorbRapToTransactions?: () => void;
 }
 
 export const TransactionList: React.FC<TransactionListProps> = ({
@@ -40,6 +42,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
   categories = defaultCategories,
   onAddCategory,
   onDeleteCategory,
+  onAbsorbRapToTransactions,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -236,6 +239,17 @@ export const TransactionList: React.FC<TransactionListProps> = ({
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
+          {onAbsorbRapToTransactions && (
+            <button
+              onClick={onAbsorbRapToTransactions}
+              className="bg-amber-600 hover:bg-amber-700 text-white font-bold px-3.5 py-2.5 rounded-xl shadow-xs flex items-center space-x-1.5 text-xs transition-all"
+              title="Serap seluruh data Rencana Anggaran Penggunaan (RAP) otomatis ke dalam transaksi kas keluar"
+            >
+              <Zap className="w-4 h-4 fill-amber-300 text-amber-200" />
+              <span>Serap RAP ke Transaksi</span>
+            </button>
+          )}
+
           <button
             onClick={() => setIsCategoryModalOpen(true)}
             className="bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-300 font-semibold px-3.5 py-2.5 rounded-xl shadow-xs flex items-center space-x-1.5 text-xs transition-all"

@@ -667,14 +667,15 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
                     const globalPhotoNumber = sheetIdx * 2 + photoInSheetIdx + 1;
 
                     return (
+// 2-Photo Mode Card Rendering
                       <div
                         key={photo.id || photoInSheetIdx}
-                        className="border border-slate-300 rounded-lg p-3 bg-white print:border-slate-400 print-avoid-break min-h-[102mm] max-h-[114mm] flex flex-col justify-between"
+                        className="border border-slate-200 rounded-xl p-3.5 bg-white print:border-slate-300 print-avoid-break min-h-[102mm] max-h-[114mm] flex flex-col justify-between shadow-2xs print:shadow-none"
                       >
                         {/* Top Bar for each photo */}
-                        <div className="flex items-center justify-between pb-1.5 mb-2 border-b border-slate-200 text-xs">
+                        <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-200 text-xs">
                           <div className="flex items-center space-x-2 truncate">
-                            <span className="bg-slate-900 text-white font-bold text-[10px] px-2 py-0.5 rounded shrink-0">
+                            <span className="bg-slate-900 text-white font-bold text-[10px] px-2 py-0.5 rounded-md shrink-0 tracking-wider">
                               FOTO {globalPhotoNumber}
                             </span>
                             <span className="font-bold text-slate-900 text-xs sm:text-sm truncate">
@@ -683,12 +684,12 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
                           </div>
                           <div className="text-[10px] text-slate-600 font-medium shrink-0 flex items-center space-x-2">
                             {photo.date && (
-                              <span className="bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                              <span className="bg-slate-100 text-slate-800 px-2 py-0.5 rounded-md border border-slate-200 font-medium">
                                 📅 {photo.date}
                               </span>
                             )}
                             {photo.location && (
-                              <span className="bg-slate-100 px-2 py-0.5 rounded border border-slate-200 hidden sm:inline">
+                              <span className="bg-slate-100 text-slate-800 px-2 py-0.5 rounded-md border border-slate-200 font-medium hidden sm:inline">
                                 📍 {photo.location}
                               </span>
                             )}
@@ -696,49 +697,54 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
                         </div>
 
                         {/* Side-by-Side Content: Foto Besar (Kiri) + Keterangan Lengkap (Kanan) */}
-                        <div className="flex flex-col sm:flex-row gap-3 flex-1 items-stretch">
+                        <div className="flex flex-col sm:flex-row gap-3.5 flex-1 items-stretch">
                           {/* Foto Container (Setara Postcard 10x15cm) */}
-                          <div className="w-full sm:w-[58%] h-[78mm] sm:h-[88mm] bg-slate-50 border border-slate-700 rounded-lg flex items-center justify-center overflow-hidden shrink-0">
+                          <div className="w-full sm:w-[58%] h-[78mm] sm:h-[88mm] bg-slate-50/80 border border-slate-300 rounded-lg flex items-center justify-center overflow-hidden shrink-0 shadow-2xs print:shadow-none">
                             {photo.imageUrl ? (
                               <img
                                 src={photo.imageUrl}
                                 alt={photo.title}
                                 className={photo.fitMode === 'contain' ? 'max-w-full max-h-full object-contain' : 'w-full h-full object-cover'}
                               />
-                            ) : null}
+                            ) : (
+                              <div className="text-center p-4 text-slate-400 text-xs">
+                                <Camera className="w-8 h-8 mx-auto mb-1 text-slate-300" />
+                                <span>Foto Belum Diunggah</span>
+                              </div>
+                            )}
                           </div>
 
                           {/* Rincian Kegiatan di Kanan */}
-                          <div className="w-full sm:w-[42%] flex flex-col justify-start bg-slate-50/80 border border-slate-200 rounded-lg p-3 text-xs leading-relaxed">
-                            <div className="space-y-2">
+                          <div className="w-full sm:w-[42%] flex flex-col justify-start bg-slate-50/90 border border-slate-200 rounded-lg p-3.5 text-xs leading-relaxed">
+                            <div className="space-y-2.5">
                               <div>
-                                <span className="text-[9.5px] font-bold text-slate-500 uppercase tracking-wider block">
+                                <span className="text-[9px] font-extrabold text-slate-500 uppercase tracking-wider block">
                                   Kegiatan / Pembelanjaan:
                                 </span>
-                                <div className="font-bold text-slate-900 text-xs mt-0.5">
+                                <div className="font-bold text-slate-900 text-xs mt-0.5 leading-snug">
                                   {photo.title || `Dokumentasi Kegiatan ${globalPhotoNumber}`}
                                 </div>
                               </div>
 
-                              <div className="pt-1.5 border-t border-slate-200 space-y-1 text-[10.5px]">
+                              <div className="pt-2 border-t border-slate-200/80 space-y-1 text-[10.5px]">
                                 {photo.date && (
-                                  <div>
-                                    <span className="text-slate-500">Tanggal: </span>
+                                  <div className="flex items-start space-x-1">
+                                    <span className="text-slate-500 font-medium w-14 shrink-0">Tanggal:</span>
                                     <span className="font-semibold text-slate-800">{photo.date}</span>
                                   </div>
                                 )}
                                 {photo.location && (
-                                  <div>
-                                    <span className="text-slate-500">Lokasi: </span>
+                                  <div className="flex items-start space-x-1">
+                                    <span className="text-slate-500 font-medium w-14 shrink-0">Lokasi:</span>
                                     <span className="font-semibold text-slate-800">{photo.location}</span>
                                   </div>
                                 )}
                               </div>
 
                               {showKeterangan && photo.description?.trim() && (
-                                <div className="pt-1.5 border-t border-slate-200">
-                                  <span className="text-[9.5px] font-bold text-slate-500 uppercase tracking-wider block mb-0.5">
-                                    Keterangan:
+                                <div className="pt-2 border-t border-slate-200/80">
+                                  <span className="text-[9px] font-extrabold text-slate-500 uppercase tracking-wider block mb-0.5">
+                                    Keterangan Detail:
                                   </span>
                                   <p className="text-[10.5px] text-slate-700 leading-relaxed text-justify line-clamp-4 print:line-clamp-none">
                                     {photo.description}
@@ -777,21 +783,21 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
                     return (
                       <div
                         key={photo.id || photoInSheetIdx}
-                        className="border border-slate-300 rounded-lg p-2.5 bg-white print:border-slate-400 print-avoid-break h-[95mm] flex flex-col justify-between"
+                        className="border border-slate-200 rounded-xl p-3 bg-white print:border-slate-300 print-avoid-break h-[96mm] flex flex-col justify-between shadow-2xs print:shadow-none"
                       >
                         {/* Top Bar for each photo */}
-                        <div className="flex items-center justify-between pb-1 mb-1 border-b border-slate-200 text-[10px]">
+                        <div className="flex items-center justify-between pb-1.5 mb-1.5 border-b border-slate-200 text-[10px]">
                           <div className="flex items-center space-x-1.5 truncate">
-                            <span className="bg-slate-900 text-white font-bold text-[9px] px-1.5 py-0.5 rounded shrink-0">
+                            <span className="bg-slate-900 text-white font-bold text-[9px] px-2 py-0.5 rounded-md shrink-0 tracking-wide">
                               FOTO {globalPhotoNumber}
                             </span>
-                            <span className="font-bold text-slate-900 text-[10px] truncate max-w-[50mm]">
+                            <span className="font-bold text-slate-900 text-xs truncate max-w-[55mm]">
                               {photo.title || `Dokumentasi ${globalPhotoNumber}`}
                             </span>
                           </div>
                           {photo.date && (
-                            <span className="text-[9px] text-slate-500 truncate shrink-0 hidden sm:inline">
-                              {photo.date}
+                            <span className="text-[9.5px] text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200 font-medium truncate shrink-0 hidden sm:inline">
+                              📅 {photo.date}
                             </span>
                           )}
                         </div>
@@ -799,7 +805,7 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
                         {/* Photo Layout */}
                         <div className="flex-1 flex flex-col h-full my-1">
                           <div 
-                            className="w-full h-full bg-slate-50 border border-slate-700 rounded flex items-center justify-center overflow-hidden"
+                            className="w-full h-full bg-slate-50/80 border border-slate-300 rounded-lg flex items-center justify-center overflow-hidden shadow-2xs print:shadow-none"
                           >
                             {photo.imageUrl ? (
                               <img
@@ -807,14 +813,19 @@ export const FotoDokumentasiLampiran: React.FC<FotoDokumentasiLampiranProps> = (
                                 alt={photo.title}
                                 className={photo.fitMode === 'contain' ? 'max-w-full max-h-full object-contain' : 'w-full h-full object-cover'}
                               />
-                            ) : null}
+                            ) : (
+                              <div className="text-center p-2 text-slate-400 text-[10px]">
+                                <Camera className="w-6 h-6 mx-auto mb-1 text-slate-300" />
+                                <span>Foto Belum Diunggah</span>
+                              </div>
+                            )}
                           </div>
                         </div>
 
                         {/* Keterangan singkat bawah (Opsional) */}
                         {showKeterangan && photo.description?.trim() && (
-                          <div className="pt-1 border-t border-slate-200 text-[9px] text-slate-600 truncate">
-                            <span className="font-semibold text-slate-800">Ket: </span>
+                          <div className="pt-1.5 mt-1 border-t border-slate-200 text-[9.5px] text-slate-700 truncate">
+                            <span className="font-bold text-slate-900">Ket: </span>
                             {photo.description}
                           </div>
                         )}

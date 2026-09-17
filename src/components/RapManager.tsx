@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import { RapItem, RtProfile, TransactionCategory } from '../types';
 import { formatRupiah } from '../utils/formatters';
-import { FileSpreadsheet, Printer, Plus, Trash2, Calendar, CheckCircle2 } from 'lucide-react';
+import { FileSpreadsheet, Printer, Plus, Trash2, Calendar, CheckCircle2, Zap } from 'lucide-react';
 import { executePrint } from '../utils/printHelper';
 
 interface RapManagerProps {
   rapItems: RapItem[];
   onUpdateRap: (items: RapItem[]) => void;
   profile: RtProfile;
+  onAbsorbRapToTransactions?: () => void;
 }
 
-export const RapManager: React.FC<RapManagerProps> = ({ rapItems, onUpdateRap, profile }) => {
+export const RapManager: React.FC<RapManagerProps> = ({ rapItems, onUpdateRap, profile, onAbsorbRapToTransactions }) => {
   const [selectedMonth, setSelectedMonth] = useState<string>('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -102,6 +103,17 @@ export const RapManager: React.FC<RapManagerProps> = ({ rapItems, onUpdateRap, p
               </option>
             ))}
           </select>
+
+          {onAbsorbRapToTransactions && (
+            <button
+              onClick={onAbsorbRapToTransactions}
+              className="bg-amber-600 hover:bg-amber-700 text-white font-bold px-3.5 py-2 rounded-xl shadow-xs flex items-center space-x-1.5 text-xs transition-all"
+              title="Serap rincian RAP ini langsung ke pencatatan transaksi kas keluar secara otomatis"
+            >
+              <Zap className="w-4 h-4 fill-amber-300 text-amber-200" />
+              <span>Serap RAP ke Transaksi</span>
+            </button>
+          )}
 
           <button
             onClick={() => setIsModalOpen(true)}

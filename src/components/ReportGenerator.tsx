@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   Sliders,
   RefreshCw,
+  Zap,
 } from 'lucide-react';
 import { executePrint } from '../utils/printHelper';
 
@@ -16,6 +17,7 @@ interface ReportGeneratorProps {
   transactions: Transaction[];
   profile: RtProfile;
   categories?: CategoryDefinition[];
+  onAbsorbRapToTransactions?: () => void;
 }
 
 interface CategoryTotalItem {
@@ -30,6 +32,7 @@ export const ReportGenerator: React.FC<ReportGeneratorProps> = ({
   transactions,
   profile,
   categories = defaultCategories,
+  onAbsorbRapToTransactions,
 }) => {
   const [selectedMonth, setSelectedMonth] = useState<string>('07'); // Default to current or July
   const [reportType, setReportType] = useState<'realisasi' | 'bku' | 'pengantar'>('realisasi');
@@ -229,6 +232,17 @@ export const ReportGenerator: React.FC<ReportGeneratorProps> = ({
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5">
+            {onAbsorbRapToTransactions && (
+              <button
+                onClick={onAbsorbRapToTransactions}
+                className="bg-amber-600 hover:bg-amber-700 text-white font-bold px-3.5 py-2 rounded-xl shadow-xs flex items-center space-x-1.5 text-xs transition-all"
+                title="Serap data RAP otomatis ke pencatatan transaksi kas keluar"
+              >
+                <Zap className="w-3.5 h-3.5 fill-amber-300 text-amber-200" />
+                <span>Serap RAP ke Transaksi</span>
+              </button>
+            )}
+
             <button
               onClick={handleExportCSV}
               className="bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-300 font-semibold px-3.5 py-2 rounded-xl text-xs flex items-center space-x-1.5 transition-all"

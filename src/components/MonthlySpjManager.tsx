@@ -1,6 +1,6 @@
 import { DEFAULT_SEMARANG_LOGO } from '../data/initialData';
 import React, { useState } from 'react';
-import { MonthlySpjRecord, RtProfile, RapItem, DocumentationPhoto } from '../types';
+import { MonthlySpjRecord, RtProfile, RapItem, DocumentationPhoto, Transaction } from '../types';
 import { formatRupiah } from '../utils/formatters';
 import { 
   FileCheck, 
@@ -13,7 +13,13 @@ import {
   Camera, 
   Layers,
   Sparkles,
-  ExternalLink
+  ExternalLink,
+  AlertTriangle,
+  AlertCircle,
+  ShieldCheck,
+  TrendingUp,
+  Info,
+  Zap
 } from 'lucide-react';
 import { executePrint } from '../utils/printHelper';
 import { FotoDokumentasiLampiran } from './FotoDokumentasiLampiran';
@@ -23,16 +29,20 @@ interface MonthlySpjManagerProps {
   profile: RtProfile;
   rapItems: RapItem[];
   spjRecords: MonthlySpjRecord[];
+  transactions?: Transaction[];
   onSaveSpj: (records: MonthlySpjRecord[]) => void;
   onNavigateToNotulen?: () => void;
+  onAbsorbRapToTransactions?: () => void;
 }
 
 export const MonthlySpjManager: React.FC<MonthlySpjManagerProps> = ({
   profile,
   rapItems,
   spjRecords,
+  transactions = [],
   onSaveSpj,
   onNavigateToNotulen,
+  onAbsorbRapToTransactions,
 }) => {
   const [selectedMonth, setSelectedMonth] = useState('Agustus');
   const [viewMode, setViewMode] = useState<'spj' | 'foto-terpisah' | 'all'>('foto-terpisah');
@@ -121,8 +131,94 @@ export const MonthlySpjManager: React.FC<MonthlySpjManagerProps> = ({
     }));
   };
 
+  // Normalize month helper for matching
+  const normalizeMonth = (m: string) => {
+    if (!m) return '';
+    const lower = m.toLowerCase().trim();
+    if (lower === 'februari' || lower === 'pebruari') return 'pebruari';
+    return lower;
+  };
+
+  const monthToIdx: Record<string, number> = {
+    januari: 0,
+    pebruari: 1,
+    februari: 1,
+    maret: 2,
+    april: 3,
+    mei: 4,
+    juni: 5,
+    juli: 6,
+    agustus: 7,
+    september: 8,
+    oktober: 9,
+    november: 10,
+    desember: 11,
+  };
+
+  const selectedMonthIdx = monthToIdx[normalizeMonth(selectedMonth)] ?? 0;
+
+  // RAP items for this month (Plafon Dana BOP)
+  const monthRapItems = rapItems.filter(
+    (item) => normalizeMonth(item.month) === normalizeMonth(selectedMonth)
+  );
+  const totalRapMonth = monthRapItems.reduce((acc, curr) => acc + (curr.total || 0), 0);
+
+  // Actual expense transactions for selected month (Realisasi Pengeluaran)
+  const monthExpenseTransactions = transactions.filter((t) => {
+    if (t.type !== 'expense') return false;
+    if (!t.date) return false;
+    const parts = t.date.split('-');
+    if (parts.length < 2) return false;
+    const mNum = parseInt(parts[1], 10) - 1;
+    return mNum === selectedMonthIdx;
+  });
+
+  const totalExpenseMonth = monthExpenseTransactions.reduce(
+    (acc, curr) => acc + (curr.amount || 0),
+    0
+  );
+
+  // Automatic Validation Status
+  const isOverbudget = totalRapMonth > 0 && totalExpenseMonth > totalRapMonth;
+  const overbudgetAmount = isOverbudget ? totalExpenseMonth - totalRapMonth : 0;
+  const remainingBudget = totalRapMonth > totalExpenseMonth ? totalRapMonth - totalExpenseMonth : 0;
+  const budgetPercentage = totalRapMonth > 0 ? Math.round((totalExpenseMonth / totalRapMonth) * 100) : 0;
+
+  // Summary validation status for all 12 months
+  const monthlyValidationSummary = months.map((m) => {
+    const mIdx = monthToIdx[normalizeMonth(m)] ?? 0;
+    const rapAlloc = rapItems
+      .filter((item) => normalizeMonth(item.month) === normalizeMonth(m))
+      .reduce((acc, curr) => acc + (curr.total || 0), 0);
+    const expenseRealized = transactions
+      .filter((t) => {
+        if (t.type !== 'expense' || !t.date) return false;
+        const parts = t.date.split('-');
+        return parts.length >= 2 && parseInt(parts[1], 10) - 1 === mIdx;
+      })
+      .reduce((acc, curr) => acc + (curr.amount || 0), 0);
+
+    const isOver = rapAlloc > 0 && expenseRealized > rapAlloc;
+    return {
+      month: m,
+      rapAlloc,
+      expenseRealized,
+      isOver,
+      overAmount: isOver ? expenseRealized - rapAlloc : 0,
+    };
+  });
+
+  const overbudgetMonthsCount = monthlyValidationSummary.filter((s) => s.isOver).length;
+
   const handleSave = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
+    if (isOverbudget) {
+      const confirmSave = window.confirm(
+        `⚠️ PERINGATAN VALIDASI SPJ:\n\nTotal pengeluaran bulan ${selectedMonth} (${formatRupiah(totalExpenseMonth)}) MELEBIHI plafon dana RAP (${formatRupiah(totalRapMonth)}) sebesar ${formatRupiah(overbudgetAmount)}.\n\nApakah Anda tetap yakin ingin menyimpan berkas SPJ bulan ${selectedMonth}?`
+      );
+      if (!confirmSave) return;
+    }
+
     const existingIndex = spjRecords.findIndex((s) => s.month === selectedMonth);
     let updated: MonthlySpjRecord[];
     if (existingIndex >= 0) {
@@ -152,10 +248,6 @@ export const MonthlySpjManager: React.FC<MonthlySpjManagerProps> = ({
       executePrint(`Dokumen SPJ Bulanan - Bulan ${selectedMonth} ${profile.year}`);
     }, 200);
   };
-
-  // RAP items for this month
-  const monthRapItems = rapItems.filter((item) => item.month === selectedMonth);
-  const totalRapMonth = monthRapItems.reduce((acc, curr) => acc + curr.total, 0);
 
   const photosList = formState.photos || initialPhotos;
   const portraitCount = photosList.filter(p => p.orientation === 'portrait').length;
@@ -190,13 +282,20 @@ export const MonthlySpjManager: React.FC<MonthlySpjManagerProps> = ({
             <select
               value={selectedMonth}
               onChange={(e) => handleMonthChange(e.target.value)}
-              className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800"
+              className={`border rounded-xl px-3 py-2 text-xs font-semibold ${
+                isOverbudget
+                  ? 'bg-rose-50 border-rose-300 text-rose-900 font-extrabold'
+                  : 'bg-slate-50 border-slate-200 text-slate-800'
+              }`}
             >
-              {months.map((m) => (
-                <option key={m} value={m}>
-                  Bulan: {m}
-                </option>
-              ))}
+              {months.map((m) => {
+                const summary = monthlyValidationSummary.find((s) => s.month === m);
+                return (
+                  <option key={m} value={m}>
+                    {summary?.isOver ? `⚠️ Bulan: ${m} (Overbudget)` : `Bulan: ${m}`}
+                  </option>
+                );
+              })}
             </select>
 
             {/* Quick Switcher 2 Foto vs 4 Foto */}
@@ -316,7 +415,18 @@ export const MonthlySpjManager: React.FC<MonthlySpjManagerProps> = ({
             </button>
           </div>
 
-          <div className="text-xs text-slate-500 flex items-center space-x-3">
+          <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
+            {onAbsorbRapToTransactions && (
+              <button
+                type="button"
+                onClick={onAbsorbRapToTransactions}
+                className="bg-amber-600 hover:bg-amber-700 text-white font-bold px-3 py-1.5 rounded-xl shadow-xs flex items-center space-x-1 text-[11px] transition-all"
+                title="Serap rincian RAP langsung ke pencatatan transaksi kas keluar secara otomatis"
+              >
+                <Zap className="w-3.5 h-3.5 fill-amber-300 text-amber-200" />
+                <span>⚡ Serap RAP ke Transaksi</span>
+              </button>
+            )}
             <span>
               Foto Bulan {selectedMonth}: <strong>{photosList.length} Foto</strong>
             </span>
@@ -328,6 +438,165 @@ export const MonthlySpjManager: React.FC<MonthlySpjManagerProps> = ({
             <span>
               Orientasi: <strong>{landscapeCount} Landscape</strong>, <strong>{portraitCount} Portrait</strong>
             </span>
+          </div>
+        </div>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* AUTOMATIC VALIDATION BANNER & BUDGET CEILING CARD                        */}
+      {/* ========================================================================= */}
+      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs print:hidden space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-3 border-b border-slate-100">
+          <div className="flex items-start sm:items-center space-x-3">
+            <div className={`p-2.5 rounded-xl shrink-0 ${isOverbudget ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}`}>
+              {isOverbudget ? <AlertTriangle className="w-5 h-5" /> : <ShieldCheck className="w-5 h-5" />}
+            </div>
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <h3 className="font-bold text-slate-900 text-sm">Validasi Otomatis SPJ & Plafon BOP (Bulan {selectedMonth})</h3>
+                {isOverbudget ? (
+                  <span className="bg-rose-100 text-rose-800 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full border border-rose-200 flex items-center space-x-1">
+                    <AlertCircle className="w-3 h-3 text-rose-600" />
+                    <span>Melebihi Plafon RAP</span>
+                  </span>
+                ) : totalRapMonth > 0 ? (
+                  <span className="bg-emerald-100 text-emerald-800 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full border border-emerald-200 flex items-center space-x-1">
+                    <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                    <span>Sesuai Plafon RAP</span>
+                  </span>
+                ) : (
+                  <span className="bg-amber-100 text-amber-800 text-[11px] font-medium px-2.5 py-0.5 rounded-full border border-amber-200">
+                    Belum Ada Alokasi RAP
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Sistem otomatis membandingkan total transaksi kas keluar dengan plafon dana Rencana Anggaran Penggunaan (RAP).
+              </p>
+            </div>
+          </div>
+
+          {/* Quick Stats Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs shrink-0">
+            <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+              <span className="text-[10px] uppercase tracking-wider text-slate-500 font-bold block">Plafon RAP</span>
+              <span className="font-extrabold text-slate-900 text-xs sm:text-sm">{formatRupiah(totalRapMonth)}</span>
+            </div>
+
+            <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+              <span className="text-[10px] uppercase tracking-wider text-slate-500 font-bold block">Realisasi Pengeluaran</span>
+              <span className={`font-extrabold text-xs sm:text-sm ${isOverbudget ? 'text-rose-600' : 'text-slate-900'}`}>
+                {formatRupiah(totalExpenseMonth)}
+              </span>
+            </div>
+
+            <div className={`p-2.5 rounded-xl border col-span-2 sm:col-span-1 ${
+              isOverbudget 
+                ? 'bg-rose-50 border-rose-200 text-rose-900' 
+                : 'bg-emerald-50 border-emerald-200 text-emerald-900'
+            }`}>
+              <span className="text-[10px] uppercase tracking-wider font-bold block opacity-80">
+                {isOverbudget ? 'Selisih Overbudget' : 'Sisa Alokasi'}
+              </span>
+              <span className="font-extrabold text-xs sm:text-sm">
+                {isOverbudget ? `+${formatRupiah(overbudgetAmount)}` : formatRupiah(remainingBudget)}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Progress Bar & Percentage */}
+        {totalRapMonth > 0 && (
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs font-semibold">
+              <span className="text-slate-600">Penggunaan Anggaran Bulan {selectedMonth}:</span>
+              <span className={isOverbudget ? 'text-rose-600 font-extrabold' : 'text-slate-800'}>
+                {budgetPercentage}% ({formatRupiah(totalExpenseMonth)} dari {formatRupiah(totalRapMonth)})
+              </span>
+            </div>
+            <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+              <div 
+                className={`h-full transition-all duration-500 ${
+                  isOverbudget ? 'bg-rose-600' : budgetPercentage > 85 ? 'bg-amber-500' : 'bg-emerald-500'
+                }`}
+                style={{ width: `${Math.min(budgetPercentage, 100)}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Prominent Warning Alert Box if Overbudget */}
+        {isOverbudget && (
+          <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-900 flex items-start space-x-3 text-xs">
+            <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <h4 className="font-bold text-rose-900 text-xs">
+                ⚠️ PERINGATAN VALIDASI: TOTAL PENGELUARAN BULAN {selectedMonth.toUpperCase()} MELEBIHI PLAFON RAP
+              </h4>
+              <p className="leading-relaxed text-rose-800">
+                Total transaksi pengeluaran (<strong>{formatRupiah(totalExpenseMonth)}</strong>) telah melampaui batas alokasi anggaran RAP (<strong>{formatRupiah(totalRapMonth)}</strong>) sebesar <strong className="text-rose-900 underline underline-offset-2">{formatRupiah(overbudgetAmount)}</strong> ({budgetPercentage}% dari plafon RAP).
+              </p>
+              <p className="text-[11px] text-rose-700 italic pt-0.5">
+                💡 <strong>Rekomendasi Tindakan:</strong> Harap sesuaikan daftar pencatatan transaksi kas keluar pada bulan {selectedMonth} atau revisi data Rencana Anggaran Penggunaan (RAP) agar pertanggungjawaban SPJ di Kelurahan valid dan bebas dari temuan.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* 12-Month Quick Validation Status Bar */}
+        <div className="pt-2 border-t border-slate-100">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wider flex items-center space-x-1.5">
+              <FileCheck className="w-3.5 h-3.5 text-slate-500" />
+              <span>Ringkasan Validasi Plafon RAP 12 Bulan:</span>
+            </span>
+            {overbudgetMonthsCount > 0 ? (
+              <span className="text-[10.5px] font-bold text-rose-700 bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-200">
+                ⚠️ {overbudgetMonthsCount} Bulan Melebihi Plafon
+              </span>
+            ) : (
+              <span className="text-[10.5px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                ✅ Seluruh Bulan Sesuai Plafon
+              </span>
+            )}
+          </div>
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-1.5">
+            {monthlyValidationSummary.map((summary) => {
+              const isSelected = summary.month === selectedMonth;
+              return (
+                <button
+                  key={summary.month}
+                  type="button"
+                  onClick={() => handleMonthChange(summary.month)}
+                  className={`p-1.5 rounded-xl border text-center transition-all ${
+                    isSelected
+                      ? 'ring-2 ring-red-500 font-bold shadow-xs'
+                      : 'hover:bg-slate-50'
+                  } ${
+                    summary.isOver
+                      ? 'bg-rose-50 border-rose-300 text-rose-900'
+                      : summary.rapAlloc > 0 && summary.expenseRealized > 0
+                      ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
+                      : 'bg-slate-50 border-slate-200 text-slate-600'
+                  }`}
+                  title={`Bulan ${summary.month}: Realisasi ${formatRupiah(summary.expenseRealized)} / RAP ${formatRupiah(summary.rapAlloc)}`}
+                >
+                  <div className="text-[10px] font-bold truncate">{summary.month.slice(0, 3)}</div>
+                  <div className="text-[9px] mt-0.5 font-medium">
+                    {summary.isOver ? (
+                      <span className="text-rose-700 font-extrabold flex items-center justify-center space-x-0.5">
+                        <AlertCircle className="w-2.5 h-2.5" />
+                        <span>Over</span>
+                      </span>
+                    ) : summary.rapAlloc > 0 ? (
+                      <span className="text-emerald-700 font-bold">OK</span>
+                    ) : (
+                      <span className="text-slate-400">-</span>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
