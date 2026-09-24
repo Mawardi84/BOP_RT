@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { ActiveTab, Transaction, RtProfile, MusyawarahRecord, RapItem, MonthlySpjRecord, CategoryDefinition } from './types';
 import { initialTransactions, initialRtProfile, initialMusyawarah, initialRapItems, initialMonthlySpj, defaultCategories } from './data/initialData';
 import { absorbRapToTransactions } from './utils/rapSync';
@@ -436,6 +437,7 @@ export default function App() {
           SI-BOP RT Kota Semarang • Sistem Pelaporan Mandiri & Transparan Berdasarkan Juknis APBD
         </p>
       </footer>
+      <Analytics />
     </div>
   );
 }
